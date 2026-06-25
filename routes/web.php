@@ -17,6 +17,14 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+Route::prefix('verkoper')->name('verkoper.')->middleware(['auth', 'verified', 'role:admin,verkoper'])->group(function () {
+    Route::get('/', fn () => redirect()->route('verkoper.quotes.index'))->name('dashboard');
+    Route::get('/offertes', \App\Livewire\Verkoper\Quotes\Index::class)->name('quotes.index');
+    Route::get('/offertes/create', \App\Livewire\Verkoper\Quotes\Create::class)->name('quotes.create');
+    Route::get('/offertes/{quote}', \App\Livewire\Verkoper\Quotes\Show::class)->name('quotes.show');
+    Route::get('/offertes/{quote}/edit', \App\Livewire\Verkoper\Quotes\Create::class)->name('quotes.edit');
+});
+
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'verified', 'role:admin'])->group(function () {
     Route::get('/', fn () => redirect()->route('admin.products.index'))->name('dashboard');
     Route::get('/products', \App\Livewire\Admin\Products\Index::class)->name('products.index');
