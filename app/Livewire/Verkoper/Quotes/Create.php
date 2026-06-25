@@ -7,6 +7,7 @@ use App\Models\Product;
 use App\Models\ProductDependency;
 use App\Models\Quote;
 use App\Models\QuoteItem;
+use App\Services\QuotePdfService;
 use Livewire\Component;
 
 class Create extends Component
@@ -271,11 +272,14 @@ class Create extends Component
             ]);
         }
 
-        $message = $generatePdf
-            ? 'Offerte opgeslagen. PDF-generatie wordt in de volgende stap toegevoegd.'
-            : 'Offerte opgeslagen als concept.';
+        if ($generatePdf) {
+            app(QuotePdfService::class)->generate($quote);
+            session()->flash('success', 'Offerte opgeslagen. PDF wordt gedownload.');
+            session()->flash('auto_download_pdf', route('verkoper.quotes.pdf', $quote));
+        } else {
+            session()->flash('success', 'Offerte opgeslagen als concept.');
+        }
 
-        session()->flash('success', $message);
         $this->redirect(route('verkoper.quotes.show', $quote));
     }
 

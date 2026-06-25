@@ -8,6 +8,11 @@
     </div>
     @endif
 
+    @if(session('auto_download_pdf'))
+    <a id="auto-pdf-link" href="{{ session('auto_download_pdf') }}" target="_blank" style="display:none;"></a>
+    <script>document.addEventListener('DOMContentLoaded', function() { document.getElementById('auto-pdf-link').click(); });</script>
+    @endif
+
     {{-- ── Header bar ──────────────────────────────────────────────────────── --}}
     <div class="flex items-start justify-between mb-6 gap-4">
         <div>
@@ -43,6 +48,16 @@
                     @endforeach
                 </div>
             </div>
+
+            {{-- PDF download --}}
+            <a href="{{ route('verkoper.quotes.pdf', $quote) }}"
+               target="_blank"
+               class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-gray-600 bg-white border border-gray-300 hover:bg-gray-50">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+                </svg>
+                PDF downloaden
+            </a>
 
             {{-- Duplicate --}}
             <button wire:click="duplicate"
