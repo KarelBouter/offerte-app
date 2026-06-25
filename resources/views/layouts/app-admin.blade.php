@@ -30,6 +30,7 @@
                     ['label' => 'Afhankelijkheden',   'route' => 'admin.dependencies.index', 'match' => 'admin.dependencies.*'],
                     ['label' => 'Gebruikers',         'route' => 'admin.users.index',      'match' => 'admin.users.*'],
                     ['label' => 'Instellingen',       'route' => 'admin.settings.index',   'match' => 'admin.settings.*'],
+                    ['label' => 'Activiteitenlog',    'route' => 'admin.activity.index',   'match' => 'admin.activity.*'],
                 ];
             @endphp
 

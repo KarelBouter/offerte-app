@@ -2,7 +2,10 @@
 
 namespace App\Livewire\Verkoper\Quotes;
 
+use App\Mail\QuoteClientMail;
 use App\Models\Quote;
+use App\Services\ActivityLogService;
+use Illuminate\Support\Facades\Mail;
 use Livewire\Component;
 
 class Show extends Component
@@ -38,6 +41,26 @@ class Show extends Component
         $this->quote->update(['status' => $status]);
         $this->quote->refresh();
         session()->flash('success', 'Status bijgewerkt naar "'.self::STATUS_LABELS[$status].'".');
+    }
+
+    public function sendToClient(): void
+    {
+        $token   = $this->quote->generateSignToken();
+        $signUrl = route('quote.public', $token);
+
+        $this->quote->update(['status' => 'verzonden']);
+        $this->quote->refresh();
+
+        Mail::to($this->quote->customer->contact_email)
+            ->send(new QuoteClientMail($this->quote, $signUrl));
+
+        app(ActivityLogService::class)->log(
+            'quote.sent',
+            $this->quote,
+            'Offerte '.$this->quote->quote_number.' verstuurd naar '.$this->quote->customer->contact_email
+        );
+
+        session()->flash('success', 'Offerte verstuurd naar '.$this->quote->customer->contact_email.'.');
     }
 
     public function duplicate(): void

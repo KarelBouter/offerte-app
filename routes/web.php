@@ -30,6 +30,9 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'verified', 'role:ad
     Route::get('/users/create', \App\Livewire\Admin\Users\Form::class)->name('users.create');
     Route::get('/users/{user}/edit', \App\Livewire\Admin\Users\Form::class)->name('users.edit');
     Route::get('/settings', \App\Livewire\Admin\Settings\Index::class)->name('settings.index');
+    Route::get('/activity', \App\Livewire\Admin\ActivityLog\Index::class)->name('activity.index');
 });
+
+Route::get('/offerte/{token}', \App\Http\Controllers\PublicQuoteController::class)->name('quote.public');
 
 require __DIR__.'/auth.php';

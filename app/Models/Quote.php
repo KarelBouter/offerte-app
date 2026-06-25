@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Str;
 
 class Quote extends Model
 {
@@ -21,17 +22,29 @@ class Quote extends Model
         'signed_at',
         'signed_by_name',
         'sign_token',
+        'sign_token_expires_at',
         'pdf_path',
     ];
 
     protected function casts(): array
     {
         return [
-            'valid_until' => 'date',
-            'signed_at' => 'datetime',
+            'valid_until'            => 'date',
+            'signed_at'              => 'datetime',
+            'sign_token_expires_at'  => 'datetime',
             'total_onetime_excl_vat' => 'decimal:2',
-            'total_yearly_excl_vat' => 'decimal:2',
+            'total_yearly_excl_vat'  => 'decimal:2',
         ];
+    }
+
+    public function generateSignToken(): string
+    {
+        $token = Str::random(64);
+        $this->update([
+            'sign_token'            => $token,
+            'sign_token_expires_at' => now()->addDays(14),
+        ]);
+        return $token;
     }
 
     protected static function boot(): void

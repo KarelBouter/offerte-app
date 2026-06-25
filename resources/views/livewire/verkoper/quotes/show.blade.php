@@ -59,6 +59,44 @@
                 PDF downloaden
             </a>
 
+            {{-- Verstuur naar klant --}}
+            @if(in_array($quote->status, ['concept', 'verzonden']))
+            <div x-data="{ confirmSend: false }">
+                <button @click="confirmSend = true"
+                        class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-emerald-700 bg-emerald-50 border border-emerald-200 hover:bg-emerald-100">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                    </svg>
+                    Verstuur naar klant
+                </button>
+
+                {{-- Confirmation modal --}}
+                <div x-show="confirmSend" x-transition
+                     class="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+                    <div class="bg-white rounded-xl shadow-xl p-6 max-w-md w-full mx-4">
+                        <h3 class="text-base font-semibold text-gray-800 mb-3">Offerte versturen</h3>
+                        <p class="text-sm text-gray-600 mb-5">
+                            Offerte wordt verstuurd naar
+                            <strong>{{ $quote->customer->contact_email }}</strong>.<br>
+                            De klant ontvangt een link om de offerte in te zien en te ondertekenen.
+                            Weet je het zeker?
+                        </p>
+                        <div class="flex justify-end gap-3">
+                            <button @click="confirmSend = false"
+                                    class="px-4 py-2 text-sm text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
+                                Annuleren
+                            </button>
+                            <button wire:click="sendToClient" @click="confirmSend = false"
+                                    class="px-4 py-2 text-sm font-medium text-white rounded-lg"
+                                    style="background-color: #1B3A6B;">
+                                Ja, versturen
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @endif
+
             {{-- Duplicate --}}
             <button wire:click="duplicate"
                     wire:confirm="Weet je zeker dat je deze offerte wilt dupliceren?"

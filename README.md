@@ -1,58 +1,153 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Offerte Tool — Proud Innovations B.V.
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Interne offerte-applicatie voor de **Kassa Continuïteitsdienst** van Proud Innovations B.V.
+Gebouwd met Laravel 13, Livewire 3, Tailwind CSS en DomPDF.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Vereisten
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+| Tool       | Versie    |
+|------------|-----------|
+| PHP        | ≥ 8.2     |
+| Composer   | ≥ 2.x     |
+| Node.js    | ≥ 20.x    |
+| SQLite     | dev       |
+| MySQL      | ≥ 8.0 (prod) |
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
-
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+## Lokale installatie
 
 ```bash
-composer require laravel/boost --dev
+# 1. Clone de repository
+git clone https://github.com/KarelBouter/offerte-app.git
+cd offerte-app
 
-php artisan boost:install
+# 2. PHP-afhankelijkheden
+composer install
+
+# 3. Omgevingsvariabelen
+cp .env.example .env
+# Stel DB_CONNECTION=sqlite in voor dev
+php artisan key:generate
+
+# 4. Database
+touch database/database.sqlite
+php artisan migrate --seed
+
+# 5. Frontend
+npm install
+npm run dev
+
+# 6. Lokale server
+php artisan serve
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+De applicatie draait nu op `http://localhost:8000`.
 
-## Contributing
+**Standaard admin-account** (na seeder):
+- E-mail: `admin@proudinnovations.nl`
+- Wachtwoord: `password`
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+---
 
-## Code of Conduct
+## Rollen
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+| Rol       | Toegang                                                        |
+|-----------|----------------------------------------------------------------|
+| `admin`   | Volledig beheer: producten, gebruikers, instellingen, logs     |
+| `verkoper`| Offertes aanmaken, bekijken en versturen                       |
 
-## Security Vulnerabilities
+---
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## Functionaliteit
 
-## License
+- **Offertes**: aanmaken via 3-staps wizard, PDF-generatie, statusbeheer
+- **Producten & afhankelijkheden**: admin beheert catalogus en dependency-regels
+- **Gebruikersbeheer**: admin beheert accounts en rollen
+- **E-mail naar klant**: offerte-link met onderteken-token (14 dagen geldig)
+- **Activiteitenlog**: audit trail van alle acties in het systeem
+- **Automatische vervaldatum**: dagelijkse cron zet verlopen offertes op "verlopen"
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+---
+
+## Productie deploy
+
+```bash
+# Kopieer en vul .env in
+cp .env.example .env
+nano .env   # Stel DB, MAIL en APP_URL in
+
+# Genereer sleutel
+php artisan key:generate
+
+# Deploy uitvoeren
+bash deploy.sh
+```
+
+Het `deploy.sh` script voert uit: git pull → composer → npm build → migraties → cache → maintenance mode aan/uit.
+
+**Cron instellen** (éénmalig op server):
+```bash
+* * * * * cd /pad/naar/offerte-app && php artisan schedule:run >> /dev/null 2>&1
+```
+
+---
+
+## Mailconfiguratie
+
+Stel in `.env` in:
+```
+MAIL_MAILER=smtp
+MAIL_HOST=smtp.example.com
+MAIL_PORT=587
+MAIL_USERNAME=noreply@proudinnovations.nl
+MAIL_PASSWORD=geheim
+MAIL_FROM_ADDRESS=noreply@proudinnovations.nl
+MAIL_FROM_NAME="Proud Innovations B.V."
+```
+
+Voor development werkt `MAIL_MAILER=log` (mail wordt naar `storage/logs/laravel.log` geschreven).
+
+---
+
+## Sessie & beveiliging
+
+- Sessies worden opgeslagen in de database (`SESSION_DRIVER=database`)
+- Rate limiting: max. 5 inlogpogingen per minuut per IP
+- Policies: `QuotePolicy` en `ProductPolicy` bewaken toegang op modelniveau
+- `TrimStrings` middleware actief op alle requests
+
+---
+
+## Projectstructuur (kern)
+
+```
+app/
+  Console/Commands/ExpireQuotes.php      — verlopen offertes markeren
+  Http/Controllers/
+    PublicQuoteController.php            — publieke offerte-link
+    QuotePdfController.php               — PDF download
+  Livewire/
+    Admin/                               — beheer (producten, users, settings, logs)
+    Verkoper/                            — offertes (index, create, show)
+    Profile/                             — profielbeheer
+  Mail/QuoteClientMail.php               — e-mail naar klant
+  Models/                                — Eloquent-modellen
+  Policies/                              — QuotePolicy, ProductPolicy
+  Services/
+    ActivityLogService.php               — audit logging
+    QuotePdfService.php                  — PDF-generatie
+database/
+  migrations/                            — alle migraties
+  seeders/DatabaseSeeder.php             — admin-account seeder
+resources/views/
+  layouts/                               — app-admin, app-verkoper, public
+  livewire/                              — component-views
+  public/                                — publieke offerte-views
+  pdf/                                   — DomPDF-template
+routes/
+  web.php                                — alle routes
+  console.php                            — scheduled commands
+```
