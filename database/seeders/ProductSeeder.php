@@ -1,0 +1,193 @@
+<?php
+
+namespace Database\Seeders;
+
+use App\Models\Product;
+use Illuminate\Database\Seeder;
+
+class ProductSeeder extends Seeder
+{
+    public function run(): void
+    {
+        $products = [
+            // Hardware
+            [
+                'name' => 'Optie A — Tower server (RAID 1)',
+                'category' => 'Hardware',
+                'description' => 'Tower server met RAID 1 configuratie voor betrouwbare lokale dataopslag.',
+                'unit_price' => 3500.00,
+                'unit' => 'set',
+                'is_price_on_quote' => false,
+                'sort_order' => 10,
+            ],
+            [
+                'name' => 'Optie B — HA Cluster (3 nodes)',
+                'category' => 'Hardware',
+                'description' => 'High Availability cluster bestaande uit 3 nodes voor maximale uptime.',
+                'unit_price' => 9500.00,
+                'unit' => 'set',
+                'is_price_on_quote' => false,
+                'sort_order' => 20,
+            ],
+            [
+                'name' => 'NUC node',
+                'category' => 'Hardware',
+                'description' => 'Compacte NUC node voor cluster-uitbreiding.',
+                'unit_price' => 0.00,
+                'unit' => 'stuk',
+                'is_price_on_quote' => true,
+                'sort_order' => 30,
+            ],
+            [
+                'name' => '2.5" SSD',
+                'category' => 'Hardware',
+                'description' => '2.5 inch SSD voor uitbreiding of vervanging van opslagcapaciteit.',
+                'unit_price' => 0.00,
+                'unit' => 'stuk',
+                'is_price_on_quote' => true,
+                'sort_order' => 40,
+            ],
+            [
+                'name' => 'Firewall',
+                'category' => 'Hardware',
+                'description' => 'Firewall — inbegrepen bij Optie A en B.',
+                'unit_price' => 0.00,
+                'unit' => 'stuk',
+                'is_price_on_quote' => true,
+                'sort_order' => 50,
+            ],
+            [
+                'name' => 'Switch standaard',
+                'category' => 'Hardware',
+                'description' => 'Standaard netwerkswitch.',
+                'unit_price' => 0.00,
+                'unit' => 'stuk',
+                'is_price_on_quote' => true,
+                'sort_order' => 60,
+            ],
+            [
+                'name' => 'PoE Switch 8-poorts',
+                'category' => 'Hardware',
+                'description' => 'Power over Ethernet switch met 8 poorten.',
+                'unit_price' => 0.00,
+                'unit' => 'stuk',
+                'is_price_on_quote' => true,
+                'sort_order' => 70,
+            ],
+            [
+                'name' => 'PoE Switch 16-poorts',
+                'category' => 'Hardware',
+                'description' => 'Power over Ethernet switch met 16 poorten.',
+                'unit_price' => 0.00,
+                'unit' => 'stuk',
+                'is_price_on_quote' => true,
+                'sort_order' => 80,
+            ],
+            [
+                'name' => 'UPS',
+                'category' => 'Hardware',
+                'description' => 'Uninterruptible Power Supply voor noodstroom bij stroomuitval.',
+                'unit_price' => 860.00,
+                'unit' => 'stuk',
+                'is_price_on_quote' => false,
+                'sort_order' => 90,
+            ],
+
+            // Netwerk
+            [
+                'name' => 'Unifi Access Point',
+                'category' => 'Netwerk',
+                'description' => 'Unifi draadloos access point voor betrouwbaar wifi-netwerk.',
+                'unit_price' => 0.00,
+                'unit' => 'stuk',
+                'is_price_on_quote' => true,
+                'sort_order' => 10,
+            ],
+
+            // Beveiliging
+            [
+                'name' => 'Beveiligingscamera (Unifi Protect)',
+                'category' => 'Beveiliging',
+                'description' => 'IP-beveiligingscamera geschikt voor Unifi Protect NVR systeem.',
+                'unit_price' => 0.00,
+                'unit' => 'stuk',
+                'is_price_on_quote' => true,
+                'sort_order' => 10,
+            ],
+            [
+                'name' => 'NVR (Network Video Recorder)',
+                'category' => 'Beveiliging',
+                'description' => 'Network Video Recorder voor opslag en beheer van camerabeelden.',
+                'unit_price' => 0.00,
+                'unit' => 'stuk',
+                'is_price_on_quote' => true,
+                'sort_order' => 20,
+            ],
+
+            // Installatie
+            [
+                'name' => 'Installatie halve dag (±4 uur)',
+                'category' => 'Installatie',
+                'description' => 'On-site installatie en configuratie, halve dag (circa 4 uur).',
+                'unit_price' => 450.00,
+                'unit' => 'dag',
+                'is_price_on_quote' => false,
+                'sort_order' => 10,
+            ],
+            [
+                'name' => 'Installatie hele dag (±8 uur)',
+                'category' => 'Installatie',
+                'description' => 'On-site installatie en configuratie, hele dag (circa 8 uur).',
+                'unit_price' => 800.00,
+                'unit' => 'dag',
+                'is_price_on_quote' => false,
+                'sort_order' => 20,
+            ],
+            [
+                'name' => 'Installatie extra dagdeel',
+                'category' => 'Installatie',
+                'description' => 'Extra dagdeel on-site voor aanvullende installatie of configuratie.',
+                'unit_price' => 450.00,
+                'unit' => 'dag',
+                'is_price_on_quote' => false,
+                'sort_order' => 30,
+            ],
+            [
+                'name' => 'Installatiemateriaal',
+                'category' => 'Installatie',
+                'description' => 'Bekabeling, bevestigingsmateriaal en overig installatiemateriaal.',
+                'unit_price' => 0.00,
+                'unit' => 'set',
+                'is_price_on_quote' => true,
+                'sort_order' => 40,
+            ],
+
+            // Service
+            [
+                'name' => 'Servicecontract Standaard',
+                'category' => 'Service',
+                'description' => 'Jaarlijks servicecontract standaard — inclusief monitoring, updates en helpdesk.',
+                'unit_price' => 8799.00,
+                'unit' => 'jaar',
+                'is_price_on_quote' => false,
+                'sort_order' => 10,
+            ],
+            [
+                'name' => 'Servicecontract Premium',
+                'category' => 'Service',
+                'description' => 'Jaarlijks servicecontract premium — inclusief uitgebreide SLA, proactief beheer en prioriteit support.',
+                'unit_price' => 13764.00,
+                'unit' => 'jaar',
+                'is_price_on_quote' => false,
+                'sort_order' => 20,
+            ],
+        ];
+
+        foreach ($products as $data) {
+            Product::firstOrCreate(
+                ['name' => $data['name'], 'category' => $data['category']],
+                array_merge($data, ['is_active' => true])
+            );
+        }
+    }
+}

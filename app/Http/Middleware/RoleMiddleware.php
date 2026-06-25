@@ -11,7 +11,8 @@ class RoleMiddleware
     public function handle(Request $request, Closure $next, string ...$roles): Response
     {
         if (! $request->user() || ! in_array($request->user()->role, $roles)) {
-            abort(403);
+            return redirect()->route('dashboard')
+                ->with('error', 'Je hebt geen toegang tot deze pagina.');
         }
 
         return $next($request);

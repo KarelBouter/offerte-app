@@ -17,4 +17,11 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'verified', 'role:admin'])->group(function () {
+    Route::get('/', fn () => redirect()->route('admin.products.index'))->name('dashboard');
+    Route::get('/products', \App\Livewire\Admin\Products\Index::class)->name('products.index');
+    Route::get('/products/create', \App\Livewire\Admin\Products\Form::class)->name('products.create');
+    Route::get('/products/{product}/edit', \App\Livewire\Admin\Products\Form::class)->name('products.edit');
+});
+
 require __DIR__.'/auth.php';
