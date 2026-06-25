@@ -27,10 +27,10 @@
                 $navItems = [
                     ['label' => 'Dashboard',         'route' => 'admin.dashboard',       'match' => 'admin.dashboard'],
                     ['label' => 'Producten',          'route' => 'admin.products.index',  'match' => 'admin.products.*'],
-                    ['label' => 'Afhankelijkheden',   'route' => 'admin.products.index',  'match' => 'admin.dependencies.*'],
-                    ['label' => 'Gebruikers',         'route' => 'admin.products.index',  'match' => 'admin.users.*'],
-                    ['label' => 'Offertes',           'route' => 'admin.products.index',  'match' => 'admin.quotes.*'],
-                    ['label' => 'Instellingen',       'route' => 'admin.products.index',  'match' => 'admin.settings.*'],
+                    ['label' => 'Afhankelijkheden',   'route' => 'admin.dependencies.index', 'match' => 'admin.dependencies.*'],
+                    ['label' => 'Gebruikers',         'route' => 'admin.products.index',   'match' => 'admin.users.*'],
+                    ['label' => 'Offertes',           'route' => 'admin.products.index',   'match' => 'admin.quotes.*'],
+                    ['label' => 'Instellingen',       'route' => 'admin.products.index',   'match' => 'admin.settings.*'],
                 ];
             @endphp
 

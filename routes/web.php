@@ -22,6 +22,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'verified', 'role:ad
     Route::get('/products', \App\Livewire\Admin\Products\Index::class)->name('products.index');
     Route::get('/products/create', \App\Livewire\Admin\Products\Form::class)->name('products.create');
     Route::get('/products/{product}/edit', \App\Livewire\Admin\Products\Form::class)->name('products.edit');
+    Route::get('/dependencies', \App\Livewire\Admin\Dependencies\Index::class)->name('dependencies.index');
 });
 
 require __DIR__.'/auth.php';
