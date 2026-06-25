@@ -3,16 +3,25 @@
 namespace App\Livewire\Admin\Settings;
 
 use App\Models\Setting;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
+use Livewire\WithFileUploads;
 
 class Index extends Component
 {
-    public string $company_name = '';
-    public string $company_address = '';
-    public string $company_kvk = '';
-    public string $company_representative = '';
-    public string $vat_percentage = '21';
-    public string $quote_validity_days = '30';
+    use WithFileUploads;
+
+    public string $company_name            = '';
+    public string $company_address         = '';
+    public string $company_kvk             = '';
+    public string $company_representative  = '';
+    public string $company_email           = '';
+    public string $company_phone           = '';
+    public string $vat_percentage          = '21';
+    public string $quote_validity_days     = '30';
+    public string $default_quote_note      = '';
+    public $logo = null;
+    public ?string $currentLogoPath        = null;
 
     public function mount(): void
     {
@@ -20,8 +29,12 @@ class Index extends Component
         $this->company_address        = Setting::get('company_address', 'Zoetermeer');
         $this->company_kvk            = Setting::get('company_kvk', '');
         $this->company_representative = Setting::get('company_representative', '');
+        $this->company_email          = Setting::get('company_email', '');
+        $this->company_phone          = Setting::get('company_phone', '');
         $this->vat_percentage         = Setting::get('vat_percentage', '21');
         $this->quote_validity_days    = Setting::get('quote_validity_days', '30');
+        $this->default_quote_note     = Setting::get('default_quote_note', '');
+        $this->currentLogoPath        = Setting::get('logo_path');
     }
 
     public function save(): void
@@ -31,23 +44,44 @@ class Index extends Component
             'company_address'        => 'required|string|max:255',
             'company_kvk'            => 'required|string|max:50',
             'company_representative' => 'required|string|max:255',
+            'company_email'          => 'nullable|email|max:255',
+            'company_phone'          => 'nullable|string|max:50',
             'vat_percentage'         => 'required|numeric|min:0|max:100',
             'quote_validity_days'    => 'required|integer|min:1',
+            'default_quote_note'     => 'nullable|string|max:1000',
+            'logo'                   => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ], [
             'company_name.required'           => 'Bedrijfsnaam is verplicht.',
             'company_address.required'        => 'Vestigingsadres is verplicht.',
             'company_kvk.required'            => 'KvK-nummer is verplicht.',
             'company_representative.required' => 'Vertegenwoordiger is verplicht.',
+            'company_email.email'             => 'Voer een geldig e-mailadres in.',
             'vat_percentage.required'         => 'BTW-percentage is verplicht.',
             'quote_validity_days.required'    => 'Geldigheidsduur is verplicht.',
+            'logo.image'                      => 'Het logo moet een afbeelding zijn.',
+            'logo.mimes'                      => 'Alleen JPG en PNG zijn toegestaan.',
+            'logo.max'                        => 'Logo mag maximaal 2 MB zijn.',
         ]);
+
+        if ($this->logo) {
+            if ($this->currentLogoPath) {
+                Storage::disk('public')->delete($this->currentLogoPath);
+            }
+            $path = $this->logo->store('logo', 'public');
+            Setting::set('logo_path', $path);
+            $this->currentLogoPath = $path;
+            $this->logo = null;
+        }
 
         Setting::set('company_name', $this->company_name);
         Setting::set('company_address', $this->company_address);
         Setting::set('company_kvk', $this->company_kvk);
         Setting::set('company_representative', $this->company_representative);
+        Setting::set('company_email', $this->company_email);
+        Setting::set('company_phone', $this->company_phone);
         Setting::set('vat_percentage', $this->vat_percentage);
         Setting::set('quote_validity_days', $this->quote_validity_days);
+        Setting::set('default_quote_note', $this->default_quote_note);
 
         session()->flash('success', 'Instellingen opgeslagen.');
     }

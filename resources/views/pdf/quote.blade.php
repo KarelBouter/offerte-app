@@ -155,7 +155,12 @@ tr.sep td { height: 4mm; border: none; }
 
 {{-- ── Fixed header ──────────────────────────────────────────────────── --}}
 <div id="header">
-    <div id="header-left">Overeenkomst Kassa Continuïteitsdienst</div>
+    <div id="header-left">
+        @if(!empty($settings['logo_base64']))
+            <img src="{{ $settings['logo_base64'] }}" alt="Logo" style="height:8mm; vertical-align:middle; margin-right:3mm;"/>
+        @endif
+        Overeenkomst Kassa Continuïteitsdienst
+    </div>
     <div id="header-right">
         {{ $quote->quote_number }}<br>
         {{ now()->format('d-m-Y') }}
@@ -503,6 +508,12 @@ tr.sep td { height: 4mm; border: none; }
 </table>
 
 <p style="font-size:8.5pt; color:#555;">Alle bedragen exclusief BTW ({{ number_format($settings['vat_percentage'], 0) }}%). De eenmalige kosten worden gefactureerd bij start van het project. Het servicecontract wordt bij oplevering vooruitbetaald.</p>
+
+@if(!empty($settings['default_quote_note']))
+<div class="info-box" style="margin-top:4mm;">
+    {{ $settings['default_quote_note'] }}
+</div>
+@endif
 
 {{-- ═══════════════════════════════════════════════════════════════════
      ARTIKEL 11 — ONDERTEKENING

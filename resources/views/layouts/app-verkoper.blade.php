@@ -39,7 +39,14 @@
             @endforeach
         </nav>
 
-        <div class="px-5 py-4 border-t border-blue-900">
+        <div class="px-3 py-3 border-t border-blue-900">
+            <a href="{{ route('profile.edit') }}"
+               class="flex items-center px-4 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150
+                      {{ request()->routeIs('profile.edit') ? 'bg-white/15 text-white' : 'text-blue-200 hover:bg-white/10 hover:text-white' }}">
+                Mijn profiel
+            </a>
+        </div>
+        <div class="px-5 py-3 border-t border-blue-900">
             <p class="text-xs text-blue-400">&copy; {{ date('Y') }} Proud Innovations B.V.</p>
         </div>
     </aside>

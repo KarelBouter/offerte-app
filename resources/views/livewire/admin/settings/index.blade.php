@@ -1,15 +1,16 @@
-<div class="max-w-2xl">
+<div class="max-w-2xl space-y-5">
     @if(session('success'))
     <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 3000)"
          x-show="show" x-transition
-         class="mb-5 flex items-center gap-3 bg-green-50 border border-green-200 text-green-800 text-sm px-4 py-3 rounded-lg">
+         class="flex items-center gap-3 bg-green-50 border border-green-200 text-green-800 text-sm px-4 py-3 rounded-lg">
         <svg class="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
         {{ session('success') }}
     </div>
     @endif
 
+    {{-- Bedrijfsgegevens --}}
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-        <h2 class="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-5">Bedrijfsgegevens</h2>
+        <h2 class="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-5">Bedrijfsinformatie</h2>
 
         <div class="space-y-4">
             <div>
@@ -33,7 +34,46 @@
                            class="w-full rounded-lg border-gray-300 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500"/>
                     @error('company_kvk') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                 </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Naam vertegenwoordiger <span class="text-red-500">*</span></label>
+                    <input wire:model="company_representative" type="text"
+                           class="w-full rounded-lg border-gray-300 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                           placeholder="Naam — Functie"/>
+                    @error('company_representative') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                </div>
+            </div>
 
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">E-mailadres bedrijf</label>
+                    <input wire:model="company_email" type="email"
+                           class="w-full rounded-lg border-gray-300 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500"/>
+                    @error('company_email') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Telefoonnummer bedrijf</label>
+                    <input wire:model="company_phone" type="tel"
+                           class="w-full rounded-lg border-gray-300 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500"/>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- Offerte-instellingen --}}
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <h2 class="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-5">Offerte-instellingen</h2>
+
+        <div class="space-y-4">
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Geldigheidsduur <span class="text-red-500">*</span></label>
+                    <div class="flex items-center gap-2">
+                        <input wire:model="quote_validity_days" type="number" min="1"
+                               class="w-full rounded-lg border-gray-300 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500"/>
+                        <span class="text-sm text-gray-500 whitespace-nowrap">dagen</span>
+                    </div>
+                    @error('quote_validity_days') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">BTW-percentage <span class="text-red-500">*</span></label>
                     <div class="flex items-center gap-2">
@@ -47,36 +87,53 @@
 
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">
-                    Vertegenwoordigd door
-                    <span class="text-red-500">*</span>
-                    <span class="text-gray-400 font-normal text-xs">(naam + functie, bijv. Pascal Versluis — Directeur)</span>
+                    Standaard notitie onderaan offerte
+                    <span class="text-gray-400 font-normal text-xs">(optioneel, verschijnt in PDF)</span>
                 </label>
-                <input wire:model="company_representative" type="text"
-                       class="w-full rounded-lg border-gray-300 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                       placeholder="Naam — Functie"/>
-                @error('company_representative') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
-            </div>
-
-            <div class="pt-2 border-t border-gray-100">
-                <label class="block text-sm font-medium text-gray-700 mb-1">
-                    Standaard geldigheidsduur offerte
-                    <span class="text-red-500">*</span>
-                </label>
-                <div class="flex items-center gap-2">
-                    <input wire:model="quote_validity_days" type="number" min="1"
-                           class="w-32 rounded-lg border-gray-300 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500"/>
-                    <span class="text-sm text-gray-500">dagen</span>
-                </div>
-                @error('quote_validity_days') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                <textarea wire:model="default_quote_note" rows="3"
+                          class="w-full rounded-lg border-gray-300 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                          placeholder="Bijv. 'Neem bij vragen contact op via info@proudinnovations.nl'"></textarea>
+                @error('default_quote_note') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
             </div>
         </div>
+    </div>
 
-        <div class="flex justify-end mt-6">
-            <button wire:click="save"
-                    class="px-5 py-2.5 rounded-lg text-sm font-medium text-white shadow-sm"
-                    style="background-color: #1B3A6B;">
-                Opslaan
-            </button>
+    {{-- Logo --}}
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <h2 class="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-5">Bedrijfslogo</h2>
+
+        @if($currentLogoPath)
+        <div class="mb-4 p-4 bg-gray-50 rounded-lg border border-gray-200 inline-block">
+            <img src="{{ Storage::url($currentLogoPath) }}" alt="Huidig logo" class="h-16 object-contain"/>
+            <p class="text-xs text-gray-400 mt-2">Huidig logo</p>
         </div>
+        @endif
+
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">
+                {{ $currentLogoPath ? 'Nieuw logo uploaden' : 'Logo uploaden' }}
+                <span class="text-gray-400 font-normal text-xs">(JPG of PNG, max. 2 MB)</span>
+            </label>
+            <input wire:model="logo" type="file" accept="image/jpeg,image/png"
+                   class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"/>
+            @error('logo') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+
+            @if($logo)
+            <div class="mt-3">
+                <img src="{{ $logo->temporaryUrl() }}" alt="Voorbeeld" class="h-16 object-contain rounded"/>
+                <p class="text-xs text-gray-400 mt-1">Voorbeeld nieuw logo</p>
+            </div>
+            @endif
+        </div>
+    </div>
+
+    <div class="flex justify-end">
+        <button wire:click="save"
+                wire:loading.attr="disabled"
+                class="px-5 py-2.5 rounded-lg text-sm font-medium text-white shadow-sm"
+                style="background-color: #1B3A6B;">
+            <span wire:loading.remove>Opslaan</span>
+            <span wire:loading>Opslaan…</span>
+        </button>
     </div>
 </div>

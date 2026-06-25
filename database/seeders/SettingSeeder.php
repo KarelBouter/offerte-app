@@ -14,8 +14,12 @@ class SettingSeeder extends Seeder
             'company_address'        => 'Zoetermeer',
             'company_kvk'            => '12345678',
             'company_representative' => 'Pascal Versluis — Directeur',
+            'company_email'          => 'info@proudinnovations.nl',
+            'company_phone'          => '',
             'vat_percentage'         => '21',
             'quote_validity_days'    => '30',
+            'default_quote_note'     => '',
+            'logo_path'              => '',
         ];
 
         foreach ($defaults as $key => $value) {

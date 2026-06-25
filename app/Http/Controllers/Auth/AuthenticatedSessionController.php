@@ -28,7 +28,12 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        $role = Auth::user()->role;
+        $default = $role === 'admin'
+            ? route('admin.dashboard', absolute: false)
+            : route('verkoper.dashboard', absolute: false);
+
+        return redirect()->intended($default);
     }
 
     /**

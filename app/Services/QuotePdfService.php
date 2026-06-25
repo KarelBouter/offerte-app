@@ -38,12 +38,24 @@ class QuotePdfService
         });
 
         // ── Company settings ────────────────────────────────────────────────
+        $logoBase64 = null;
+        $logoPath   = Setting::get('logo_path');
+        if ($logoPath && Storage::disk('public')->exists($logoPath)) {
+            $logoData   = Storage::disk('public')->get($logoPath);
+            $logoMime   = Storage::disk('public')->mimeType($logoPath);
+            $logoBase64 = 'data:'.$logoMime.';base64,'.base64_encode($logoData);
+        }
+
         $settings = [
             'company_name'           => Setting::get('company_name', 'Proud Innovations B.V.'),
             'company_address'        => Setting::get('company_address', 'Zoetermeer'),
             'company_kvk'            => Setting::get('company_kvk', ''),
             'company_representative' => Setting::get('company_representative', ''),
+            'company_email'          => Setting::get('company_email', ''),
+            'company_phone'          => Setting::get('company_phone', ''),
             'vat_percentage'         => (float) Setting::get('vat_percentage', '21'),
+            'default_quote_note'     => Setting::get('default_quote_note', ''),
+            'logo_base64'            => $logoBase64,
         ];
 
         $pdf = Pdf::loadView('pdf.quote', [

@@ -42,19 +42,22 @@ class Show extends Component
 
     public function duplicate(): void
     {
-        $new = $this->quote->replicate(['quote_number', 'created_at', 'updated_at']);
-        $new->status = 'concept';
-        $new->user_id = auth()->id();
+        $new = $this->quote->replicate();
+        $new->quote_number  = null;
+        $new->pdf_path      = null;
+        $new->status        = 'concept';
+        $new->user_id       = auth()->id();
+        $new->valid_until   = now()->addDays(30)->toDateString();
         $new->save();
 
         foreach ($this->quote->items as $item) {
-            $newItem = $item->replicate(['quote_id']);
+            $newItem = $item->replicate();
             $newItem->quote_id = $new->id;
             $newItem->save();
         }
 
-        session()->flash('success', 'Offerte gedupliceerd als '.$new->quote_number.'.');
-        $this->redirect(route('verkoper.quotes.show', $new));
+        session()->flash('success', 'Offerte gekopieerd. Je bewerkt nu een nieuwe conceptofferte.');
+        $this->redirect(route('verkoper.quotes.edit', $new));
     }
 
     public function render()
