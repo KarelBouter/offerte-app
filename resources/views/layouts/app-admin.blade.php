@@ -53,16 +53,26 @@
                     @endif
                 </a>
             @endforeach
+        </nav>
 
-            {{-- Nieuwe taak --}}
+        {{-- Actieknopen boven scheiding --}}
+        <div class="px-3 pb-2 space-y-1">
+            <a href="{{ route('verkoper.offertes.create') }}"
+               class="flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150
+                      {{ request()->routeIs('verkoper.offertes.create') ? 'bg-white text-blue-800' : 'bg-white/10 text-white hover:bg-white/20' }}">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
+                </svg>
+                Nieuwe offerte
+            </a>
             <button onclick="Livewire.dispatch('open-task-modal')"
-                    class="w-full flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium bg-white/10 text-white hover:bg-white/20 transition-colors duration-150 mt-1">
+                    class="w-full flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium bg-white/10 text-white hover:bg-white/20 transition-colors duration-150">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
                 </svg>
                 Nieuwe taak
             </button>
-        </nav>
+        </div>
 
         <div class="px-3 pt-3 border-t border-blue-900 space-y-0.5">
             <a href="{{ route('profile.edit') }}"

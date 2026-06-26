@@ -15,8 +15,8 @@
 <div class="flex h-screen overflow-hidden">
 
     {{-- Sidebar --}}
-    <aside class="w-58 flex-shrink-0 flex flex-col" style="background-color: #1B3A6B; width: 224px;">
-        <div class="px-5 py-5 border-b border-blue-900">
+    <aside class="w-64 flex-shrink-0 flex flex-col" style="background-color: #1B3A6B;">
+        <div class="px-6 py-5 border-b border-blue-900">
             <p class="text-base font-bold text-white leading-tight">Proud Innovations</p>
             <p class="text-xs text-blue-300 mt-0.5">Offerte Tool</p>
         </div>
@@ -64,18 +64,18 @@
                 @endif
             </a>
 
-            {{-- Nieuwe offerte — afwijkende stijl --}}
-            @php $active = request()->routeIs('verkoper.offertes.create'); @endphp
+        </nav>
+
+        {{-- Actieknopen boven scheiding --}}
+        <div class="px-3 pb-2 space-y-1">
             <a href="{{ route('verkoper.offertes.create') }}"
                class="flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150
-                      {{ $active ? 'bg-white text-blue-800' : 'bg-white/10 text-white hover:bg-white/20' }}">
+                      {{ request()->routeIs('verkoper.offertes.create') ? 'bg-white text-blue-800' : 'bg-white/10 text-white hover:bg-white/20' }}">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
                 </svg>
                 Nieuwe offerte
             </a>
-
-            {{-- Nieuwe taak --}}
             <button onclick="Livewire.dispatch('open-task-modal')"
                     class="w-full flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium bg-white/10 text-white hover:bg-white/20 transition-colors duration-150">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -83,7 +83,7 @@
                 </svg>
                 Nieuwe taak
             </button>
-        </nav>
+        </div>
 
         <div class="px-3 pt-3 border-t border-blue-900 space-y-0.5">
             <a href="{{ route('profile.edit') }}"
@@ -105,7 +105,7 @@
                 </button>
             </form>
         </div>
-        <div class="px-5 py-3 border-t border-blue-900">
+        <div class="px-6 py-3 border-t border-blue-900">
             <p class="text-xs text-blue-400">&copy; {{ date('Y') }} Proud Innovations B.V.</p>
         </div>
     </aside>
