@@ -19,7 +19,7 @@
         @auth
             @php
                 $back = auth()->user()->role === 'admin'
-                    ? route('admin.dashboard')
+                    ? route('beheer.dashboard')
                     : route('verkoper.dashboard');
             @endphp
             <a href="{{ $back }}"

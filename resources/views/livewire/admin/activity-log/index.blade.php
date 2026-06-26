@@ -1,4 +1,6 @@
 <div>
+    <x-breadcrumb :items="[['label' => 'Beheer', 'route' => 'beheer.dashboard'], ['label' => 'Activiteitenlog']]"/>
+
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <h2 class="text-lg font-semibold text-gray-800">Activiteitenlog</h2>
     </div>

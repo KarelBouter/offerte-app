@@ -1,4 +1,7 @@
-<div class="max-w-2xl space-y-5">
+<div>
+    <x-breadcrumb :items="[['label' => 'Beheer', 'route' => 'beheer.dashboard'], ['label' => 'Instellingen']]"/>
+
+    <div class="max-w-2xl space-y-5">
     @if(session('success'))
     <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 3000)"
          x-show="show" x-transition
@@ -136,4 +139,5 @@
             <span wire:loading>Opslaan…</span>
         </button>
     </div>
+</div>
 </div>

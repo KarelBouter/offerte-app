@@ -111,7 +111,7 @@ class Form extends Component
 
         session()->flash('success', 'Product succesvol opgeslagen.');
 
-        $this->redirect(route('admin.products.index'));
+        $this->redirect(route('beheer.producten.index'));
     }
 
     public function render()

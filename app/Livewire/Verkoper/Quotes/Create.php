@@ -275,12 +275,12 @@ class Create extends Component
         if ($generatePdf) {
             app(QuotePdfService::class)->generate($quote);
             session()->flash('success', 'Offerte opgeslagen. PDF wordt gedownload.');
-            session()->flash('auto_download_pdf', route('verkoper.quotes.pdf', $quote));
+            session()->flash('auto_download_pdf', route('verkoper.offertes.pdf', $quote));
         } else {
             session()->flash('success', 'Offerte opgeslagen als concept.');
         }
 
-        $this->redirect(route('verkoper.quotes.show', $quote));
+        $this->redirect(route('verkoper.offertes.show', $quote));
     }
 
     // ── Dependency engine ──────────────────────────────────────────────────

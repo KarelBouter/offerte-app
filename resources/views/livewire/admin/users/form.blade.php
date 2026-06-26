@@ -1,3 +1,6 @@
+<div>
+    <x-breadcrumb :items="[['label' => 'Beheer', 'route' => 'beheer.dashboard'], ['label' => 'Gebruikers', 'route' => 'beheer.gebruikers.index'], ['label' => 'Gebruiker']]"/>
+
 <div class="max-w-lg">
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
         <div class="space-y-4">
@@ -62,7 +65,7 @@
         </div>
 
         <div class="flex items-center justify-between mt-6 pt-5 border-t border-gray-100">
-            <a href="{{ route('admin.users.index') }}"
+            <a href="{{ route('beheer.gebruikers.index') }}"
                class="text-sm text-gray-500 hover:text-gray-700">← Terug</a>
             <button wire:click="save"
                     wire:loading.attr="disabled"

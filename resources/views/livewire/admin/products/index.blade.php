@@ -1,4 +1,6 @@
 <div>
+    <x-breadcrumb :items="[['label' => 'Beheer', 'route' => 'beheer.dashboard'], ['label' => 'Producten']]"/>
+
     {{-- Toolbar --}}
     <div class="flex items-center justify-between mb-5">
         <div class="flex items-center gap-3">
@@ -18,7 +20,7 @@
                 @endforeach
             </select>
         </div>
-        <a href="{{ route('admin.products.create') }}"
+        <a href="{{ route('beheer.producten.create') }}"
            class="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-white shadow-sm transition-colors"
            style="background-color: #1B3A6B;">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -73,7 +75,7 @@
                         </td>
                         <td class="px-6 py-4 text-right">
                             <div class="flex items-center justify-end gap-4">
-                                <a href="{{ route('admin.products.edit', $product) }}"
+                                <a href="{{ route('beheer.producten.edit', $product) }}"
                                    class="text-blue-600 hover:text-blue-800 font-medium transition-colors">
                                     Bewerken
                                 </a>

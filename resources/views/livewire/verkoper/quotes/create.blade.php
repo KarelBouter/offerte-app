@@ -1,4 +1,6 @@
 <div>
+    <x-breadcrumb :items="[['label' => 'Offertes', 'route' => 'verkoper.offertes.index'], ['label' => $existingQuoteId ? 'Offerte bewerken' : 'Nieuwe offerte']]"/>
+
     {{-- ═══════════════════════════════════════════════════════════════════
          WIZARD STEPS INDICATOR
     ═══════════════════════════════════════════════════════════════════════ --}}

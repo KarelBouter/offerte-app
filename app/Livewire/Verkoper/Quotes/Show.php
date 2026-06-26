@@ -80,7 +80,7 @@ class Show extends Component
         }
 
         session()->flash('success', 'Offerte gekopieerd. Je bewerkt nu een nieuwe conceptofferte.');
-        $this->redirect(route('verkoper.quotes.edit', $new));
+        $this->redirect(route('verkoper.offertes.edit', $new));
     }
 
     public function render()

@@ -1,7 +1,9 @@
 <div>
+    <x-breadcrumb :items="['label' => 'Beheer', 'route' => 'beheer.dashboard'], ['label' => 'Producten', 'route' => 'beheer.producten.index'], ['label' => 'Product']]"/>
+
     {{-- Back + title --}}
     <div class="flex items-center gap-3 mb-6">
-        <a href="{{ route('admin.products.index') }}"
+        <a href="{{ route('beheer.producten.index') }}"
            class="text-gray-400 hover:text-gray-600 transition-colors">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
@@ -189,7 +191,7 @@
 
         {{-- Actions --}}
         <div class="flex items-center justify-end gap-3 pb-2">
-            <a href="{{ route('admin.products.index') }}"
+            <a href="{{ route('beheer.producten.index') }}"
                class="px-5 py-2 rounded-lg text-sm font-medium text-gray-600 bg-white border border-gray-300 hover:bg-gray-50 transition-colors">
                 Annuleren
             </a>

@@ -30,7 +30,7 @@ class AuthenticatedSessionController extends Controller
 
         $role = Auth::user()->role;
         $default = $role === 'admin'
-            ? route('admin.dashboard', absolute: false)
+            ? route('beheer.dashboard', absolute: false)
             : route('verkoper.dashboard', absolute: false);
 
         return redirect()->intended($default);

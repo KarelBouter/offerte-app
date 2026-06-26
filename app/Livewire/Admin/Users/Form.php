@@ -84,7 +84,7 @@ class Form extends Component
             session()->flash('success', "Gebruiker {$user->name} bijgewerkt.");
         }
 
-        $this->redirect(route('admin.users.index'));
+        $this->redirect(route('beheer.gebruikers.index'));
     }
 
     public function render()

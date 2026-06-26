@@ -1,4 +1,6 @@
 <div>
+    <x-breadcrumb :items="[['label' => 'Offertes', 'route' => 'verkoper.offertes.index'], ['label' => $quote->quote_number]]"/>
+
     @if(session('success'))
     <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 4000)"
          x-show="show" x-transition
@@ -50,7 +52,7 @@
             </div>
 
             {{-- PDF download --}}
-            <a href="{{ route('verkoper.quotes.pdf', $quote) }}"
+            <a href="{{ route('verkoper.offertes.pdf', $quote) }}"
                target="_blank"
                class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-gray-600 bg-white border border-gray-300 hover:bg-gray-50">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -106,7 +108,7 @@
 
             {{-- Edit (only for concept) --}}
             @if($quote->status === 'concept')
-            <a href="{{ route('verkoper.quotes.edit', $quote) }}"
+            <a href="{{ route('verkoper.offertes.edit', $quote) }}"
                class="px-3 py-2 rounded-lg text-sm font-medium text-white shadow-sm"
                style="background-color: #1B3A6B;">
                 Bewerken
@@ -348,7 +350,7 @@
             </div>
 
             {{-- Back link --}}
-            <a href="{{ route('verkoper.quotes.index') }}"
+            <a href="{{ route('verkoper.offertes.index') }}"
                class="flex items-center gap-2 text-sm text-gray-400 hover:text-gray-600 transition-colors">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>

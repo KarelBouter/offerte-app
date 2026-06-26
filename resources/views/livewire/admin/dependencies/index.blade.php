@@ -2,6 +2,7 @@
     x-data="{ notifyMessage: null }"
     x-on:notify.window="notifyMessage = $event.detail.message; setTimeout(() => notifyMessage = null, 3500)"
 >
+    <x-breadcrumb :items="[['label' => 'Beheer', 'route' => 'beheer.dashboard'], ['label' => 'Afhankelijkheden']]"/>
 
     {{-- Inline success toast (dispatched from component) --}}
     <div
