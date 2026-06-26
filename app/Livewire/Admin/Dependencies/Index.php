@@ -89,7 +89,17 @@ class Index extends Component
             ->all();
     }
 
-    // ── Updated hooks ───────────────────────────────────────────────────────
+    // ── Product selectie ────────────────────────────────────────────────────
+
+    public function selectProduct(string $productId): void
+    {
+        $this->selectedProductId = $productId !== '' ? (int) $productId : null;
+        $this->showModal         = false;
+        $this->showTestModal     = false;
+        $this->resetForm();
+    }
+
+    // ── Updated hooks (fallback) ─────────────────────────────────────────────
 
     public function updatedSelectedProductId(): void
     {

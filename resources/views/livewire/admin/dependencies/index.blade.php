@@ -1,13 +1,6 @@
-@assets
-<style>
-    /* force Livewire component re-init after wire:navigate */
-</style>
-@endassets
-
 <div
     x-data="{ notifyMessage: null }"
     x-on:notify.window="notifyMessage = $event.detail.message; setTimeout(() => notifyMessage = null, 3500)"
-    x-on:livewire-navigate-end.window="$wire.$refresh()"
 >
     <x-breadcrumb :items="[['label' => 'Beheer', 'route' => 'beheer.dashboard'], ['label' => 'Afhankelijkheden']]"/>
 
@@ -39,14 +32,15 @@
             Stap 1: Kies het product dat de regel activeert (het trigger-product)
         </label>
         <select
-                wire:model="selectedProductId"
-                x-on:change="$wire.set('selectedProductId', $event.target.value)"
+                wire:change="selectProduct($event.target.value)"
                 class="rounded-lg border-gray-300 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500 min-w-80">
             <option value="">Selecteer een product...</option>
             @foreach($products->groupBy('category') as $cat => $items)
                 <optgroup label="{{ $cat }}">
                     @foreach($items as $p)
-                        <option value="{{ $p->id }}">{{ $p->name }}</option>
+                        <option value="{{ $p->id }}" @selected($selectedProductId === $p->id)>
+                            {{ $p->name }}
+                        </option>
                     @endforeach
                 </optgroup>
             @endforeach
