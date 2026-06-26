@@ -1,5 +1,5 @@
 <div>
-    <x-breadcrumb :items="['label' => 'Beheer', 'route' => 'beheer.dashboard'], ['label' => 'Producten', 'route' => 'beheer.producten.index'], ['label' => 'Product']]"/>
+    <x-breadcrumb :items="[['label' => 'Beheer', 'route' => 'beheer.dashboard'], ['label' => 'Producten', 'route' => 'beheer.producten.index'], ['label' => 'Product']]"/>
 
     {{-- Back + title --}}
     <div class="flex items-center gap-3 mb-6">

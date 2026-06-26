@@ -1,5 +1,5 @@
 <div>
-    <x-breadcrumb :items="['label' => 'Beheer', 'route' => 'beheer.dashboard'], ['label' => 'Gebruikers']]"/>
+    <x-breadcrumb :items="[['label' => 'Beheer', 'route' => 'beheer.dashboard'], ['label' => 'Gebruikers']]"/>
 
     <div class="flex items-center justify-between mb-5">
         <input wire:model.live.debounce.300ms="search" type="text"
