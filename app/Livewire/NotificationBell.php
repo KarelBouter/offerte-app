@@ -10,13 +10,6 @@ use Livewire\Component;
 #[Poll('30s')]
 class NotificationBell extends Component
 {
-    public bool $open = false;
-
-    public function toggle(): void
-    {
-        $this->open = !$this->open;
-    }
-
     public function markRead(int $id): void
     {
         $notification = AppNotification::where('id', $id)

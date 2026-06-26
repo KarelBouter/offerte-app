@@ -1,7 +1,7 @@
-<div class="relative" x-data="{ open: @entangle('open') }" x-on:click.outside="open = false">
+<div class="relative" x-data="{ open: false }">
 
     {{-- Bel-knop --}}
-    <button wire:click="toggle"
+    <button @click="open = !open"
             class="relative flex items-center justify-center w-9 h-9 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -15,13 +15,16 @@
     </button>
 
     {{-- Dropdown --}}
-    <div x-show="open" x-transition
+    <div x-show="open"
+         @click.away="open = false"
+         x-transition
          class="absolute right-0 top-full mt-2 w-96 bg-white border border-gray-200 rounded-xl shadow-xl z-50 overflow-hidden">
 
         <div class="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
             <h3 class="text-sm font-semibold text-gray-800">Notificaties</h3>
             @if($unreadCount > 0)
-                <button wire:click="markAllRead" class="text-xs text-blue-600 hover:text-blue-800">
+                <button @click="open = false" wire:click="markAllRead"
+                        class="text-xs text-blue-600 hover:text-blue-800">
                     Alles als gelezen markeren
                 </button>
             @endif
@@ -29,7 +32,7 @@
 
         <div class="divide-y divide-gray-50 max-h-96 overflow-y-auto">
             @forelse($notifications as $n)
-                <button wire:click="markRead({{ $n->id }})"
+                <button @click="open = false" wire:click="markRead({{ $n->id }})"
                         class="w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors
                                {{ is_null($n->read_at) ? 'bg-blue-50' : '' }}">
                     <div class="flex items-start gap-3">
@@ -51,7 +54,7 @@
         </div>
 
         <div class="px-4 py-2.5 border-t border-gray-100 bg-gray-50">
-            <a href="{{ route('notificaties.index') }}"
+            <a href="{{ route('notificaties.index') }}" @click="open = false" wire:navigate
                class="text-xs text-blue-600 hover:text-blue-800 font-medium">
                 Alle notificaties bekijken →
             </a>
