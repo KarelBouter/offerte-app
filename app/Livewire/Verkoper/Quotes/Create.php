@@ -536,13 +536,14 @@ class Create extends Component
             Quote::whereYear('created_at', now()->year)->count() + ($this->existingQuoteId ? 0 : 1)
         );
 
-        $title = $this->existingQuoteId ? 'Offerte bewerken' : 'Nieuwe offerte';
+        $title  = $this->existingQuoteId ? 'Offerte bewerken' : 'Nieuwe offerte';
+        $layout = auth()->user()->role === 'admin' ? 'layouts.app-admin' : 'layouts.app-verkoper';
 
         return view('livewire.verkoper.quotes.create', [
             'productsByCategory' => $productsByCategory,
             'autoOnlyNames'      => $autoOnlyNames,
             'prices'             => $this->calculatePrices(),
             'previewNumber'      => $previewNumber,
-        ])->layout('layouts.app-verkoper', ['title' => $title]);
+        ])->layout($layout, ['title' => $title]);
     }
 }

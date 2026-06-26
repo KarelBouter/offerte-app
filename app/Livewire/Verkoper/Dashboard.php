@@ -78,10 +78,12 @@ class Dashboard extends Component
             ->with(['quote.customer'])
             ->get();
 
+        $layout = auth()->user()->role === 'admin' ? 'layouts.app-admin' : 'layouts.app-verkoper';
+
         return view('livewire.verkoper.dashboard.index', compact(
             'actionItems',
             'expiringSoon', 'waitingSignature', 'signedThisMonth', 'totalOpen',
             'recentQuotes', 'mijnTaken'
-        ))->layout('layouts.app-verkoper', ['title' => 'Dashboard']);
+        ))->layout($layout, ['title' => 'Dashboard']);
     }
 }

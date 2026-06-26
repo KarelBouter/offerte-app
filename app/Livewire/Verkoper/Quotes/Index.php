@@ -63,9 +63,11 @@ class Index extends Component
             ->latest()
             ->get();
 
+        $layout = auth()->user()->role === 'admin' ? 'layouts.app-admin' : 'layouts.app-verkoper';
+
         return view('livewire.verkoper.quotes.index', [
             'quotes'       => $quotes,
             'statusLabels' => self::STATUS_LABELS,
-        ])->layout('layouts.app-verkoper', ['title' => 'Offertes']);
+        ])->layout($layout, ['title' => 'Offertes']);
     }
 }

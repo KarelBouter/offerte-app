@@ -102,12 +102,14 @@ class Show extends Component
             fn ($item) => $item->product && $item->product->is_price_on_quote
         );
 
+        $layout = auth()->user()->role === 'admin' ? 'layouts.app-admin' : 'layouts.app-verkoper';
+
         return view('livewire.verkoper.quotes.show', [
             'onetimeItems'   => $onetimeItems,
             'yearlyItems'    => $yearlyItems,
             'onQuoteItems'   => $onQuoteItems,
             'statusLabels'   => self::STATUS_LABELS,
             'statusColors'   => self::STATUS_COLORS,
-        ])->layout('layouts.app-verkoper', ['title' => 'Offerte '.$this->quote->quote_number]);
+        ])->layout($layout, ['title' => 'Offerte '.$this->quote->quote_number]);
     }
 }
