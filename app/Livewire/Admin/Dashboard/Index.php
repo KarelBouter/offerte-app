@@ -4,6 +4,7 @@ namespace App\Livewire\Admin\Dashboard;
 
 use App\Models\ActivityLog;
 use App\Models\Quote;
+use App\Models\Task;
 use Livewire\Component;
 
 class Index extends Component
@@ -91,12 +92,19 @@ class Index extends Component
         // ── Recente activiteit ────────────────────────────────────────────
         $recentActivity = ActivityLog::with('user')->orderByDesc('created_at')->limit(8)->get();
 
+        // ── Alle openstaande taken ─────────────────────────────────────────
+        $openTaken = Task::whereIn('status', ['open', 'in_behandeling'])
+            ->orderBy('due_date')
+            ->limit(5)
+            ->with(['assignedTo', 'quote.customer'])
+            ->get();
+
         return view('livewire.admin.dashboard.index', compact(
             'actionItems',
             'conceptCount', 'verzondCount', 'signedMonth', 'expiredMonth',
             'pipelineOnetime', 'pipelineYearly', 'wonOnetimeMonth', 'wonYearlyMonth',
             'chartData',
-            'recentQuotes', 'recentActivity'
+            'recentQuotes', 'recentActivity', 'openTaken'
         ))->layout('layouts.app-admin', ['title' => 'Dashboard']);
     }
 }

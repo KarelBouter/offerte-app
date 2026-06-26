@@ -199,31 +199,77 @@
             </table>
         </div>
 
-        {{-- Recente activiteit --}}
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-            <div class="px-5 py-3 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
-                <h2 class="text-sm font-semibold text-gray-700">Recente activiteit</h2>
-                <a href="{{ route('beheer.activiteit.index') }}" class="text-xs text-blue-600 hover:underline">Alle activiteit →</a>
+        {{-- Recente activiteit + Openstaande taken --}}
+        <div class="space-y-5">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                <div class="px-5 py-3 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
+                    <h2 class="text-sm font-semibold text-gray-700">Recente activiteit</h2>
+                    <a href="{{ route('beheer.activiteit.index') }}" class="text-xs text-blue-600 hover:underline">Alle activiteit →</a>
+                </div>
+                <ul class="divide-y divide-gray-50">
+                    @forelse($recentActivity as $log)
+                    <li class="px-5 py-3 flex items-start gap-3">
+                        <div class="w-7 h-7 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <span class="text-xs font-bold text-blue-700">
+                                {{ strtoupper(substr($log->user?->name ?? '?', 0, 1)) }}
+                            </span>
+                        </div>
+                        <div class="min-w-0">
+                            <p class="text-xs text-gray-700 leading-snug">{{ $log->description }}</p>
+                            <p class="text-xs text-gray-400 mt-0.5">
+                                {{ $log->user?->name ?? 'Systeem' }} &middot; {{ $log->created_at->diffForHumans() }}
+                            </p>
+                        </div>
+                    </li>
+                    @empty
+                    <li class="px-5 py-8 text-center text-gray-400 text-sm">Nog geen activiteit vastgelegd.</li>
+                    @endforelse
+                </ul>
             </div>
-            <ul class="divide-y divide-gray-50">
-                @forelse($recentActivity as $log)
-                <li class="px-5 py-3 flex items-start gap-3">
-                    <div class="w-7 h-7 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0 mt-0.5">
-                        <span class="text-xs font-bold text-blue-700">
-                            {{ strtoupper(substr($log->user?->name ?? '?', 0, 1)) }}
-                        </span>
-                    </div>
-                    <div class="min-w-0">
-                        <p class="text-xs text-gray-700 leading-snug">{{ $log->description }}</p>
-                        <p class="text-xs text-gray-400 mt-0.5">
-                            {{ $log->user?->name ?? 'Systeem' }} &middot; {{ $log->created_at->diffForHumans() }}
-                        </p>
-                    </div>
-                </li>
-                @empty
-                <li class="px-5 py-8 text-center text-gray-400 text-sm">Nog geen activiteit vastgelegd.</li>
-                @endforelse
-            </ul>
+
+            {{-- Openstaande taken --}}
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                <div class="px-5 py-3 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
+                    <h2 class="text-sm font-semibold text-gray-700">Alle openstaande taken</h2>
+                    <a href="{{ route('taken.index', ['tab' => 'alle']) }}" class="text-xs text-blue-600 hover:underline">Alle taken →</a>
+                </div>
+                @if($openTaken->isEmpty())
+                    <p class="px-5 py-8 text-center text-gray-400 text-sm">Geen openstaande taken.</p>
+                @else
+                    <table class="w-full text-sm">
+                        <tbody class="divide-y divide-gray-50">
+                            @foreach($openTaken as $taak)
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-5 py-2.5">
+                                    <a href="{{ route('taken.show', $taak) }}"
+                                       class="font-medium text-gray-800 hover:text-blue-600 text-xs">
+                                        {{ $taak->title }}
+                                    </a>
+                                    @if($taak->quote)
+                                        <p class="text-xs text-gray-400">
+                                            {{ $taak->quote->quote_number }}
+                                            @if($taak->quote->customer) — {{ $taak->quote->customer->company_name }} @endif
+                                        </p>
+                                    @endif
+                                </td>
+                                <td class="px-5 py-2.5 text-xs text-gray-500">
+                                    {{ $taak->assignedTo?->name ?? '—' }}
+                                </td>
+                                <td class="px-5 py-2.5 text-xs text-right">
+                                    @if($taak->due_date)
+                                        <span class="{{ $taak->due_date->isPast() ? 'text-red-600 font-medium' : 'text-gray-400' }}">
+                                            {{ $taak->due_date->format('d-m-Y') }}
+                                        </span>
+                                    @else
+                                        <span class="text-gray-300">—</span>
+                                    @endif
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                @endif
+            </div>
         </div>
     </div>
 </div>

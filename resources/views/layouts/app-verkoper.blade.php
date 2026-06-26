@@ -24,6 +24,8 @@
         <nav class="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
             @php
                 $conceptCount = \App\Models\Quote::where('status', 'concept')->count();
+                $openTakenCount = \App\Models\Task::where('assigned_to_user_id', auth()->id())
+                    ->whereIn('status', ['open', 'in_behandeling'])->count();
             @endphp
 
             {{-- Dashboard --}}
@@ -48,6 +50,20 @@
                 @endif
             </a>
 
+            {{-- Taken met badge --}}
+            @php $takenActive = request()->routeIs('taken.*'); @endphp
+            <a href="{{ route('taken.index') }}"
+               class="flex items-center justify-between px-4 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150
+                      {{ $takenActive ? 'bg-white/15 text-white' : 'text-blue-200 hover:bg-white/10 hover:text-white' }}">
+                <span>Taken</span>
+                @if($openTakenCount > 0)
+                    <span class="ml-2 inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1.5 rounded-full text-xs font-bold
+                                 {{ $takenActive ? 'bg-white text-blue-700' : 'bg-blue-500 text-white' }}">
+                        {{ $openTakenCount }}
+                    </span>
+                @endif
+            </a>
+
             {{-- Nieuwe offerte — afwijkende stijl --}}
             @php $active = request()->routeIs('verkoper.offertes.create'); @endphp
             <a href="{{ route('verkoper.offertes.create') }}"
@@ -58,6 +74,15 @@
                 </svg>
                 Nieuwe offerte
             </a>
+
+            {{-- Nieuwe taak --}}
+            <button onclick="Livewire.dispatch('open-task-modal')"
+                    class="w-full flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium bg-white/10 text-white hover:bg-white/20 transition-colors duration-150">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
+                </svg>
+                Nieuwe taak
+            </button>
         </nav>
 
         <div class="px-3 pt-3 border-t border-blue-900 space-y-0.5">
@@ -91,7 +116,10 @@
         <header class="bg-white border-b border-gray-200 flex-shrink-0">
             <div class="flex items-center justify-between px-6 h-14">
                 <h1 class="text-base font-semibold text-gray-800">{{ $title ?? 'Offertes' }}</h1>
-                <span class="text-sm text-gray-500">{{ Auth::user()->name }}</span>
+                <div class="flex items-center gap-3">
+                    <livewire:notification-bell />
+                    <span class="text-sm text-gray-500">{{ Auth::user()->name }}</span>
+                </div>
             </div>
         </header>
 
@@ -122,6 +150,8 @@
         </main>
     </div>
 </div>
+
+<livewire:tasks.modal />
 
 </body>
 </html>

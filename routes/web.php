@@ -22,6 +22,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/profiel', \App\Livewire\Profile\Edit::class)->name('profile.edit');
 });
 
+// ── Gedeelde routes (admin + verkoper) ────────────────────────────────────────
+Route::middleware(['auth', 'verified', 'role:admin,verkoper'])->group(function () {
+    Route::get('/taken', \App\Livewire\Tasks\Index::class)->name('taken.index');
+    Route::get('/taken/{task}', \App\Livewire\Tasks\Show::class)->name('taken.show');
+    Route::get('/notificaties', \App\Livewire\Notifications\Index::class)->name('notificaties.index');
+});
+
 // ── Verkoper ──────────────────────────────────────────────────────────────────
 Route::prefix('verkoper')->name('verkoper.')->middleware(['auth', 'verified', 'role:admin,verkoper'])->group(function () {
     Route::get('/', \App\Livewire\Verkoper\Dashboard::class)->name('dashboard');

@@ -359,4 +359,84 @@
             </a>
         </div>
     </div>
+
+    {{-- ── Taken & notities ────────────────────────────────────────────────── --}}
+    <div class="mt-6">
+        <div class="flex items-center justify-between mb-3">
+            <h2 class="text-sm font-semibold text-gray-700 uppercase tracking-wide">Taken & notities</h2>
+            <button onclick="Livewire.dispatch('open-task-modal', { quoteId: {{ $quote->id }} })"
+                    class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-white transition-colors"
+                    style="background-color: #1B3A6B;">
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
+                </svg>
+                Taak toevoegen
+            </button>
+        </div>
+
+        @if($quote->tasks->isEmpty())
+            <div class="bg-white rounded-xl border border-gray-200 px-5 py-10 text-center">
+                <svg class="w-8 h-8 mx-auto mb-2 text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                </svg>
+                <p class="text-sm text-gray-400">Nog geen taken gekoppeld aan deze offerte.</p>
+            </div>
+        @else
+            <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr class="bg-gray-50 border-b border-gray-100 text-left">
+                            <th class="px-5 py-2.5 text-xs font-semibold text-gray-500 uppercase tracking-wide">Status</th>
+                            <th class="px-5 py-2.5 text-xs font-semibold text-gray-500 uppercase tracking-wide">Taak</th>
+                            <th class="px-5 py-2.5 text-xs font-semibold text-gray-500 uppercase tracking-wide">Toegewezen aan</th>
+                            <th class="px-5 py-2.5 text-xs font-semibold text-gray-500 uppercase tracking-wide">Deadline</th>
+                            <th class="px-5 py-2.5 text-xs font-semibold text-gray-500 uppercase tracking-wide text-right">Actie</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-50">
+                        @foreach($quote->tasks->sortBy('due_date') as $task)
+                            @php
+                                $sc = ['open'=>'bg-gray-100 text-gray-600','in_behandeling'=>'bg-blue-100 text-blue-700','afgerond'=>'bg-green-100 text-green-700'];
+                                $sl = ['open'=>'Open','in_behandeling'=>'In behandeling','afgerond'=>'Afgerond'];
+                            @endphp
+                            <tr class="{{ $task->status === 'afgerond' ? 'opacity-60' : '' }} hover:bg-gray-50 transition-colors">
+                                <td class="px-5 py-3">
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium {{ $sc[$task->status] ?? 'bg-gray-100 text-gray-600' }}">
+                                        {{ $sl[$task->status] ?? $task->status }}
+                                    </span>
+                                </td>
+                                <td class="px-5 py-3">
+                                    <a href="{{ route('taken.show', $task) }}"
+                                       class="font-medium text-gray-800 hover:text-blue-600 {{ $task->status === 'afgerond' ? 'line-through' : '' }}">
+                                        {{ $task->title }}
+                                    </a>
+                                    @if($task->createdBy)
+                                        <p class="text-xs text-gray-400 mt-0.5">Door {{ $task->createdBy->name }}</p>
+                                    @endif
+                                </td>
+                                <td class="px-5 py-3 text-gray-500 text-xs">
+                                    {{ $task->assignedTo?->name ?? '—' }}
+                                </td>
+                                <td class="px-5 py-3 text-xs">
+                                    @if($task->due_date)
+                                        <span class="{{ $task->due_date->isPast() && $task->status !== 'afgerond' ? 'text-red-600 font-medium' : 'text-gray-500' }}">
+                                            {{ $task->due_date->format('d-m-Y') }}
+                                        </span>
+                                    @else
+                                        <span class="text-gray-300">—</span>
+                                    @endif
+                                </td>
+                                <td class="px-5 py-3 text-right">
+                                    <a href="{{ route('taken.show', $task) }}"
+                                       class="text-blue-600 hover:text-blue-800 text-xs font-medium">
+                                        Bekijken
+                                    </a>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        @endif
+    </div>
 </div>

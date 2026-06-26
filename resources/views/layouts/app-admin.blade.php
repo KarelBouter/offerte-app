@@ -24,10 +24,13 @@
         <nav class="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
             @php
                 $conceptCount = \App\Models\Quote::where('status', 'concept')->count();
+                $openTakenCount = \App\Models\Task::where('assigned_to_user_id', auth()->id())
+                    ->whereIn('status', ['open', 'in_behandeling'])->count();
 
                 $navItems = [
                     ['label' => 'Dashboard',        'route' => 'beheer.dashboard',           'match' => 'beheer.dashboard'],
                     ['label' => 'Offertes',          'route' => 'verkoper.offertes.index',    'match' => 'verkoper.offertes.*', 'badge' => $conceptCount ?: null],
+                    ['label' => 'Taken',             'route' => 'taken.index',                'match' => 'taken.*', 'badge' => $openTakenCount ?: null],
                     ['label' => 'Producten',         'route' => 'beheer.producten.index',     'match' => 'beheer.producten.*'],
                     ['label' => 'Afhankelijkheden',  'route' => 'beheer.afhankelijkheden.index', 'match' => 'beheer.afhankelijkheden.*'],
                     ['label' => 'Gebruikers',        'route' => 'beheer.gebruikers.index',    'match' => 'beheer.gebruikers.*'],
@@ -50,6 +53,15 @@
                     @endif
                 </a>
             @endforeach
+
+            {{-- Nieuwe taak --}}
+            <button onclick="Livewire.dispatch('open-task-modal')"
+                    class="w-full flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium bg-white/10 text-white hover:bg-white/20 transition-colors duration-150 mt-1">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
+                </svg>
+                Nieuwe taak
+            </button>
         </nav>
 
         <div class="px-3 pt-3 border-t border-blue-900 space-y-0.5">
@@ -77,7 +89,10 @@
         <header class="bg-white border-b border-gray-200 flex-shrink-0">
             <div class="flex items-center justify-between px-6 h-14">
                 <h1 class="text-base font-semibold text-gray-800">{{ $title ?? 'Beheer' }}</h1>
-                <span class="text-sm text-gray-500">{{ Auth::user()->name }}</span>
+                <div class="flex items-center gap-3">
+                    <livewire:notification-bell />
+                    <span class="text-sm text-gray-500">{{ Auth::user()->name }}</span>
+                </div>
             </div>
         </header>
 
@@ -108,6 +123,8 @@
         </main>
     </div>
 </div>
+
+<livewire:tasks.modal />
 
 </body>
 </html>

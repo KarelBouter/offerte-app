@@ -78,4 +78,9 @@ class Quote extends Model
     {
         return $this->hasMany(QuoteItem::class);
     }
+
+    public function tasks(): HasMany
+    {
+        return $this->hasMany(Task::class);
+    }
 }

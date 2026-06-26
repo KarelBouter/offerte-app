@@ -110,6 +110,59 @@
         </a>
     </div>
 
+    {{-- ── Mijn openstaande taken ─────────────────────────────────────────── --}}
+    @if($mijnTaken->isNotEmpty())
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <div class="px-5 py-3 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
+            <h2 class="text-sm font-semibold text-gray-700">Mijn openstaande taken</h2>
+            <a href="{{ route('taken.index') }}" class="text-xs text-blue-600 hover:underline">Alle taken →</a>
+        </div>
+        <table class="w-full text-sm">
+            <thead>
+                <tr class="border-b border-gray-100 text-left">
+                    <th class="px-5 py-2 text-xs font-semibold text-gray-500">Taak</th>
+                    <th class="px-5 py-2 text-xs font-semibold text-gray-500">Gekoppeld aan</th>
+                    <th class="px-5 py-2 text-xs font-semibold text-gray-500">Deadline</th>
+                    <th class="px-5 py-2 text-xs font-semibold text-gray-500 text-right">Actie</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-50">
+                @foreach($mijnTaken as $taak)
+                <tr class="hover:bg-gray-50">
+                    <td class="px-5 py-3 font-medium text-gray-800">{{ $taak->title }}</td>
+                    <td class="px-5 py-3 text-gray-500 text-xs">
+                        @if($taak->quote)
+                            <a href="{{ route('verkoper.offertes.show', $taak->quote) }}"
+                               class="text-blue-600 hover:underline font-mono">
+                                {{ $taak->quote->quote_number }}
+                                @if($taak->quote->customer)
+                                    — {{ $taak->quote->customer->company_name }}
+                                @endif
+                            </a>
+                        @else
+                            <span class="text-gray-300">—</span>
+                        @endif
+                    </td>
+                    <td class="px-5 py-3 text-xs">
+                        @if($taak->due_date)
+                            <span class="{{ $taak->due_date->isPast() ? 'text-red-600 font-medium' : ($taak->due_date->diffInDays(now()) <= 2 ? 'text-orange-600' : 'text-gray-500') }}">
+                                {{ $taak->due_date->format('d-m-Y') }}
+                            </span>
+                        @else
+                            <span class="text-gray-300">—</span>
+                        @endif
+                    </td>
+                    <td class="px-5 py-3 text-right">
+                        <a href="{{ route('taken.show', $taak) }}"
+                           class="text-xs font-medium text-blue-600 hover:text-blue-800">Bekijken</a>
+                    </td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
+    @endif
+
     {{-- ── Recente offertes ────────────────────────────────────────────────── --}}
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
         <div class="px-5 py-3 border-b border-gray-100 bg-gray-50 flex items-center justify-between">

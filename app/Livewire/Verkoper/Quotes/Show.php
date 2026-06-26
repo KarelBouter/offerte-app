@@ -6,6 +6,7 @@ use App\Mail\QuoteClientMail;
 use App\Models\Quote;
 use App\Services\ActivityLogService;
 use Illuminate\Support\Facades\Mail;
+use Livewire\Attributes\On;
 use Livewire\Component;
 
 class Show extends Component
@@ -30,7 +31,13 @@ class Show extends Component
 
     public function mount(Quote $quote): void
     {
-        $this->quote = $quote->load(['customer', 'user', 'items.product']);
+        $this->quote = $quote->load(['customer', 'user', 'items.product', 'tasks.assignedTo', 'tasks.createdBy']);
+    }
+
+    #[On('task-saved')]
+    public function refreshTasks(): void
+    {
+        $this->quote->load(['tasks.assignedTo', 'tasks.createdBy']);
     }
 
     public function updateStatus(string $status): void

@@ -3,6 +3,7 @@
 namespace App\Livewire\Verkoper;
 
 use App\Models\Quote;
+use App\Models\Task;
 use Livewire\Component;
 
 class Dashboard extends Component
@@ -69,10 +70,18 @@ class Dashboard extends Component
         // ── Recente offertes ───────────────────────────────────────────────
         $recentQuotes = Quote::with(['customer', 'user'])->latest()->limit(8)->get();
 
+        // ── Mijn openstaande taken ─────────────────────────────────────────
+        $mijnTaken = Task::where('assigned_to_user_id', auth()->id())
+            ->whereIn('status', ['open', 'in_behandeling'])
+            ->orderBy('due_date')
+            ->limit(5)
+            ->with(['quote.customer'])
+            ->get();
+
         return view('livewire.verkoper.dashboard.index', compact(
             'actionItems',
             'expiringSoon', 'waitingSignature', 'signedThisMonth', 'totalOpen',
-            'recentQuotes'
+            'recentQuotes', 'mijnTaken'
         ))->layout('layouts.app-verkoper', ['title' => 'Dashboard']);
     }
 }
