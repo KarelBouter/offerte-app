@@ -1,3 +1,4 @@
+<div>
 @if($isOpen)
 <div class="fixed inset-0 z-50 flex items-center justify-center p-4"
      x-data x-on:keydown.escape.window="$wire.close()">
@@ -183,3 +184,4 @@
     </div>
 </div>
 @endif
+</div>
