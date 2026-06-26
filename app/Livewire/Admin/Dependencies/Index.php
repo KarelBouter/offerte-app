@@ -9,17 +9,17 @@ use Livewire\Component;
 class Index extends Component
 {
     public const RULE_LABELS = [
-        'REQUIRED'             => 'Altijd vereist',
-        'REQUIRED_CALCULATED'  => 'Vereist (berekend aantal)',
-        'THRESHOLD_SWITCH'     => 'Drempelschakelaar',
-        'RECOMMENDED'          => 'Aanbevolen',
-        'EXCLUDES'             => 'Sluit uit',
+        'REQUIRED'            => 'Altijd vereist',
+        'REQUIRED_CALCULATED' => 'Vereist (berekend aantal)',
+        'THRESHOLD_SWITCH'    => 'Drempelschakelaar',
+        'RECOMMENDED'         => 'Aanbevolen',
+        'EXCLUDES'            => 'Sluit uit',
     ];
 
     // Product selector
     public string $selectedProductId = '';
 
-    // Modal state
+    // Create/edit modal
     public bool $showModal = false;
     public ?int $editingDependencyId = null;
 
@@ -32,7 +32,11 @@ class Index extends Component
     public string $resulting_quantity_formula = '';
     public string $replaces_product_id = '';
 
-    // ── Visibility helpers (used in view) ──────────────────────────────────
+    // Test modal
+    public bool $showTestModal = false;
+    public int $testQuantity = 1;
+
+    // ── Visibility helpers ──────────────────────────────────────────────────
 
     public function getShowTriggerMinProperty(): bool
     {
@@ -59,7 +63,26 @@ class Index extends Component
         return $this->rule_type === 'THRESHOLD_SWITCH';
     }
 
-    // ── Modal open / close ─────────────────────────────────────────────────
+    // ── Test computed property ──────────────────────────────────────────────
+
+    public function getTestResultsProperty(): array
+    {
+        if (! $this->showTestModal || ! $this->selectedProductId) {
+            return [];
+        }
+
+        return ProductDependency::with(['dependsOnProduct', 'replacesProduct'])
+            ->where('product_id', (int) $this->selectedProductId)
+            ->get()
+            ->map(fn ($dep) => [
+                'label'       => self::RULE_LABELS[$dep->rule_type] ?? $dep->rule_type,
+                'description' => $this->simulateRule($dep, $this->testQuantity),
+                'applies'     => $this->ruleApplies($dep, $this->testQuantity),
+            ])
+            ->all();
+    }
+
+    // ── Modal open / close ──────────────────────────────────────────────────
 
     public function openCreate(): void
     {
@@ -70,14 +93,14 @@ class Index extends Component
     public function openEdit(int $id): void
     {
         $dep = ProductDependency::findOrFail($id);
-        $this->editingDependencyId = $id;
-        $this->rule_type = $dep->rule_type;
-        $this->depends_on_product_id = (string) $dep->depends_on_product_id;
-        $this->trigger_quantity_min = $dep->trigger_quantity_min;
-        $this->trigger_quantity_max = $dep->trigger_quantity_max;
-        $this->resulting_quantity = $dep->resulting_quantity;
+        $this->editingDependencyId       = $id;
+        $this->rule_type                 = $dep->rule_type;
+        $this->depends_on_product_id     = (string) $dep->depends_on_product_id;
+        $this->trigger_quantity_min      = $dep->trigger_quantity_min;
+        $this->trigger_quantity_max      = $dep->trigger_quantity_max;
+        $this->resulting_quantity        = $dep->resulting_quantity;
         $this->resulting_quantity_formula = $dep->resulting_quantity_formula ?? '';
-        $this->replaces_product_id = (string) ($dep->replaces_product_id ?? '');
+        $this->replaces_product_id       = (string) ($dep->replaces_product_id ?? '');
         $this->resetValidation();
         $this->showModal = true;
     }
@@ -88,7 +111,19 @@ class Index extends Component
         $this->resetForm();
     }
 
-    // ── Save ───────────────────────────────────────────────────────────────
+    public function openTestModal(): void
+    {
+        $this->testQuantity  = 1;
+        $this->showTestModal = true;
+    }
+
+    public function closeTestModal(): void
+    {
+        $this->showTestModal = false;
+        $this->testQuantity  = 1;
+    }
+
+    // ── Save ────────────────────────────────────────────────────────────────
 
     public function save(): void
     {
@@ -118,14 +153,14 @@ class Index extends Component
         );
 
         $data = [
-            'product_id'                  => (int) $this->selectedProductId,
-            'depends_on_product_id'       => (int) $this->depends_on_product_id,
-            'rule_type'                   => $this->rule_type,
-            'trigger_quantity_min'        => $this->showTriggerMin ? $this->trigger_quantity_min : null,
-            'trigger_quantity_max'        => $this->showTriggerMax ? $this->trigger_quantity_max : null,
-            'resulting_quantity'          => $this->showResultingQty ? $this->resulting_quantity : null,
-            'resulting_quantity_formula'  => $this->showFormula ? ($this->resulting_quantity_formula ?: null) : null,
-            'replaces_product_id'         => $this->showReplaces && $this->replaces_product_id
+            'product_id'                 => (int) $this->selectedProductId,
+            'depends_on_product_id'      => (int) $this->depends_on_product_id,
+            'rule_type'                  => $this->rule_type,
+            'trigger_quantity_min'       => $this->showTriggerMin ? $this->trigger_quantity_min : null,
+            'trigger_quantity_max'       => $this->showTriggerMax ? $this->trigger_quantity_max : null,
+            'resulting_quantity'         => $this->showResultingQty ? $this->resulting_quantity : null,
+            'resulting_quantity_formula' => $this->showFormula ? ($this->resulting_quantity_formula ?: null) : null,
+            'replaces_product_id'        => $this->showReplaces && $this->replaces_product_id
                                                 ? (int) $this->replaces_product_id
                                                 : null,
         ];
@@ -142,7 +177,7 @@ class Index extends Component
         $this->dispatch('notify', message: $message);
     }
 
-    // ── Delete ─────────────────────────────────────────────────────────────
+    // ── Delete ──────────────────────────────────────────────────────────────
 
     public function delete(int $id): void
     {
@@ -150,12 +185,16 @@ class Index extends Component
         $this->dispatch('notify', message: 'Regel verwijderd.');
     }
 
-    // ── Render ─────────────────────────────────────────────────────────────
+    // ── Render ──────────────────────────────────────────────────────────────
 
     public function render()
     {
         $products = Product::orderBy('category')->orderBy('sort_order')->orderBy('name')
             ->get(['id', 'name', 'category']);
+
+        $selectedProduct = $this->selectedProductId
+            ? $products->firstWhere('id', (int) $this->selectedProductId)
+            : null;
 
         $dependencies = $this->selectedProductId
             ? ProductDependency::with(['dependsOnProduct', 'replacesProduct'])
@@ -171,25 +210,103 @@ class Index extends Component
             : collect();
 
         return view('livewire.admin.dependencies.index', [
-            'products'     => $products,
-            'dependencies' => $dependencies,
-            'otherProducts' => $otherProducts,
-            'ruleLabels'   => self::RULE_LABELS,
+            'products'            => $products,
+            'selectedProductName' => $selectedProduct?->name ?? '',
+            'dependencies'        => $dependencies,
+            'otherProducts'       => $otherProducts,
+            'ruleLabels'          => self::RULE_LABELS,
         ])->layout('layouts.app-admin', ['title' => 'Afhankelijkheden']);
     }
 
-    // ── Helpers ────────────────────────────────────────────────────────────
+    // ── Helpers ─────────────────────────────────────────────────────────────
 
     private function resetForm(): void
     {
-        $this->editingDependencyId = null;
-        $this->rule_type = 'REQUIRED';
-        $this->depends_on_product_id = '';
-        $this->trigger_quantity_min = null;
-        $this->trigger_quantity_max = null;
-        $this->resulting_quantity = null;
+        $this->editingDependencyId        = null;
+        $this->rule_type                  = 'REQUIRED';
+        $this->depends_on_product_id      = '';
+        $this->trigger_quantity_min       = null;
+        $this->trigger_quantity_max       = null;
+        $this->resulting_quantity         = null;
         $this->resulting_quantity_formula = '';
-        $this->replaces_product_id = '';
+        $this->replaces_product_id        = '';
         $this->resetValidation();
+    }
+
+    private function evaluateFormula(string $formula, int $quantity): ?int
+    {
+        $expr = strtolower(str_replace(['trigger', ' '], [(string) $quantity, ''], $formula));
+
+        if (preg_match('/^ceil\((.+?)\)$/', $expr, $m)) {
+            $inner = $m[1];
+            if (preg_match('/^([\d.]+)\/([\d.]+)$/', $inner, $p) && (float) $p[2] > 0) {
+                return (int) ceil((float) $p[1] / (float) $p[2]);
+            }
+        }
+        if (preg_match('/^floor\((.+?)\)$/', $expr, $m)) {
+            $inner = $m[1];
+            if (preg_match('/^([\d.]+)\/([\d.]+)$/', $inner, $p) && (float) $p[2] > 0) {
+                return (int) floor((float) $p[1] / (float) $p[2]);
+            }
+        }
+        if (preg_match('/^([\d.]+)\*([\d.]+)$/', $expr, $p)) {
+            return (int) round((float) $p[1] * (float) $p[2]);
+        }
+        if (preg_match('/^([\d.]+)\/([\d.]+)$/', $expr, $p) && (float) $p[2] > 0) {
+            return (int) round((float) $p[1] / (float) $p[2]);
+        }
+
+        return null;
+    }
+
+    private function simulateRule(ProductDependency $dep, int $qty): string
+    {
+        $product  = $dep->dependsOnProduct?->name ?? '?';
+        $replaces = $dep->replacesProduct?->name;
+
+        if ($dep->rule_type === 'REQUIRED') {
+            return 'Voegt automatisch ' . ($dep->resulting_quantity ?? 1) . ' stuks ' . $product . ' toe';
+        }
+
+        if ($dep->rule_type === 'REQUIRED_CALCULATED') {
+            if (! $dep->resulting_quantity_formula) {
+                return 'Berekent ' . $product . ' (geen formule ingesteld)';
+            }
+            $n = $this->evaluateFormula($dep->resulting_quantity_formula, $qty);
+            return $n !== null
+                ? 'Voegt ' . $n . ' stuks ' . $product . ' toe (formule: ' . $dep->resulting_quantity_formula . ')'
+                : 'Berekent ' . $product . ' via formule ' . $dep->resulting_quantity_formula . ' (kan niet automatisch worden berekend)';
+        }
+
+        if ($dep->rule_type === 'THRESHOLD_SWITCH') {
+            $range = ($dep->trigger_quantity_min ?? '?') . '–' . ($dep->trigger_quantity_max ?? '∞');
+            if ($this->ruleApplies($dep, $qty)) {
+                $action = $replaces
+                    ? 'Vervangt ' . $replaces . ' door ' . $product
+                    : 'Voegt ' . $product . ' toe';
+                return $action . ' (drempel actief: ' . $qty . ' valt in bereik ' . $range . ')';
+            }
+            return 'Drempel niet actief bij ' . $qty . ' stuks (bereik: ' . $range . ')';
+        }
+
+        if ($dep->rule_type === 'RECOMMENDED') {
+            return 'Stelt ' . $product . ' voor aan de verkoper (kan worden afgevinkt)';
+        }
+
+        if ($dep->rule_type === 'EXCLUDES') {
+            return 'Sluit ' . $product . ' uit — deze twee producten kunnen niet samen worden gekozen';
+        }
+
+        return '—';
+    }
+
+    private function ruleApplies(ProductDependency $dep, int $qty): bool
+    {
+        if ($dep->rule_type !== 'THRESHOLD_SWITCH') {
+            return true;
+        }
+
+        return ($dep->trigger_quantity_min === null || $qty >= $dep->trigger_quantity_min)
+            && ($dep->trigger_quantity_max === null || $qty <= $dep->trigger_quantity_max);
     }
 }
