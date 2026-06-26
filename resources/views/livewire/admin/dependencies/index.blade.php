@@ -32,7 +32,7 @@
             Stap 1: Kies het product dat de regel activeert (het trigger-product)
         </label>
         <select
-                wire:change="selectProduct($event.target.value)"
+                id="dep-trigger-select"
                 class="rounded-lg border-gray-300 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500 min-w-80">
             <option value="">Selecteer een product...</option>
             @foreach($products->groupBy('category') as $cat => $items)
@@ -45,6 +45,14 @@
                 </optgroup>
             @endforeach
         </select>
+
+        @script
+        <script>
+            document.getElementById('dep-trigger-select')?.addEventListener('change', (e) => {
+                $wire.selectProduct(e.target.value);
+            });
+        </script>
+        @endscript
         <p class="mt-1.5 text-xs text-gray-400">Dit is het product dat de verkoper kiest in de configurator.</p>
     </div>
 
