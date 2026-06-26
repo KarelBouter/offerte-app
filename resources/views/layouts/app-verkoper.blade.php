@@ -23,52 +23,45 @@
 
         <nav class="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
             @php
-                $conceptCount = \App\Models\Quote::where('status', 'concept')->count();
+                $conceptCount   = \App\Models\Quote::where('status', 'concept')->count();
                 $openTakenCount = \App\Models\Task::where('assigned_to_user_id', auth()->id())
                     ->whereIn('status', ['open', 'in_behandeling'])->count();
             @endphp
 
-            {{-- Dashboard --}}
-            @php $active = request()->routeIs('verkoper.dashboard'); @endphp
-            <a href="{{ route('verkoper.dashboard') }}"
+            <a href="{{ route('verkoper.dashboard') }}" wire:navigate
                class="flex items-center px-4 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150
-                      {{ $active ? 'bg-white/15 text-white' : 'text-blue-200 hover:bg-white/10 hover:text-white' }}">
+                      {{ request()->routeIs('verkoper.dashboard') ? 'bg-white/15 text-white' : 'text-blue-200 hover:bg-white/10 hover:text-white' }}">
                 Dashboard
             </a>
 
-            {{-- Offertes met badge --}}
-            @php $active = request()->routeIs('verkoper.offertes.*') && !request()->routeIs('verkoper.offertes.create'); @endphp
-            <a href="{{ route('verkoper.offertes.index') }}"
+            <a href="{{ route('verkoper.offertes.index') }}" wire:navigate
                class="flex items-center justify-between px-4 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150
-                      {{ $active ? 'bg-white/15 text-white' : 'text-blue-200 hover:bg-white/10 hover:text-white' }}">
+                      {{ request()->routeIs('verkoper.offertes.*') && !request()->routeIs('verkoper.offertes.create') ? 'bg-white/15 text-white' : 'text-blue-200 hover:bg-white/10 hover:text-white' }}">
                 <span>Offertes</span>
                 @if($conceptCount > 0)
                     <span class="ml-2 inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1.5 rounded-full text-xs font-bold
-                                 {{ $active ? 'bg-white text-blue-700' : 'bg-blue-500 text-white' }}">
+                                 {{ request()->routeIs('verkoper.offertes.*') && !request()->routeIs('verkoper.offertes.create') ? 'bg-white text-blue-700' : 'bg-blue-500 text-white' }}">
                         {{ $conceptCount }}
                     </span>
                 @endif
             </a>
 
-            {{-- Taken met badge --}}
-            @php $takenActive = request()->routeIs('taken.*'); @endphp
-            <a href="{{ route('taken.index') }}"
+            <a href="{{ route('taken.index') }}" wire:navigate
                class="flex items-center justify-between px-4 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150
-                      {{ $takenActive ? 'bg-white/15 text-white' : 'text-blue-200 hover:bg-white/10 hover:text-white' }}">
+                      {{ request()->routeIs('taken.*') ? 'bg-white/15 text-white' : 'text-blue-200 hover:bg-white/10 hover:text-white' }}">
                 <span>Taken</span>
                 @if($openTakenCount > 0)
                     <span class="ml-2 inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1.5 rounded-full text-xs font-bold
-                                 {{ $takenActive ? 'bg-white text-blue-700' : 'bg-blue-500 text-white' }}">
+                                 {{ request()->routeIs('taken.*') ? 'bg-white text-blue-700' : 'bg-blue-500 text-white' }}">
                         {{ $openTakenCount }}
                     </span>
                 @endif
             </a>
-
         </nav>
 
         {{-- Actieknopen boven scheiding --}}
         <div class="px-3 pb-2 space-y-1">
-            <a href="{{ route('verkoper.offertes.create') }}"
+            <a href="{{ route('verkoper.offertes.create') }}" wire:navigate
                class="flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150
                       {{ request()->routeIs('verkoper.offertes.create') ? 'bg-white text-blue-800' : 'bg-white/10 text-white hover:bg-white/20' }}">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -86,13 +79,13 @@
         </div>
 
         <div class="px-3 pt-3 border-t border-blue-900 space-y-0.5">
-            <a href="{{ route('profile.edit') }}"
+            <a href="{{ route('profile.edit') }}" wire:navigate
                class="flex items-center px-4 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150
                       {{ request()->routeIs('profile.edit') ? 'bg-white/15 text-white' : 'text-blue-200 hover:bg-white/10 hover:text-white' }}">
                 Mijn profiel
             </a>
             @if(Auth::user()->role === 'admin')
-                <a href="{{ route('beheer.dashboard') }}"
+                <a href="{{ route('beheer.dashboard') }}" wire:navigate
                    class="flex items-center px-4 py-2.5 rounded-lg text-sm font-medium text-blue-200 hover:bg-white/10 hover:text-white transition-colors duration-150">
                     Beheer ↗
                 </a>
@@ -124,7 +117,6 @@
         </header>
 
         <main class="flex-1 overflow-y-auto">
-            {{-- Breadcrumbs --}}
             @isset($breadcrumbs)
                 <div class="px-6 pt-4 pb-0">
                     {{ $breadcrumbs }}

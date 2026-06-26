@@ -23,41 +23,75 @@
 
         <nav class="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
             @php
-                $conceptCount = \App\Models\Quote::where('status', 'concept')->count();
+                $conceptCount   = \App\Models\Quote::where('status', 'concept')->count();
                 $openTakenCount = \App\Models\Task::where('assigned_to_user_id', auth()->id())
                     ->whereIn('status', ['open', 'in_behandeling'])->count();
-
-                $navItems = [
-                    ['label' => 'Dashboard',        'route' => 'beheer.dashboard',           'match' => 'beheer.dashboard'],
-                    ['label' => 'Offertes',          'route' => 'verkoper.offertes.index',    'match' => 'verkoper.offertes.*', 'badge' => $conceptCount ?: null],
-                    ['label' => 'Taken',             'route' => 'taken.index',                'match' => 'taken.*', 'badge' => $openTakenCount ?: null],
-                    ['label' => 'Producten',         'route' => 'beheer.producten.index',     'match' => 'beheer.producten.*'],
-                    ['label' => 'Afhankelijkheden',  'route' => 'beheer.afhankelijkheden.index', 'match' => 'beheer.afhankelijkheden.*'],
-                    ['label' => 'Gebruikers',        'route' => 'beheer.gebruikers.index',    'match' => 'beheer.gebruikers.*'],
-                    ['label' => 'Activiteitenlog',   'route' => 'beheer.activiteit.index',    'match' => 'beheer.activiteit.*'],
-                    ['label' => 'Instellingen',      'route' => 'beheer.instellingen.index',  'match' => 'beheer.instellingen.*'],
-                ];
             @endphp
 
-            @foreach($navItems as $item)
-                @php $active = request()->routeIs($item['match']); @endphp
-                <a href="{{ route($item['route']) }}"
-                   class="flex items-center justify-between px-4 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150
-                          {{ $active ? 'bg-white/15 text-white' : 'text-blue-200 hover:bg-white/10 hover:text-white' }}">
-                    <span>{{ $item['label'] }}</span>
-                    @if(!empty($item['badge']))
-                        <span class="ml-2 inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1.5 rounded-full text-xs font-bold
-                                     {{ $active ? 'bg-white text-blue-700' : 'bg-blue-500 text-white' }}">
-                            {{ $item['badge'] }}
-                        </span>
-                    @endif
-                </a>
-            @endforeach
+            <a href="{{ route('beheer.dashboard') }}" wire:navigate
+               class="flex items-center px-4 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150
+                      {{ request()->routeIs('beheer.dashboard') ? 'bg-white/15 text-white' : 'text-blue-200 hover:bg-white/10 hover:text-white' }}">
+                Dashboard
+            </a>
+
+            <a href="{{ route('verkoper.offertes.index') }}" wire:navigate
+               class="flex items-center justify-between px-4 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150
+                      {{ request()->routeIs('verkoper.offertes.*') ? 'bg-white/15 text-white' : 'text-blue-200 hover:bg-white/10 hover:text-white' }}">
+                <span>Offertes</span>
+                @if($conceptCount > 0)
+                    <span class="ml-2 inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1.5 rounded-full text-xs font-bold
+                                 {{ request()->routeIs('verkoper.offertes.*') ? 'bg-white text-blue-700' : 'bg-blue-500 text-white' }}">
+                        {{ $conceptCount }}
+                    </span>
+                @endif
+            </a>
+
+            <a href="{{ route('taken.index') }}" wire:navigate
+               class="flex items-center justify-between px-4 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150
+                      {{ request()->routeIs('taken.*') ? 'bg-white/15 text-white' : 'text-blue-200 hover:bg-white/10 hover:text-white' }}">
+                <span>Taken</span>
+                @if($openTakenCount > 0)
+                    <span class="ml-2 inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1.5 rounded-full text-xs font-bold
+                                 {{ request()->routeIs('taken.*') ? 'bg-white text-blue-700' : 'bg-blue-500 text-white' }}">
+                        {{ $openTakenCount }}
+                    </span>
+                @endif
+            </a>
+
+            <a href="{{ route('beheer.producten.index') }}" wire:navigate
+               class="flex items-center px-4 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150
+                      {{ request()->routeIs('beheer.producten.*') ? 'bg-white/15 text-white' : 'text-blue-200 hover:bg-white/10 hover:text-white' }}">
+                Producten
+            </a>
+
+            <a href="{{ route('beheer.afhankelijkheden.index') }}" wire:navigate
+               class="flex items-center px-4 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150
+                      {{ request()->routeIs('beheer.afhankelijkheden.*') ? 'bg-white/15 text-white' : 'text-blue-200 hover:bg-white/10 hover:text-white' }}">
+                Afhankelijkheden
+            </a>
+
+            <a href="{{ route('beheer.gebruikers.index') }}" wire:navigate
+               class="flex items-center px-4 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150
+                      {{ request()->routeIs('beheer.gebruikers.*') ? 'bg-white/15 text-white' : 'text-blue-200 hover:bg-white/10 hover:text-white' }}">
+                Gebruikers
+            </a>
+
+            <a href="{{ route('beheer.activiteit.index') }}" wire:navigate
+               class="flex items-center px-4 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150
+                      {{ request()->routeIs('beheer.activiteit.*') ? 'bg-white/15 text-white' : 'text-blue-200 hover:bg-white/10 hover:text-white' }}">
+                Activiteitenlog
+            </a>
+
+            <a href="{{ route('beheer.instellingen.index') }}" wire:navigate
+               class="flex items-center px-4 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150
+                      {{ request()->routeIs('beheer.instellingen.*') ? 'bg-white/15 text-white' : 'text-blue-200 hover:bg-white/10 hover:text-white' }}">
+                Instellingen
+            </a>
         </nav>
 
         {{-- Actieknopen boven scheiding --}}
         <div class="px-3 pb-2 space-y-1">
-            <a href="{{ route('verkoper.offertes.create') }}"
+            <a href="{{ route('verkoper.offertes.create') }}" wire:navigate
                class="flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150
                       {{ request()->routeIs('verkoper.offertes.create') ? 'bg-white text-blue-800' : 'bg-white/10 text-white hover:bg-white/20' }}">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -75,7 +109,7 @@
         </div>
 
         <div class="px-3 pt-3 border-t border-blue-900 space-y-0.5">
-            <a href="{{ route('profile.edit') }}"
+            <a href="{{ route('profile.edit') }}" wire:navigate
                class="flex items-center px-4 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150
                       {{ request()->routeIs('profile.edit') ? 'bg-white/15 text-white' : 'text-blue-200 hover:bg-white/10 hover:text-white' }}">
                 Mijn profiel
@@ -107,7 +141,6 @@
         </header>
 
         <main class="flex-1 overflow-y-auto">
-            {{-- Breadcrumbs --}}
             @isset($breadcrumbs)
                 <div class="px-6 pt-4 pb-0">
                     {{ $breadcrumbs }}
