@@ -17,7 +17,7 @@ class Index extends Component
     ];
 
     // Product selector
-    public string $selectedProductId = '';
+    public ?int $selectedProductId = null;
 
     // Create/edit modal
     public bool $showModal = false;
@@ -72,7 +72,7 @@ class Index extends Component
         }
 
         return ProductDependency::with(['dependsOnProduct', 'replacesProduct'])
-            ->where('product_id', (int) $this->selectedProductId)
+            ->where('product_id', $this->selectedProductId)
             ->get()
             ->map(fn ($dep) => [
                 'label'       => self::RULE_LABELS[$dep->rule_type] ?? $dep->rule_type,
@@ -80,6 +80,15 @@ class Index extends Component
                 'applies'     => $this->ruleApplies($dep, $this->testQuantity),
             ])
             ->all();
+    }
+
+    // ── Updated hooks ───────────────────────────────────────────────────────
+
+    public function updatedSelectedProductId(): void
+    {
+        $this->showModal     = false;
+        $this->showTestModal = false;
+        $this->resetForm();
     }
 
     // ── Modal open / close ──────────────────────────────────────────────────
@@ -153,7 +162,7 @@ class Index extends Component
         );
 
         $data = [
-            'product_id'                 => (int) $this->selectedProductId,
+            'product_id'                 => $this->selectedProductId,
             'depends_on_product_id'      => (int) $this->depends_on_product_id,
             'rule_type'                  => $this->rule_type,
             'trigger_quantity_min'       => $this->showTriggerMin ? $this->trigger_quantity_min : null,
@@ -193,24 +202,25 @@ class Index extends Component
             ->get(['id', 'name', 'category']);
 
         $selectedProduct = $this->selectedProductId
-            ? $products->firstWhere('id', (int) $this->selectedProductId)
+            ? $products->firstWhere('id', $this->selectedProductId)
             : null;
 
         $dependencies = $this->selectedProductId
             ? ProductDependency::with(['dependsOnProduct', 'replacesProduct'])
-                ->where('product_id', (int) $this->selectedProductId)
+                ->where('product_id', $this->selectedProductId)
                 ->get()
             : collect();
 
         $otherProducts = $this->selectedProductId
             ? Product::where('is_active', true)
-                ->where('id', '!=', (int) $this->selectedProductId)
+                ->where('id', '!=', $this->selectedProductId)
                 ->orderBy('category')->orderBy('name')
                 ->get(['id', 'name', 'category'])
             : collect();
 
         return view('livewire.admin.dependencies.index', [
             'products'            => $products,
+            'selectedProductId'   => $this->selectedProductId,
             'selectedProductName' => $selectedProduct?->name ?? '',
             'dependencies'        => $dependencies,
             'otherProducts'       => $otherProducts,
