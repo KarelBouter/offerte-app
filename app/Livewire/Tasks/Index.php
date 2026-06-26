@@ -73,7 +73,7 @@ class Index extends Component
             $query->where('created_by_user_id', $userId);
         }
 
-        $tasks  = $query->orderByRaw("FIELD(status,'open','in_behandeling','afgerond')")->orderBy('due_date')->get();
+        $tasks  = $query->orderByRaw("CASE status WHEN 'open' THEN 0 WHEN 'in_behandeling' THEN 1 ELSE 2 END")->orderBy('due_date')->get();
         $quotes = Quote::with('customer')->orderByDesc('id')->get(['id', 'quote_number', 'customer_id'])->map(fn ($q) => [
             'id'    => $q->id,
             'label' => $q->quote_number,
