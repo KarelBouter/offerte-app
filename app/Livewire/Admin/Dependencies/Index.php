@@ -36,6 +36,13 @@ class Index extends Component
     public bool $showTestModal = false;
     public int $testQuantity = 1;
 
+    // ── Lifecycle ───────────────────────────────────────────────────────────
+
+    public function mount(): void
+    {
+        $this->selectedProductId = null;
+    }
+
     // ── Visibility helpers ──────────────────────────────────────────────────
 
     public function getShowTriggerMinProperty(): bool
