@@ -151,6 +151,39 @@
             </div>
         </div>
 
+        {{-- Handtekening Proud Innovations --}}
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <h2 class="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-3">Handtekening (namens Proud Innovations)</h2>
+            <p class="text-xs text-gray-500 mb-4">
+                Deze handtekening wordt op de PDF geplaatst nadat u een ondertekende offerte
+                definitief bevestigt. Upload een PNG of JPG met transparante of witte achtergrond.
+            </p>
+
+            @if($currentSignaturePath)
+            <div class="mb-4 p-4 bg-gray-50 rounded-lg border border-gray-200 inline-block">
+                <img src="{{ Storage::url($currentSignaturePath) }}" alt="Huidige handtekening" class="h-16 object-contain"/>
+                <p class="text-xs text-gray-400 mt-2">Huidige handtekening</p>
+            </div>
+            @endif
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">
+                    {{ $currentSignaturePath ? 'Nieuwe handtekening uploaden' : 'Handtekening uploaden' }}
+                    <span class="text-gray-400 font-normal text-xs">(JPG of PNG, max. 2 MB)</span>
+                </label>
+                <input wire:model="company_signature" type="file" accept="image/jpeg,image/png"
+                       class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"/>
+                @error('company_signature') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+
+                @if($company_signature)
+                <div class="mt-3">
+                    <img src="{{ $company_signature->temporaryUrl() }}" alt="Voorbeeld" class="h-16 object-contain rounded"/>
+                    <p class="text-xs text-gray-400 mt-1">Voorbeeld nieuwe handtekening</p>
+                </div>
+                @endif
+            </div>
+        </div>
+
         <div class="flex justify-end">
             <button wire:click="save"
                     wire:loading.attr="disabled"

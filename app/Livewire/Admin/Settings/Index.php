@@ -22,6 +22,8 @@ class Index extends Component
     public string $default_quote_note      = '';
     public $logo = null;
     public ?string $currentLogoPath        = null;
+    public $company_signature              = null;
+    public ?string $currentSignaturePath   = null;
 
     public function mount(): void
     {
@@ -35,6 +37,7 @@ class Index extends Component
         $this->quote_validity_days    = Setting::get('quote_validity_days', '30');
         $this->default_quote_note     = Setting::get('default_quote_note', '');
         $this->currentLogoPath        = Setting::get('logo_path');
+        $this->currentSignaturePath   = Setting::get('company_signature_path');
     }
 
     public function save(): void
@@ -50,6 +53,7 @@ class Index extends Component
             'quote_validity_days'    => 'required|integer|min:1',
             'default_quote_note'     => 'nullable|string|max:1000',
             'logo'                   => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'company_signature'      => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ], [
             'company_name.required'           => 'Bedrijfsnaam is verplicht.',
             'company_address.required'        => 'Vestigingsadres is verplicht.',
@@ -71,6 +75,16 @@ class Index extends Component
             Setting::set('logo_path', $path);
             $this->currentLogoPath = $path;
             $this->logo = null;
+        }
+
+        if ($this->company_signature) {
+            if ($this->currentSignaturePath && Storage::disk('public')->exists($this->currentSignaturePath)) {
+                Storage::disk('public')->delete($this->currentSignaturePath);
+            }
+            $path = $this->company_signature->store('signatures', 'public');
+            Setting::set('company_signature_path', $path);
+            $this->currentSignaturePath = $path;
+            $this->company_signature = null;
         }
 
         Setting::set('company_name', $this->company_name);

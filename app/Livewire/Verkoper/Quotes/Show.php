@@ -6,6 +6,7 @@ use App\Mail\QuoteClientMail;
 use App\Models\Quote;
 use App\Services\ActivityLogService;
 use App\Services\AutoTaskService;
+use App\Services\QuotePdfService;
 use Illuminate\Support\Facades\Mail;
 use Livewire\Attributes\On;
 use Livewire\Component;
@@ -79,6 +80,35 @@ class Show extends Component
         app(AutoTaskService::class)->triggerForStatusChange($this->quote, 'verzonden');
 
         session()->flash('success', 'Offerte verstuurd naar '.$this->quote->customer->contact_email.'.');
+    }
+
+    public function signOnBehalf(): void
+    {
+        if (!auth()->user()->canSendQuotes()) {
+            session()->flash('error', 'Je hebt geen rechten om namens Proud Innovations te ondertekenen.');
+            return;
+        }
+
+        if ($this->quote->status !== 'ondertekend') {
+            session()->flash('error', 'De klant heeft deze offerte nog niet ondertekend.');
+            return;
+        }
+
+        if ($this->quote->cosigned_at) {
+            session()->flash('error', 'Deze offerte is al mede-ondertekend.');
+            return;
+        }
+
+        $this->quote->update([
+            'cosigned_at' => now(),
+            'cosigned_by' => auth()->user()->name,
+        ]);
+
+        $this->quote->load('items.product', 'customer', 'user');
+        app(QuotePdfService::class)->generate($this->quote->fresh());
+
+        $this->quote->refresh();
+        session()->flash('success', 'Offerte mede-ondertekend. PDF is bijgewerkt.');
     }
 
     public function duplicate(): void

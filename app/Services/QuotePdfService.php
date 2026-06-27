@@ -87,10 +87,19 @@ class QuotePdfService
             }
         }
 
-        // ── Handtekening ──────────────────────────────────────────────────────
+        // ── Handtekening klant ────────────────────────────────────────────────
         $signatureSrc = null;
         if ($quote->signature_path && Storage::disk('local')->exists($quote->signature_path)) {
             $signatureSrc = Storage::disk('local')->path($quote->signature_path);
+        }
+
+        // ── Handtekening Proud Innovations (alleen bij mede-ondertekend) ──────
+        $companySigSrc = null;
+        if ($quote->cosigned_at) {
+            $companySigPath = $settings->get('company_signature_path');
+            if ($companySigPath && Storage::disk('public')->exists($companySigPath)) {
+                $companySigSrc = Storage::disk('public')->path($companySigPath);
+            }
         }
 
         // ── Vervang {{vat_pct}} in artikel 10 footer ─────────────────────────
@@ -107,6 +116,7 @@ class QuotePdfService
             'settings'      => $settings,
             'logoSrc'       => $logoSrc,
             'signatureSrc'  => $signatureSrc,
+            'companySigSrc' => $companySigSrc,
             'chosenHw'      => $chosenHw,
             'hwOptionA'     => $hwOptionA,
             'hwOptionB'     => $hwOptionB,

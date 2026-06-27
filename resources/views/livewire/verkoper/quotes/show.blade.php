@@ -112,6 +112,23 @@
             </button>
             @endif
 
+            {{-- Mede-ondertekenen namens Proud Innovations --}}
+            @if($quote->status === 'ondertekend' && !$quote->cosigned_at && auth()->user()->canSendQuotes())
+            <button
+                wire:click="signOnBehalf"
+                wire:confirm="Weet je zeker dat je deze offerte wilt mede-ondertekenen namens Proud Innovations? De PDF wordt daarna definitief bijgewerkt."
+                class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-green-700 bg-green-50 border border-green-300 hover:bg-green-100 transition-colors">
+                Ondertekenen namens PI
+            </button>
+            @endif
+
+            @if($quote->cosigned_at)
+            <div class="text-xs text-green-600 font-medium px-2">
+                ✓ Mede-ondertekend door {{ $quote->cosigned_by }}<br>
+                <span class="text-gray-400">{{ $quote->cosigned_at->format('d-m-Y H:i') }}</span>
+            </div>
+            @endif
+
             {{-- Edit (only for concept) --}}
             @if($quote->status === 'concept')
             <a href="{{ route('verkoper.offertes.edit', $quote) }}"

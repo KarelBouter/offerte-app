@@ -309,10 +309,20 @@ p { margin-bottom: 3mm; font-size: 9pt; }
         <tr>
             <td>
                 <b>Namens {{ $settings->get('company_name', 'Proud Innovations B.V.') }}</b><br><br>
-                {{ $settings->get('company_representative', '') }}<br><br><br><br><br>
+                {{ $settings->get('company_representative', '') }}<br><br>
+                @if(!empty($companySigSrc) && $quote->cosigned_at)
+                    <img src="file://{{ $companySigSrc }}" style="max-height: 25mm; max-width: 70mm; margin-bottom: 2mm;"><br>
+                @else
+                    <br><br><br><br>
+                @endif
                 <div class="handtekening-lijn"></div>
-                Handtekening<br><br>
-                Datum: ________________________________<br><br>
+                @if($quote->cosigned_at)
+                    Ondertekend op: {{ $quote->cosigned_at->format('d-m-Y H:i') }}<br>
+                    Door: {{ $quote->cosigned_by }}<br>
+                @else
+                    Handtekening<br><br>
+                    Datum: ________________________________<br><br>
+                @endif
                 Plaats: {{ $settings->get('company_address', 'Zoetermeer') }}
             </td>
             <td>
