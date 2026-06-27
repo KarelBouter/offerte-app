@@ -5,6 +5,7 @@ namespace App\Livewire\Verkoper\Quotes;
 use App\Mail\QuoteClientMail;
 use App\Models\Quote;
 use App\Services\ActivityLogService;
+use App\Services\AutoTaskService;
 use Illuminate\Support\Facades\Mail;
 use Livewire\Attributes\On;
 use Livewire\Component;
@@ -47,6 +48,7 @@ class Show extends Component
         }
         $this->quote->update(['status' => $status]);
         $this->quote->refresh();
+        app(AutoTaskService::class)->triggerForStatusChange($this->quote, $status);
         session()->flash('success', 'Status bijgewerkt naar "'.self::STATUS_LABELS[$status].'".');
     }
 
@@ -66,6 +68,7 @@ class Show extends Component
             $this->quote,
             'Offerte '.$this->quote->quote_number.' verstuurd naar '.$this->quote->customer->contact_email
         );
+        app(AutoTaskService::class)->triggerForStatusChange($this->quote, 'verzonden');
 
         session()->flash('success', 'Offerte verstuurd naar '.$this->quote->customer->contact_email.'.');
     }

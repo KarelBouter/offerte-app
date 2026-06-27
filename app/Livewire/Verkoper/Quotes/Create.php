@@ -62,7 +62,8 @@ class Create extends Component
 
     public function mount(?Quote $quote = null): void
     {
-        $this->validUntil = now()->addDays(30)->format('Y-m-d');
+        $days = (int) (\App\Models\Setting::where('key', 'quote_validity_days')->value('value') ?? 30);
+        $this->validUntil = now()->addDays($days)->format('Y-m-d');
 
         if ($quote?->exists) {
             $this->existingQuoteId = $quote->id;

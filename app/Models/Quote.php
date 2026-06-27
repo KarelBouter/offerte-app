@@ -53,13 +53,14 @@ class Quote extends Model
 
         static::creating(function (Quote $quote) {
             if (empty($quote->quote_number)) {
-                $year = now()->year;
-                $count = static::whereYear('created_at', $year)->count() + 1;
-                $quote->quote_number = sprintf('PI-%d-%04d', $year, $count);
+                $latest = static::whereYear('created_at', now()->year)->count();
+                $quote->quote_number = 'PI-' . now()->year . '-' .
+                    str_pad($latest + 1, 4, '0', STR_PAD_LEFT);
             }
 
             if (empty($quote->valid_until)) {
-                $quote->valid_until = now()->addDays(30)->toDateString();
+                $days = (int) (Setting::where('key', 'quote_validity_days')->value('value') ?? 30);
+                $quote->valid_until = now()->addDays($days)->toDateString();
             }
         });
     }
