@@ -5,8 +5,8 @@ namespace App\Services;
 use App\Models\Quote;
 use App\Models\Setting;
 use App\Support\PdfDefaults;
-use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Storage;
+use Knp\Snappy\Pdf;
 
 class QuotePdfService
 {
@@ -30,7 +30,7 @@ class QuotePdfService
                 || ($i->product->category === 'Installatie' && $i->product->is_price_on_quote);
         });
 
-        // ── Settings: defaults + DB in één Collection ────────────────────────
+        // ── Settings: defaults + DB ──────────────────────────────────────────
         $defaults = collect([
             'company_name'           => 'Proud Innovations B.V.',
             'company_address'        => 'Zoetermeer',
@@ -65,20 +65,27 @@ class QuotePdfService
             'pdf_tekst_artikel_10_footer'     => PdfDefaults::ARTIKEL_10_FOOTER,
         ]);
 
-        // DB-waarden overschrijven de defaults (één query)
         $settings = $defaults->merge(Setting::all()->pluck('value', 'key'));
 
         // ── Logo ─────────────────────────────────────────────────────────────
-        // DomPDF rendert geen afbeeldingen via data: URI in position:fixed elementen.
-        // Oplossing: file:// absoluut pad meegeven zodat DomPDF het bestand direct leest.
-        $logoSrc  = null;
-        $logoPath = $settings->get('company_logo') ?? $settings->get('logo_path');
-        if ($logoPath && Storage::disk('public')->exists($logoPath)) {
-            $logoSrc = 'file://' . Storage::disk('public')->path($logoPath);
+        // wkhtmltopdf kan gewone file:// paden aan — geen base64 nodig.
+        $logoSrc = null;
+        foreach (['company_logo', 'logo_path', 'pdf_logo'] as $logoKey) {
+            $logoPath = $settings->get($logoKey);
+            if (!$logoPath) continue;
+            if (Storage::disk('public')->exists($logoPath)) {
+                $logoSrc = Storage::disk('public')->path($logoPath);
+                break;
+            }
+            if (Storage::disk('local')->exists($logoPath)) {
+                $logoSrc = Storage::disk('local')->path($logoPath);
+                break;
+            }
+            if (file_exists($logoPath)) {
+                $logoSrc = $logoPath;
+                break;
+            }
         }
-        // Backwards-compat: oude code gebruikte $logoBase64/$logoMime in de view
-        $logoBase64 = null;
-        $logoMime   = 'image/png';
 
         // ── Vervang {{vat_pct}} in artikel 10 footer ─────────────────────────
         $vatPct = (float) $settings->get('vat_percentage', '21');
@@ -88,13 +95,11 @@ class QuotePdfService
             $settings->get('pdf_tekst_artikel_10_footer')
         ));
 
-        // ── Genereer PDF ─────────────────────────────────────────────────────
-        $pdf = Pdf::loadView('pdf.quote', [
+        // ── Render HTML ───────────────────────────────────────────────────────
+        $html = view('pdf.quote', [
             'quote'        => $quote,
             'settings'     => $settings,
             'logoSrc'      => $logoSrc,
-            'logoBase64'   => $logoBase64,
-            'logoMime'     => $logoMime,
             'chosenHw'     => $chosenHw,
             'hwOptionA'    => $hwOptionA,
             'hwOptionB'    => $hwOptionB,
@@ -103,20 +108,57 @@ class QuotePdfService
             'installItems' => $installItems,
             'addonItems'   => $addonItems,
             'allItems'     => $items,
-        ])
-        ->setPaper('a4', 'portrait')
-        ->setOptions([
-            'isRemoteEnabled'         => true,
-            'isHtml5ParserEnabled'    => true,
-            'isFontSubsettingEnabled' => true,
-            'defaultFont'             => 'DejaVu Sans',
-            'enable_html5_parser'     => true,
-            'dpi'                     => 150,
-            'defaultMediaType'        => 'print',
-        ], true);
+        ])->render();
 
-        $filename = 'quotes/' . $quote->quote_number . '.pdf';
-        Storage::disk('local')->put($filename, $pdf->output());
+        // ── Header en footer HTML ─────────────────────────────────────────────
+        $headerHtml = view('pdf.header', [
+            'quote'    => $quote,
+            'settings' => $settings,
+            'logoSrc'  => $logoSrc,
+        ])->render();
+
+        $footerHtml = view('pdf.footer', [
+            'settings' => $settings,
+        ])->render();
+
+        // Schrijf tijdelijke HTML bestanden (wkhtmltopdf leest ze via file://)
+        $tmpDir = storage_path('app/tmp');
+        if (!is_dir($tmpDir)) {
+            mkdir($tmpDir, 0755, true);
+        }
+
+        $headerFile = $tmpDir . '/header_' . $quote->id . '.html';
+        $footerFile = $tmpDir . '/footer_' . $quote->id . '.html';
+
+        file_put_contents($headerFile, $headerHtml);
+        file_put_contents($footerFile, $footerHtml);
+
+        // ── Genereer PDF via wkhtmltopdf ──────────────────────────────────────
+        $snappy = new Pdf(config('snappy.pdf.binary'));
+        $snappy->setOptions([
+            'page-size'                => 'A4',
+            'margin-top'               => '48mm',
+            'margin-bottom'            => '22mm',
+            'margin-left'              => '20mm',
+            'margin-right'             => '20mm',
+            'encoding'                 => 'UTF-8',
+            'enable-local-file-access' => true,
+            'print-media-type'         => true,
+            'header-html'              => $headerFile,
+            'footer-html'              => $footerFile,
+            'header-spacing'           => 3,
+            'footer-spacing'           => 3,
+        ]);
+
+        $pdfOutput = $snappy->getOutputFromHtml($html);
+
+        // Opruimen tijdelijke bestanden
+        @unlink($headerFile);
+        @unlink($footerFile);
+
+        // ── Opslaan ───────────────────────────────────────────────────────────
+        $filename = 'quotes/' . $quote->quote_number . '-v' . $quote->revision . '.pdf';
+        Storage::disk('local')->put($filename, $pdfOutput);
         $quote->update(['pdf_path' => $filename]);
 
         return $filename;

@@ -360,6 +360,11 @@
         </div>
     </div>
 
+    {{-- ── Versiegeschiedenis ──────────────────────────────────────────────── --}}
+    <div class="mt-8 border-t border-gray-200 pt-6">
+        @livewire('quotes.quote-versions', ['quote' => $quote])
+    </div>
+
     {{-- ── Taken & notities ────────────────────────────────────────────────── --}}
     <div class="mt-6">
         <div class="flex items-center justify-between mb-3">

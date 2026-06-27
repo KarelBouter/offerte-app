@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
 class Quote extends Model
@@ -15,6 +16,7 @@ class Quote extends Model
         'customer_id',
         'installation_address',
         'status',
+        'revision',
         'valid_until',
         'notes',
         'total_onetime_excl_vat',
@@ -29,6 +31,7 @@ class Quote extends Model
     protected function casts(): array
     {
         return [
+            'revision'               => 'integer',
             'valid_until'            => 'date',
             'signed_at'              => 'datetime',
             'sign_token_expires_at'  => 'datetime',
@@ -83,5 +86,43 @@ class Quote extends Model
     public function tasks(): HasMany
     {
         return $this->hasMany(Task::class);
+    }
+
+    public function versions(): HasMany
+    {
+        return $this->hasMany(QuoteVersion::class)->orderByDesc('revision');
+    }
+
+    public function createVersion(?string $label = null): QuoteVersion
+    {
+        $version = QuoteVersion::create([
+            'quote_id'       => $this->id,
+            'created_by'     => Auth::id(),
+            'revision'       => $this->revision,
+            'label'          => $label ?? 'Opgeslagen als v' . $this->revision,
+            'quote_snapshot' => $this->only([
+                'quote_number', 'revision', 'status', 'valid_until', 'notes',
+                'installation_address', 'total_onetime_excl_vat', 'total_yearly_excl_vat',
+            ]),
+            'items_snapshot' => $this->items->map(fn ($item) => [
+                'product_id'          => $item->product_id,
+                'product_name'        => $item->product->name ?? '(verwijderd)',
+                'quantity'            => $item->quantity,
+                'unit_price_snapshot' => $item->unit_price_snapshot,
+                'is_auto_added'       => $item->is_auto_added,
+                'sort_order'          => $item->sort_order,
+            ])->values()->toArray(),
+            'created_at' => now(),
+        ]);
+
+        $this->increment('revision');
+        $this->refresh();
+
+        return $version;
+    }
+
+    public function revisionLabel(): string
+    {
+        return 'v' . $this->revision;
     }
 }

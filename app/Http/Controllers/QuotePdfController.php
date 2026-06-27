@@ -16,7 +16,7 @@ class QuotePdfController extends Controller
             $quote->refresh();
         }
 
-        $filename = 'Offerte_'.$quote->quote_number.'_ProudInnovations.pdf';
+        $filename = 'Offerte_'.$quote->quote_number.'-v'.$quote->revision.'_ProudInnovations.pdf';
 
         return Storage::disk('local')->download($quote->pdf_path, $filename, [
             'Content-Type' => 'application/pdf',

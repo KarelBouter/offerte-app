@@ -5,57 +5,12 @@
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body {
-    font-family: DejaVu Sans, sans-serif;
+    font-family: Arial, DejaVu Sans, sans-serif;
     font-size: 9pt;
     color: #1a1a1a;
     line-height: 1.5;
 }
-@page {
-    margin-top: 40mm;
-    margin-bottom: 25mm;
-    margin-left: 20mm;
-    margin-right: 20mm;
-}
-#header {
-    position: fixed;
-    top: -35mm;
-    left: 0;
-    right: 0;
-    height: 30mm;
-    border-bottom: 2pt solid #1B3A6B;
-    padding-bottom: 3mm;
-}
-#header table { width: 100%; }
-.logo-cel {
-    width: 50%;
-    vertical-align: middle;
-    font-size: 12pt;
-    font-weight: bold;
-    color: #1B3A6B;
-}
-.info-cel {
-    width: 50%;
-    text-align: right;
-    vertical-align: middle;
-    font-size: 7.5pt;
-    color: #555555;
-    line-height: 1.7;
-}
-#footer {
-    position: fixed;
-    bottom: -20mm;
-    left: 0;
-    right: 0;
-    height: 15mm;
-    border-top: 1pt solid #cccccc;
-    padding-top: 3mm;
-    font-size: 7.5pt;
-    color: #888888;
-}
-#footer table { width: 100%; }
-.pagenum:before { content: counter(page); }
 .titelblok { margin-bottom: 8mm; border-bottom: 2pt solid #1B3A6B; padding-bottom: 4mm; }
-.titelblok table { width: 100%; }
 .titel-label { font-size: 7.5pt; color: #888888; text-transform: uppercase; letter-spacing: 1px; }
 .titel-naam { font-size: 18pt; font-weight: bold; color: #1B3A6B; margin-top: 1mm; }
 .titel-meta { font-size: 8.5pt; color: #555555; line-height: 1.8; text-align: right; vertical-align: bottom; }
@@ -91,49 +46,10 @@ p { margin-bottom: 3mm; font-size: 9pt; }
 </head>
 <body>
 
-<div id="header">
-    <table>
-        <tr>
-            <td class="logo-cel">
-                @if(!empty($logoSrc))
-                    <img src="{{ $logoSrc }}" style="max-height: 14mm; max-width: 50mm;">
-                @else
-                    Proud Innovations B.V.
-                @endif
-            </td>
-            <td class="info-cel">
-                Overeenkomst Kassa Continuïteitsdienst<br>
-                Offertenummer: <b>{{ $quote->quote_number }}</b><br>
-                Datum: {{ \Carbon\Carbon::parse($quote->created_at)->format('d-m-Y') }}<br>
-                Geldig tot: {{ \Carbon\Carbon::parse($quote->valid_until)->format('d-m-Y') }}
-            </td>
-        </tr>
-    </table>
-</div>
-
-<div id="footer">
-    <table>
-        <tr>
-            <td>{{ $settings->get('company_name', 'Proud Innovations B.V.') }} &nbsp;|&nbsp; {{ $settings->get('company_address', 'Zoetermeer') }}</td>
-            <td style="text-align: right;">Pagina <span class="pagenum"></span></td>
-        </tr>
-    </table>
-</div>
 
 <div class="titelblok">
-    <table>
-        <tr>
-            <td style="vertical-align: bottom;">
-                <div class="titel-label">Overeenkomst</div>
-                <div class="titel-naam">Kassa Continuïteitsdienst</div>
-            </td>
-            <td class="titel-meta">
-                Offertenummer: <b>{{ $quote->quote_number }}</b><br>
-                Datum: {{ \Carbon\Carbon::parse($quote->created_at)->format('d-m-Y') }}<br>
-                Geldig tot: {{ \Carbon\Carbon::parse($quote->valid_until)->format('d-m-Y') }}
-            </td>
-        </tr>
-    </table>
+    <div class="titel-label">Overeenkomst</div>
+    <div class="titel-naam">Kassa Continuïteitsdienst</div>
 </div>
 
 <div class="artikel">

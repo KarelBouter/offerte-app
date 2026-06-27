@@ -273,6 +273,9 @@ class Create extends Component
             ]);
         }
 
+        $quote->load('items.product');
+        $quote->createVersion();
+
         if ($generatePdf) {
             app(QuotePdfService::class)->generate($quote);
             session()->flash('success', 'Offerte opgeslagen. PDF wordt gedownload.');
