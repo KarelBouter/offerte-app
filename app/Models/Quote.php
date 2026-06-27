@@ -23,6 +23,8 @@ class Quote extends Model
         'total_yearly_excl_vat',
         'signed_at',
         'signed_by_name',
+        'signature_path',
+        'signed_ip',
         'sign_token',
         'sign_token_expires_at',
         'pdf_path',

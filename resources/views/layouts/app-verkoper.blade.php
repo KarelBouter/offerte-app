@@ -57,6 +57,12 @@
                     </span>
                 @endif
             </a>
+
+            <a href="{{ route('verkoper.klanten.index') }}" wire:navigate
+               class="flex items-center px-4 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150
+                      {{ request()->routeIs('verkoper.klanten.*') ? 'bg-white/15 text-white' : 'text-blue-200 hover:bg-white/10 hover:text-white' }}">
+                Klanten
+            </a>
         </nav>
 
         {{-- Actieknopen boven scheiding --}}

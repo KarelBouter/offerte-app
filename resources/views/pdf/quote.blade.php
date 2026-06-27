@@ -317,10 +317,20 @@ p { margin-bottom: 3mm; font-size: 9pt; }
             </td>
             <td>
                 <b>Namens Opdrachtgever</b><br><br>
-                {{ $quote->customer->contact_name }}<br><br><br><br><br>
+                {{ $quote->customer->contact_name }}<br><br>
+                @if(!empty($signatureSrc))
+                    <img src="file://{{ $signatureSrc }}" style="max-height: 30mm; max-width: 80mm; margin-bottom: 2mm;"><br>
+                @else
+                    <br><br><br><br>
+                @endif
                 <div class="handtekening-lijn"></div>
-                Handtekening<br><br>
-                Datum: ________________________________<br><br>
+                @if($quote->signed_at)
+                    Ondertekend op: {{ $quote->signed_at->format('d-m-Y H:i') }}<br>
+                    Door: {{ $quote->signed_by_name }}<br>
+                @else
+                    Handtekening<br><br>
+                    Datum: ________________________________<br><br>
+                @endif
                 Bedrijf: {{ $quote->customer->company_name }}
             </td>
         </tr>

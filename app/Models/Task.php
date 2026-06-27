@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Models\Customer;
 
 class Task extends Model
 {
@@ -12,6 +13,7 @@ class Task extends Model
         'created_by_user_id',
         'assigned_to_user_id',
         'quote_id',
+        'customer_id',
         'title',
         'description',
         'status',
@@ -40,6 +42,11 @@ class Task extends Model
     public function quote(): BelongsTo
     {
         return $this->belongsTo(Quote::class);
+    }
+
+    public function customer(): BelongsTo
+    {
+        return $this->belongsTo(Customer::class);
     }
 
     public function mentions(): HasMany

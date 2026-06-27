@@ -24,4 +24,34 @@ class User extends Authenticatable
             'is_active'         => 'boolean',
         ];
     }
+
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
+
+    public function isVerkoper(): bool
+    {
+        return $this->role === 'verkoper';
+    }
+
+    public function isSamensteller(): bool
+    {
+        return $this->role === 'samensteller';
+    }
+
+    public function canSendQuotes(): bool
+    {
+        return in_array($this->role, ['admin', 'verkoper']);
+    }
+
+    public function canGeneratePdf(): bool
+    {
+        return in_array($this->role, ['admin', 'verkoper']);
+    }
+
+    public function canChangeQuoteStatus(): bool
+    {
+        return in_array($this->role, ['admin', 'verkoper']);
+    }
 }

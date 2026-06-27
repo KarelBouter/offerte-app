@@ -87,6 +87,12 @@ class QuotePdfService
             }
         }
 
+        // ── Handtekening ──────────────────────────────────────────────────────
+        $signatureSrc = null;
+        if ($quote->signature_path && Storage::disk('local')->exists($quote->signature_path)) {
+            $signatureSrc = Storage::disk('local')->path($quote->signature_path);
+        }
+
         // ── Vervang {{vat_pct}} in artikel 10 footer ─────────────────────────
         $vatPct = (float) $settings->get('vat_percentage', '21');
         $settings->put('pdf_tekst_artikel_10_footer', str_replace(
@@ -97,17 +103,18 @@ class QuotePdfService
 
         // ── Render HTML ───────────────────────────────────────────────────────
         $html = view('pdf.quote', [
-            'quote'        => $quote,
-            'settings'     => $settings,
-            'logoSrc'      => $logoSrc,
-            'chosenHw'     => $chosenHw,
-            'hwOptionA'    => $hwOptionA,
-            'hwOptionB'    => $hwOptionB,
-            'upsItem'      => $upsItem,
-            'svcItem'      => $svcItem,
-            'installItems' => $installItems,
-            'addonItems'   => $addonItems,
-            'allItems'     => $items,
+            'quote'         => $quote,
+            'settings'      => $settings,
+            'logoSrc'       => $logoSrc,
+            'signatureSrc'  => $signatureSrc,
+            'chosenHw'      => $chosenHw,
+            'hwOptionA'     => $hwOptionA,
+            'hwOptionB'     => $hwOptionB,
+            'upsItem'       => $upsItem,
+            'svcItem'       => $svcItem,
+            'installItems'  => $installItems,
+            'addonItems'    => $addonItems,
+            'allItems'      => $items,
         ])->render();
 
         // ── Header en footer HTML ─────────────────────────────────────────────

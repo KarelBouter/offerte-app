@@ -43,6 +43,10 @@ class Show extends Component
 
     public function updateStatus(string $status): void
     {
+        if (!auth()->user()->canChangeQuoteStatus()) {
+            session()->flash('error', 'Je hebt geen rechten om de status te wijzigen.');
+            return;
+        }
         if (!array_key_exists($status, self::STATUS_LABELS)) {
             return;
         }
@@ -54,6 +58,10 @@ class Show extends Component
 
     public function sendToClient(): void
     {
+        if (!auth()->user()->canSendQuotes()) {
+            session()->flash('error', 'Je hebt geen rechten om offertes te versturen.');
+            return;
+        }
         $token   = $this->quote->generateSignToken();
         $signUrl = route('quote.public', $token);
 
@@ -75,6 +83,10 @@ class Show extends Component
 
     public function duplicate(): void
     {
+        if (!auth()->user()->canSendQuotes()) {
+            session()->flash('error', 'Je hebt geen rechten om offertes te dupliceren.');
+            return;
+        }
         $new = $this->quote->replicate();
         $new->quote_number  = null;
         $new->pdf_path      = null;

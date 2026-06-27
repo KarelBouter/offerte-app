@@ -33,6 +33,7 @@
 
         <div class="flex items-center gap-2 flex-shrink-0">
             {{-- Status dropdown --}}
+            @if(auth()->user()->canChangeQuoteStatus())
             <div class="relative" x-data="{ open: false }">
                 <button @click="open = !open"
                         class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-gray-600 bg-white border border-gray-300 hover:bg-gray-50">
@@ -50,8 +51,10 @@
                     @endforeach
                 </div>
             </div>
+            @endif
 
             {{-- PDF download --}}
+            @if(auth()->user()->canGeneratePdf())
             <a href="{{ route('verkoper.offertes.pdf', $quote) }}"
                target="_blank"
                class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-gray-600 bg-white border border-gray-300 hover:bg-gray-50">
@@ -60,9 +63,10 @@
                 </svg>
                 PDF downloaden
             </a>
+            @endif
 
             {{-- Verstuur naar klant --}}
-            @if(in_array($quote->status, ['concept', 'verzonden']))
+            @if(auth()->user()->canSendQuotes() && in_array($quote->status, ['concept', 'verzonden']))
             <div x-data="{ confirmSend: false }">
                 <button @click="confirmSend = true"
                         class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-emerald-700 bg-emerald-50 border border-emerald-200 hover:bg-emerald-100">
@@ -100,11 +104,13 @@
             @endif
 
             {{-- Duplicate --}}
+            @if(auth()->user()->canSendQuotes())
             <button wire:click="duplicate"
                     wire:confirm="Weet je zeker dat je deze offerte wilt dupliceren?"
                     class="px-3 py-2 rounded-lg text-sm font-medium text-gray-600 bg-white border border-gray-300 hover:bg-gray-50">
                 Dupliceren
             </button>
+            @endif
 
             {{-- Edit (only for concept) --}}
             @if($quote->status === 'concept')

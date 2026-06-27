@@ -36,7 +36,7 @@ class Form extends Component
         $rules = [
             'name'  => 'required|string|max:255',
             'email' => ['required', 'email', 'max:255', Rule::unique('users', 'email')->ignore($this->userId)],
-            'role'  => 'required|in:admin,verkoper',
+            'role'  => 'required|in:admin,verkoper,samensteller',
         ];
 
         if ($isNew || $this->password !== '') {

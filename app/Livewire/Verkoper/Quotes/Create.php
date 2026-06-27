@@ -276,7 +276,7 @@ class Create extends Component
         $quote->load('items.product');
         $quote->createVersion();
 
-        if ($generatePdf) {
+        if ($generatePdf && auth()->user()->canGeneratePdf()) {
             app(QuotePdfService::class)->generate($quote);
             session()->flash('success', 'Offerte opgeslagen. PDF wordt gedownload.');
             session()->flash('auto_download_pdf', route('verkoper.offertes.pdf', $quote));

@@ -22,21 +22,30 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/profiel', \App\Livewire\Profile\Edit::class)->name('profile.edit');
 });
 
-// ── Gedeelde routes (admin + verkoper) ────────────────────────────────────────
-Route::middleware(['auth', 'verified', 'role:admin,verkoper'])->group(function () {
+// ── Gedeelde routes (admin + verkoper + samensteller) ─────────────────────────
+Route::middleware(['auth', 'verified', 'role:admin,verkoper,samensteller'])->group(function () {
     Route::get('/taken', \App\Livewire\Tasks\Index::class)->name('taken.index');
     Route::get('/taken/{task}', \App\Livewire\Tasks\Show::class)->name('taken.show');
     Route::get('/notificaties', \App\Livewire\Notifications\Index::class)->name('notificaties.index');
 });
 
 // ── Verkoper ──────────────────────────────────────────────────────────────────
-Route::prefix('verkoper')->name('verkoper.')->middleware(['auth', 'verified', 'role:admin,verkoper'])->group(function () {
-    Route::get('/', \App\Livewire\Verkoper\Dashboard::class)->name('dashboard');
-    Route::get('/offertes', \App\Livewire\Verkoper\Quotes\Index::class)->name('offertes.index');
-    Route::get('/offertes/create', \App\Livewire\Verkoper\Quotes\Create::class)->name('offertes.create');
-    Route::get('/offertes/{quote}/pdf', \App\Http\Controllers\QuotePdfController::class)->name('offertes.pdf');
-    Route::get('/offertes/{quote}/edit', \App\Livewire\Verkoper\Quotes\Create::class)->name('offertes.edit');
-    Route::get('/offertes/{quote}', \App\Livewire\Verkoper\Quotes\Show::class)->name('offertes.show');
+Route::prefix('verkoper')->name('verkoper.')->group(function () {
+    // Samensteller mag ook deze routes
+    Route::middleware(['auth', 'verified', 'role:admin,verkoper,samensteller'])->group(function () {
+        Route::get('/', \App\Livewire\Verkoper\Dashboard::class)->name('dashboard');
+        Route::get('/offertes', \App\Livewire\Verkoper\Quotes\Index::class)->name('offertes.index');
+        Route::get('/offertes/create', \App\Livewire\Verkoper\Quotes\Create::class)->name('offertes.create');
+        Route::get('/offertes/{quote}/edit', \App\Livewire\Verkoper\Quotes\Create::class)->name('offertes.edit');
+        Route::get('/offertes/{quote}', \App\Livewire\Verkoper\Quotes\Show::class)->name('offertes.show');
+        Route::get('/klanten', \App\Livewire\Verkoper\Customers\Index::class)->name('klanten.index');
+        Route::get('/klanten/{customer}', \App\Livewire\Verkoper\Customers\Show::class)->name('klanten.show');
+    });
+
+    // PDF-download — samensteller mag dit niet
+    Route::middleware(['auth', 'verified', 'role:admin,verkoper'])->group(function () {
+        Route::get('/offertes/{quote}/pdf', \App\Http\Controllers\QuotePdfController::class)->name('offertes.pdf');
+    });
 });
 
 // ── Beheer (admin) ────────────────────────────────────────────────────────────
@@ -55,5 +64,10 @@ Route::prefix('beheer')->name('beheer.')->middleware(['auth', 'verified', 'role:
 
 // ── Publieke offerte-link (geen auth vereist) ──────────────────────────────────
 Route::get('/offerte/{token}', \App\Http\Controllers\PublicQuoteController::class)->name('quote.public');
+Route::post('/offerte/{token}/ondertekenen', \App\Http\Controllers\PublicQuoteSignController::class)->name('quote.sign');
+Route::get('/offerte/{token}/bedankt', function (string $token) {
+    $quote = \App\Models\Quote::where('sign_token', $token)->with('customer')->firstOrFail();
+    return view('public.quote-signed', compact('quote'));
+})->name('quote.signed');
 
 require __DIR__.'/auth.php';
