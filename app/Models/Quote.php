@@ -60,6 +60,10 @@ class Quote extends Model
         parent::boot();
 
         static::creating(function (Quote $quote) {
+            if (is_null($quote->revision)) {
+                $quote->revision = 0;
+            }
+
             if (empty($quote->quote_number)) {
                 $latest = static::whereYear('created_at', now()->year)->count();
                 $quote->quote_number = 'PI-' . now()->year . '-' .
@@ -100,7 +104,10 @@ class Quote extends Model
 
     public function createVersion(?string $label = null): QuoteVersion
     {
-        $version = QuoteVersion::create([
+        $this->increment('revision');
+        $this->refresh();
+
+        return QuoteVersion::create([
             'quote_id'       => $this->id,
             'created_by'     => Auth::id(),
             'revision'       => $this->revision,
@@ -119,11 +126,6 @@ class Quote extends Model
             ])->values()->toArray(),
             'created_at' => now(),
         ]);
-
-        $this->increment('revision');
-        $this->refresh();
-
-        return $version;
     }
 
     public function revisionLabel(): string
