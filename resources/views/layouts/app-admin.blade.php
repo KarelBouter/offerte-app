@@ -6,8 +6,8 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $title ?? 'Beheer' }} — {{ config('app.name') }}</title>
     <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet"/>
-    <style>[x-cloak] { display: none !important; }</style>
+    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+    <style>[x-cloak]{display:none!important}</style>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('scripts')
 </head>
@@ -15,226 +15,98 @@
 
 <div class="flex h-screen overflow-hidden" x-data="{ open: false }">
 
-    {{-- ── MOBIELE OVERLAY ── --}}
-    <div x-cloak x-show="open"
-         x-transition:enter="transition-opacity duration-200"
-         x-transition:enter-start="opacity-0"
-         x-transition:enter-end="opacity-100"
-         x-transition:leave="transition-opacity duration-200"
-         x-transition:leave-start="opacity-100"
-         x-transition:leave-end="opacity-0"
-         @click="open = false"
-         class="fixed inset-0 z-20 bg-black/50 lg:hidden">
-    </div>
-
-    {{-- ── MOBIELE SIDEBAR (fixed overlay, alleen op < lg) ── --}}
-    <div x-cloak x-show="open"
-         x-transition:enter="transition-transform duration-200"
-         x-transition:enter-start="-translate-x-full"
-         x-transition:enter-end="translate-x-0"
-         x-transition:leave="transition-transform duration-200"
-         x-transition:leave-start="translate-x-0"
-         x-transition:leave-end="-translate-x-full"
-         class="fixed inset-y-0 left-0 z-30 flex w-64 flex-col lg:hidden"
-         style="background-color: #1B3A6B;">
-
-        <div class="flex items-center justify-between border-b border-blue-900 px-6 py-5">
-            <div>
-                <p class="text-base font-bold text-white leading-tight">Proud Innovations</p>
-                <p class="text-xs text-blue-300 mt-0.5">Offerte Tool — Beheer</p>
-            </div>
-            <button @click="open = false" class="rounded p-1 text-blue-300 hover:text-white">
-                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                </svg>
-            </button>
-        </div>
-
-        <nav class="flex-1 overflow-y-auto px-3 py-4 space-y-0.5">
-            @php
-                $conceptCount   = \App\Models\Quote::where('status', 'concept')->count();
-                $openTakenCount = \App\Models\Task::where('assigned_to_user_id', auth()->id())
-                    ->whereIn('status', ['open', 'in_behandeling'])->count();
-            @endphp
-            <a href="{{ route('beheer.dashboard') }}" wire:navigate @click="open = false"
-               class="flex items-center px-4 py-2.5 rounded-lg text-sm font-medium transition-colors
-                      {{ request()->routeIs('beheer.dashboard') ? 'bg-white/15 text-white' : 'text-blue-200 hover:bg-white/10 hover:text-white' }}">
-                Dashboard
-            </a>
-            <a href="{{ route('verkoper.offertes.index') }}" wire:navigate @click="open = false"
-               class="flex items-center justify-between px-4 py-2.5 rounded-lg text-sm font-medium transition-colors
-                      {{ request()->routeIs('verkoper.offertes.*') ? 'bg-white/15 text-white' : 'text-blue-200 hover:bg-white/10 hover:text-white' }}">
-                <span>Offertes</span>
-                @if($conceptCount > 0)
-                    <span class="inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1.5 rounded-full text-xs font-bold bg-blue-500 text-white">{{ $conceptCount }}</span>
-                @endif
-            </a>
-            <a href="{{ route('taken.index') }}" wire:navigate @click="open = false"
-               class="flex items-center justify-between px-4 py-2.5 rounded-lg text-sm font-medium transition-colors
-                      {{ request()->routeIs('taken.*') ? 'bg-white/15 text-white' : 'text-blue-200 hover:bg-white/10 hover:text-white' }}">
-                <span>Taken</span>
-                @if($openTakenCount > 0)
-                    <span class="inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1.5 rounded-full text-xs font-bold bg-blue-500 text-white">{{ $openTakenCount }}</span>
-                @endif
-            </a>
-            <a href="{{ route('verkoper.klanten.index') }}" wire:navigate @click="open = false"
-               class="flex items-center px-4 py-2.5 rounded-lg text-sm font-medium transition-colors
-                      {{ request()->routeIs('verkoper.klanten.*') ? 'bg-white/15 text-white' : 'text-blue-200 hover:bg-white/10 hover:text-white' }}">
-                Klanten
-            </a>
-            <a href="{{ route('beheer.producten.index') }}" wire:navigate @click="open = false"
-               class="flex items-center px-4 py-2.5 rounded-lg text-sm font-medium transition-colors
-                      {{ request()->routeIs('beheer.producten.*') ? 'bg-white/15 text-white' : 'text-blue-200 hover:bg-white/10 hover:text-white' }}">
-                Producten
-            </a>
-            <a href="{{ route('beheer.afhankelijkheden.index') }}" wire:navigate @click="open = false"
-               class="flex items-center px-4 py-2.5 rounded-lg text-sm font-medium transition-colors
-                      {{ request()->routeIs('beheer.afhankelijkheden.*') ? 'bg-white/15 text-white' : 'text-blue-200 hover:bg-white/10 hover:text-white' }}">
-                Afhankelijkheden
-            </a>
-            <a href="{{ route('beheer.gebruikers.index') }}" wire:navigate @click="open = false"
-               class="flex items-center px-4 py-2.5 rounded-lg text-sm font-medium transition-colors
-                      {{ request()->routeIs('beheer.gebruikers.*') ? 'bg-white/15 text-white' : 'text-blue-200 hover:bg-white/10 hover:text-white' }}">
-                Gebruikers
-            </a>
-            <a href="{{ route('beheer.activiteit.index') }}" wire:navigate @click="open = false"
-               class="flex items-center px-4 py-2.5 rounded-lg text-sm font-medium transition-colors
-                      {{ request()->routeIs('beheer.activiteit.*') ? 'bg-white/15 text-white' : 'text-blue-200 hover:bg-white/10 hover:text-white' }}">
-                Activiteitenlog
-            </a>
-            <a href="{{ route('beheer.instellingen.index') }}" wire:navigate @click="open = false"
-               class="flex items-center px-4 py-2.5 rounded-lg text-sm font-medium transition-colors
-                      {{ request()->routeIs('beheer.instellingen.*') ? 'bg-white/15 text-white' : 'text-blue-200 hover:bg-white/10 hover:text-white' }}">
-                Instellingen
-            </a>
-        </nav>
-
-        <div class="px-3 pb-2 space-y-1">
-            <a href="{{ route('verkoper.offertes.create') }}" wire:navigate @click="open = false"
-               class="flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium bg-white/10 text-white hover:bg-white/20 transition-colors">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
-                Nieuwe offerte
-            </a>
-            <button onclick="Livewire.dispatch('open-task-modal')"
-                    class="w-full flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium bg-white/10 text-white hover:bg-white/20 transition-colors">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
-                Nieuwe taak
-            </button>
-        </div>
-
-        <div class="px-3 pt-3 border-t border-blue-900 space-y-0.5">
-            <a href="{{ route('profile.edit') }}" wire:navigate @click="open = false"
-               class="flex items-center px-4 py-2.5 rounded-lg text-sm font-medium transition-colors
-                      {{ request()->routeIs('profile.edit') ? 'bg-white/15 text-white' : 'text-blue-200 hover:bg-white/10 hover:text-white' }}">
-                Mijn profiel
-            </a>
-            <form method="POST" action="{{ route('logout') }}">
-                @csrf
-                <button type="submit" class="w-full text-left flex items-center px-4 py-2.5 rounded-lg text-sm font-medium text-blue-200 hover:bg-white/10 hover:text-white transition-colors">
-                    Uitloggen
-                </button>
-            </form>
-        </div>
-        <div class="px-6 py-3 border-t border-blue-900">
-            <p class="text-xs text-blue-400">&copy; {{ date('Y') }} Proud Innovations B.V.</p>
-        </div>
-    </div>
-
-    {{-- ── DESKTOP SIDEBAR (altijd zichtbaar, gewoon in de flow) ── --}}
-    <aside class="hidden lg:flex lg:w-64 lg:flex-shrink-0 lg:flex-col" style="background-color: #1B3A6B;">
-        <div class="border-b border-blue-900 px-6 py-5">
+    {{-- Desktop sidebar: gewoon in de flow, verborgen onder lg --}}
+    <aside class="flex-shrink-0 flex flex-col w-64 max-lg:hidden" style="background-color: #1B3A6B;">
+        <div class="px-6 py-5 border-b border-blue-900">
             <p class="text-base font-bold text-white leading-tight">Proud Innovations</p>
             <p class="text-xs text-blue-300 mt-0.5">Offerte Tool — Beheer</p>
         </div>
-
-        <nav class="flex-1 overflow-y-auto px-3 py-4 space-y-0.5">
+        <nav class="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
             @php
                 $conceptCount   = \App\Models\Quote::where('status', 'concept')->count();
                 $openTakenCount = \App\Models\Task::where('assigned_to_user_id', auth()->id())
                     ->whereIn('status', ['open', 'in_behandeling'])->count();
             @endphp
             <a href="{{ route('beheer.dashboard') }}" wire:navigate
-               class="flex items-center px-4 py-2.5 rounded-lg text-sm font-medium transition-colors
+               class="flex items-center px-4 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150
                       {{ request()->routeIs('beheer.dashboard') ? 'bg-white/15 text-white' : 'text-blue-200 hover:bg-white/10 hover:text-white' }}">
                 Dashboard
             </a>
             <a href="{{ route('verkoper.offertes.index') }}" wire:navigate
-               class="flex items-center justify-between px-4 py-2.5 rounded-lg text-sm font-medium transition-colors
+               class="flex items-center justify-between px-4 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150
                       {{ request()->routeIs('verkoper.offertes.*') ? 'bg-white/15 text-white' : 'text-blue-200 hover:bg-white/10 hover:text-white' }}">
                 <span>Offertes</span>
                 @if($conceptCount > 0)
-                    <span class="inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1.5 rounded-full text-xs font-bold
+                    <span class="ml-2 inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1.5 rounded-full text-xs font-bold
                                  {{ request()->routeIs('verkoper.offertes.*') ? 'bg-white text-blue-700' : 'bg-blue-500 text-white' }}">
                         {{ $conceptCount }}
                     </span>
                 @endif
             </a>
             <a href="{{ route('taken.index') }}" wire:navigate
-               class="flex items-center justify-between px-4 py-2.5 rounded-lg text-sm font-medium transition-colors
+               class="flex items-center justify-between px-4 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150
                       {{ request()->routeIs('taken.*') ? 'bg-white/15 text-white' : 'text-blue-200 hover:bg-white/10 hover:text-white' }}">
                 <span>Taken</span>
                 @if($openTakenCount > 0)
-                    <span class="inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1.5 rounded-full text-xs font-bold
+                    <span class="ml-2 inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1.5 rounded-full text-xs font-bold
                                  {{ request()->routeIs('taken.*') ? 'bg-white text-blue-700' : 'bg-blue-500 text-white' }}">
                         {{ $openTakenCount }}
                     </span>
                 @endif
             </a>
             <a href="{{ route('verkoper.klanten.index') }}" wire:navigate
-               class="flex items-center px-4 py-2.5 rounded-lg text-sm font-medium transition-colors
+               class="flex items-center px-4 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150
                       {{ request()->routeIs('verkoper.klanten.*') ? 'bg-white/15 text-white' : 'text-blue-200 hover:bg-white/10 hover:text-white' }}">
                 Klanten
             </a>
             <a href="{{ route('beheer.producten.index') }}" wire:navigate
-               class="flex items-center px-4 py-2.5 rounded-lg text-sm font-medium transition-colors
+               class="flex items-center px-4 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150
                       {{ request()->routeIs('beheer.producten.*') ? 'bg-white/15 text-white' : 'text-blue-200 hover:bg-white/10 hover:text-white' }}">
                 Producten
             </a>
             <a href="{{ route('beheer.afhankelijkheden.index') }}" wire:navigate
-               class="flex items-center px-4 py-2.5 rounded-lg text-sm font-medium transition-colors
+               class="flex items-center px-4 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150
                       {{ request()->routeIs('beheer.afhankelijkheden.*') ? 'bg-white/15 text-white' : 'text-blue-200 hover:bg-white/10 hover:text-white' }}">
                 Afhankelijkheden
             </a>
             <a href="{{ route('beheer.gebruikers.index') }}" wire:navigate
-               class="flex items-center px-4 py-2.5 rounded-lg text-sm font-medium transition-colors
+               class="flex items-center px-4 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150
                       {{ request()->routeIs('beheer.gebruikers.*') ? 'bg-white/15 text-white' : 'text-blue-200 hover:bg-white/10 hover:text-white' }}">
                 Gebruikers
             </a>
             <a href="{{ route('beheer.activiteit.index') }}" wire:navigate
-               class="flex items-center px-4 py-2.5 rounded-lg text-sm font-medium transition-colors
+               class="flex items-center px-4 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150
                       {{ request()->routeIs('beheer.activiteit.*') ? 'bg-white/15 text-white' : 'text-blue-200 hover:bg-white/10 hover:text-white' }}">
                 Activiteitenlog
             </a>
             <a href="{{ route('beheer.instellingen.index') }}" wire:navigate
-               class="flex items-center px-4 py-2.5 rounded-lg text-sm font-medium transition-colors
+               class="flex items-center px-4 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150
                       {{ request()->routeIs('beheer.instellingen.*') ? 'bg-white/15 text-white' : 'text-blue-200 hover:bg-white/10 hover:text-white' }}">
                 Instellingen
             </a>
         </nav>
-
         <div class="px-3 pb-2 space-y-1">
             <a href="{{ route('verkoper.offertes.create') }}" wire:navigate
-               class="flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors
+               class="flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150
                       {{ request()->routeIs('verkoper.offertes.create') ? 'bg-white text-blue-800' : 'bg-white/10 text-white hover:bg-white/20' }}">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
                 Nieuwe offerte
             </a>
             <button onclick="Livewire.dispatch('open-task-modal')"
-                    class="w-full flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium bg-white/10 text-white hover:bg-white/20 transition-colors">
+                    class="w-full flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium bg-white/10 text-white hover:bg-white/20 transition-colors duration-150">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
                 Nieuwe taak
             </button>
         </div>
-
         <div class="px-3 pt-3 border-t border-blue-900 space-y-0.5">
             <a href="{{ route('profile.edit') }}" wire:navigate
-               class="flex items-center px-4 py-2.5 rounded-lg text-sm font-medium transition-colors
+               class="flex items-center px-4 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150
                       {{ request()->routeIs('profile.edit') ? 'bg-white/15 text-white' : 'text-blue-200 hover:bg-white/10 hover:text-white' }}">
                 Mijn profiel
             </a>
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
-                <button type="submit" class="w-full text-left flex items-center px-4 py-2.5 rounded-lg text-sm font-medium text-blue-200 hover:bg-white/10 hover:text-white transition-colors">
+                <button type="submit" class="w-full text-left flex items-center px-4 py-2.5 rounded-lg text-sm font-medium text-blue-200 hover:bg-white/10 hover:text-white transition-colors duration-150">
                     Uitloggen
                 </button>
             </form>
@@ -244,15 +116,124 @@
         </div>
     </aside>
 
-    {{-- ── MAIN CONTENT ── --}}
-    <div class="flex min-w-0 flex-1 flex-col overflow-hidden">
+    {{--
+        Mobiele sidebar: fixed overlay, alleen zichtbaar op < lg.
+        De donkere achtergrond zit BINNEN deze container (na de sidebar-div),
+        zodat die nooit over de sidebar zelf valt.
+    --}}
+    <div x-cloak x-show="open" class="fixed inset-0 z-40 flex lg:hidden">
+        {{-- Sidebar --}}
+        <div class="relative z-10 flex flex-col w-64 flex-shrink-0" style="background-color: #1B3A6B;">
+            <div class="flex items-center justify-between px-6 py-5 border-b border-blue-900">
+                <div>
+                    <p class="text-base font-bold text-white leading-tight">Proud Innovations</p>
+                    <p class="text-xs text-blue-300 mt-0.5">Offerte Tool — Beheer</p>
+                </div>
+                <button @click="open = false" class="p-1 text-blue-300 hover:text-white">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+            <nav class="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
+                @php
+                    $conceptCount   = \App\Models\Quote::where('status', 'concept')->count();
+                    $openTakenCount = \App\Models\Task::where('assigned_to_user_id', auth()->id())
+                        ->whereIn('status', ['open', 'in_behandeling'])->count();
+                @endphp
+                <a href="{{ route('beheer.dashboard') }}" wire:navigate @click="open = false"
+                   class="flex items-center px-4 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150
+                          {{ request()->routeIs('beheer.dashboard') ? 'bg-white/15 text-white' : 'text-blue-200 hover:bg-white/10 hover:text-white' }}">
+                    Dashboard
+                </a>
+                <a href="{{ route('verkoper.offertes.index') }}" wire:navigate @click="open = false"
+                   class="flex items-center justify-between px-4 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150
+                          {{ request()->routeIs('verkoper.offertes.*') ? 'bg-white/15 text-white' : 'text-blue-200 hover:bg-white/10 hover:text-white' }}">
+                    <span>Offertes</span>
+                    @if($conceptCount > 0)
+                        <span class="ml-2 inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1.5 rounded-full text-xs font-bold bg-blue-500 text-white">{{ $conceptCount }}</span>
+                    @endif
+                </a>
+                <a href="{{ route('taken.index') }}" wire:navigate @click="open = false"
+                   class="flex items-center justify-between px-4 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150
+                          {{ request()->routeIs('taken.*') ? 'bg-white/15 text-white' : 'text-blue-200 hover:bg-white/10 hover:text-white' }}">
+                    <span>Taken</span>
+                    @if($openTakenCount > 0)
+                        <span class="ml-2 inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1.5 rounded-full text-xs font-bold bg-blue-500 text-white">{{ $openTakenCount }}</span>
+                    @endif
+                </a>
+                <a href="{{ route('verkoper.klanten.index') }}" wire:navigate @click="open = false"
+                   class="flex items-center px-4 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150
+                          {{ request()->routeIs('verkoper.klanten.*') ? 'bg-white/15 text-white' : 'text-blue-200 hover:bg-white/10 hover:text-white' }}">
+                    Klanten
+                </a>
+                <a href="{{ route('beheer.producten.index') }}" wire:navigate @click="open = false"
+                   class="flex items-center px-4 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150
+                          {{ request()->routeIs('beheer.producten.*') ? 'bg-white/15 text-white' : 'text-blue-200 hover:bg-white/10 hover:text-white' }}">
+                    Producten
+                </a>
+                <a href="{{ route('beheer.afhankelijkheden.index') }}" wire:navigate @click="open = false"
+                   class="flex items-center px-4 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150
+                          {{ request()->routeIs('beheer.afhankelijkheden.*') ? 'bg-white/15 text-white' : 'text-blue-200 hover:bg-white/10 hover:text-white' }}">
+                    Afhankelijkheden
+                </a>
+                <a href="{{ route('beheer.gebruikers.index') }}" wire:navigate @click="open = false"
+                   class="flex items-center px-4 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150
+                          {{ request()->routeIs('beheer.gebruikers.*') ? 'bg-white/15 text-white' : 'text-blue-200 hover:bg-white/10 hover:text-white' }}">
+                    Gebruikers
+                </a>
+                <a href="{{ route('beheer.activiteit.index') }}" wire:navigate @click="open = false"
+                   class="flex items-center px-4 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150
+                          {{ request()->routeIs('beheer.activiteit.*') ? 'bg-white/15 text-white' : 'text-blue-200 hover:bg-white/10 hover:text-white' }}">
+                    Activiteitenlog
+                </a>
+                <a href="{{ route('beheer.instellingen.index') }}" wire:navigate @click="open = false"
+                   class="flex items-center px-4 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150
+                          {{ request()->routeIs('beheer.instellingen.*') ? 'bg-white/15 text-white' : 'text-blue-200 hover:bg-white/10 hover:text-white' }}">
+                    Instellingen
+                </a>
+            </nav>
+            <div class="px-3 pb-2 space-y-1">
+                <a href="{{ route('verkoper.offertes.create') }}" wire:navigate @click="open = false"
+                   class="flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium bg-white/10 text-white hover:bg-white/20 transition-colors duration-150">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+                    Nieuwe offerte
+                </a>
+                <button onclick="Livewire.dispatch('open-task-modal')"
+                        class="w-full flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium bg-white/10 text-white hover:bg-white/20 transition-colors duration-150">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+                    Nieuwe taak
+                </button>
+            </div>
+            <div class="px-3 pt-3 border-t border-blue-900 space-y-0.5">
+                <a href="{{ route('profile.edit') }}" wire:navigate @click="open = false"
+                   class="flex items-center px-4 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150
+                          {{ request()->routeIs('profile.edit') ? 'bg-white/15 text-white' : 'text-blue-200 hover:bg-white/10 hover:text-white' }}">
+                    Mijn profiel
+                </a>
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit" class="w-full text-left flex items-center px-4 py-2.5 rounded-lg text-sm font-medium text-blue-200 hover:bg-white/10 hover:text-white transition-colors duration-150">
+                        Uitloggen
+                    </button>
+                </form>
+            </div>
+            <div class="px-6 py-3 border-t border-blue-900">
+                <p class="text-xs text-blue-400">&copy; {{ date('Y') }} Proud Innovations B.V.</p>
+            </div>
+        </div>
+        {{-- Donkere achtergrond rechts van de sidebar — klik sluit het menu --}}
+        <div class="flex-1 bg-black/50" @click="open = false"></div>
+    </div>
 
-        <header class="flex-shrink-0 border-b border-gray-200 bg-white">
-            <div class="flex h-14 items-center justify-between px-4 lg:px-6">
+    {{-- Main --}}
+    <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
+        <header class="bg-white border-b border-gray-200 flex-shrink-0">
+            <div class="flex items-center justify-between px-4 lg:px-6 h-14">
                 <div class="flex items-center gap-3">
                     <button @click="open = true"
-                            class="rounded-lg p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors lg:hidden">
-                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            class="lg:hidden p-2 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
                         </svg>
                     </button>
@@ -260,26 +241,24 @@
                 </div>
                 <div class="flex items-center gap-3">
                     <livewire:notification-bell />
-                    <span class="hidden text-sm text-gray-500 sm:inline">{{ Auth::user()->name }}</span>
+                    <span class="text-sm text-gray-500 hidden sm:inline">{{ Auth::user()->name }}</span>
                 </div>
             </div>
         </header>
-
         <main class="flex-1 overflow-y-auto">
             @isset($breadcrumbs)
-                <div class="px-4 pb-0 pt-4 lg:px-6">{{ $breadcrumbs }}</div>
+                <div class="px-4 lg:px-6 pt-4 pb-0">{{ $breadcrumbs }}</div>
             @endisset
-
             <div class="p-4 lg:p-6">
                 @if(session('success'))
-                    <div class="mb-5 flex items-center gap-3 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800">
-                        <svg class="h-4 w-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                    <div class="mb-5 flex items-center gap-3 bg-green-50 border border-green-200 text-green-800 rounded-lg px-4 py-3 text-sm">
+                        <svg class="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
                         {{ session('success') }}
                     </div>
                 @endif
                 @if(session('error'))
-                    <div class="mb-5 flex items-center gap-3 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
-                        <svg class="h-4 w-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
+                    <div class="mb-5 flex items-center gap-3 bg-red-50 border border-red-200 text-red-800 rounded-lg px-4 py-3 text-sm">
+                        <svg class="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
                         {{ session('error') }}
                     </div>
                 @endif
