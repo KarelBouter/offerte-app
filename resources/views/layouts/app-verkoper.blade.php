@@ -185,7 +185,7 @@
     </div>
 
     {{-- Main --}}
-    <div class="flex-1 flex flex-col min-w-0 overflow-y-auto">
+    <div class="flex-1 flex flex-col min-w-0 min-h-0">
         <header class="bg-white border-b border-gray-200 flex-shrink-0">
             <div class="flex items-center justify-between px-4 lg:px-6 h-14">
                 <div class="flex items-center gap-3">
