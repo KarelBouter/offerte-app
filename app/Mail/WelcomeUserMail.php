@@ -2,6 +2,7 @@
 
 namespace App\Mail;
 
+use App\Models\Setting;
 use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
@@ -21,7 +22,10 @@ class WelcomeUserMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Welkom bij de Proud Innovations offerte-applicatie',
+            subject: Setting::get(
+                'mail_subject_welcome',
+                'Welkom bij de Proud Innovations offerte-applicatie'
+            )
         );
     }
 

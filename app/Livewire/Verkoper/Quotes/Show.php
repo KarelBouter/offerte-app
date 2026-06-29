@@ -6,6 +6,7 @@ use App\Mail\QuoteClientMail;
 use App\Models\Quote;
 use App\Services\ActivityLogService;
 use App\Services\AutoTaskService;
+use App\Services\MailSettingsService;
 use App\Services\QuotePdfService;
 use Illuminate\Support\Facades\Mail;
 use Livewire\Attributes\On;
@@ -69,6 +70,7 @@ class Show extends Component
         $this->quote->update(['status' => 'verzonden']);
         $this->quote->refresh();
 
+        MailSettingsService::applyFromDatabase();
         Mail::to($this->quote->customer->contact_email)
             ->send(new QuoteClientMail($this->quote, $signUrl));
 

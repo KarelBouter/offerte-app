@@ -18,6 +18,11 @@
                 class="px-4 pb-3 text-sm transition-colors">
             PDF opmaak &amp; teksten
         </button>
+        <button x-on:click="tab = 'email'"
+                x-bind:class="tab === 'email' ? 'border-b-2 border-blue-600 text-blue-700 font-semibold' : 'text-gray-500 hover:text-gray-700'"
+                class="px-4 pb-3 text-sm transition-colors">
+            E-mail
+        </button>
     </div>
 
     {{-- Tab 1: Algemeen --}}
@@ -281,5 +286,133 @@
     {{-- Tab 3: PDF opmaak & teksten --}}
     <div x-show="tab === 'pdf'" class="max-w-3xl">
         <livewire:admin.settings.pdf-settings />
+    </div>
+
+    {{-- Tab 4: E-mailinstellingen --}}
+    <div x-show="tab === 'email'" class="max-w-2xl space-y-5">
+
+        {{-- SMTP-verbinding --}}
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <h2 class="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-5">SMTP-verbinding</h2>
+
+            <div class="space-y-4">
+                <div class="grid grid-cols-3 gap-4">
+                    <div class="col-span-2">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">SMTP-host <span class="text-red-500">*</span></label>
+                        <input wire:model="mail_host" type="text" placeholder="smtp.example.com"
+                               class="w-full rounded-lg border-gray-300 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500"/>
+                        @error('mail_host') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Poort <span class="text-red-500">*</span></label>
+                        <input wire:model="mail_port" type="number" min="1" max="65535"
+                               class="w-full rounded-lg border-gray-300 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500"/>
+                        @error('mail_port') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Encryptie</label>
+                    <select wire:model="mail_encryption"
+                            class="w-full rounded-lg border-gray-300 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        <option value="tls">TLS (aanbevolen, poort 587)</option>
+                        <option value="ssl">SSL (poort 465)</option>
+                        <option value="">Geen</option>
+                    </select>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Gebruikersnaam</label>
+                        <input wire:model="mail_username" type="text" autocomplete="off"
+                               class="w-full rounded-lg border-gray-300 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500"/>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Wachtwoord</label>
+                        <input wire:model="mail_password" type="password" autocomplete="new-password"
+                               placeholder="Laat leeg om huidig wachtwoord te behouden"
+                               class="w-full rounded-lg border-gray-300 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500"/>
+                        <p class="mt-1 text-xs text-gray-400">Leeglaten = huidig wachtwoord blijft bewaard.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Afzender --}}
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <h2 class="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-5">Afzender</h2>
+
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Afzendernaam <span class="text-red-500">*</span></label>
+                    <input wire:model="mail_from_name" type="text" placeholder="Proud Innovations B.V."
+                           class="w-full rounded-lg border-gray-300 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500"/>
+                    @error('mail_from_name') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Afzenderadres <span class="text-red-500">*</span></label>
+                    <input wire:model="mail_from_address" type="email" placeholder="noreply@proudinnovations.nl"
+                           class="w-full rounded-lg border-gray-300 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500"/>
+                    @error('mail_from_address') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                </div>
+            </div>
+        </div>
+
+        {{-- Onderwerpregels --}}
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <h2 class="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-5">Onderwerpregels</h2>
+
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                        Onderwerp offerte-mail <span class="text-red-500">*</span>
+                        <span class="text-gray-400 font-normal text-xs ml-1">gebruik <code class="bg-gray-100 px-1 rounded">{quote_number}</code> voor het offertenummer</span>
+                    </label>
+                    <input wire:model="mail_subject_quote" type="text"
+                           class="w-full rounded-lg border-gray-300 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500"/>
+                    @error('mail_subject_quote') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Onderwerp welkomstmail <span class="text-red-500">*</span></label>
+                    <input wire:model="mail_subject_welcome" type="text"
+                           class="w-full rounded-lg border-gray-300 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500"/>
+                    @error('mail_subject_welcome') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                </div>
+            </div>
+        </div>
+
+        {{-- Testmail --}}
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <h2 class="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-2">Verbinding testen</h2>
+            <p class="text-xs text-gray-500 mb-4">
+                Sla eerst de instellingen op en klik dan op "Testmail versturen". De testmail wordt verstuurd naar het ingestelde afzenderadres.
+            </p>
+
+            @if($mailTestResult)
+                <div class="mb-4 px-4 py-3 rounded-lg text-sm border
+                    {{ $mailTestSuccess
+                        ? 'bg-green-50 border-green-200 text-green-800'
+                        : 'bg-red-50 border-red-200 text-red-700' }}">
+                    {{ $mailTestResult }}
+                </div>
+            @endif
+
+            <button wire:click="sendTestMail"
+                    wire:loading.attr="disabled"
+                    class="px-4 py-2 rounded-lg text-sm font-medium text-white shadow-sm bg-gray-600 hover:bg-gray-700 transition-colors">
+                <span wire:loading.remove wire:target="sendTestMail">Testmail versturen</span>
+                <span wire:loading wire:target="sendTestMail">Versturen…</span>
+            </button>
+        </div>
+
+        <div class="flex justify-end">
+            <button wire:click="save"
+                    wire:loading.attr="disabled"
+                    class="px-5 py-2.5 rounded-lg text-sm font-medium text-white shadow-sm"
+                    style="background-color: #1B3A6B;">
+                <span wire:loading.remove>Opslaan</span>
+                <span wire:loading>Opslaan…</span>
+            </button>
+        </div>
     </div>
 </div>

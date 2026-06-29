@@ -4,6 +4,7 @@ namespace App\Livewire\Admin\Users;
 
 use App\Mail\WelcomeUserMail;
 use App\Models\User;
+use App\Services\MailSettingsService;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\Rule;
 use Livewire\Component;
@@ -65,6 +66,7 @@ class Form extends Component
                 'password'  => $this->password,
             ]);
 
+            MailSettingsService::applyFromDatabase();
             Mail::to($user->email)->send(new WelcomeUserMail($user, $this->password));
 
             session()->flash('success', "Gebruiker {$user->name} aangemaakt. Welkomstmail verstuurd.");

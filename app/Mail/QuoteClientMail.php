@@ -3,6 +3,7 @@
 namespace App\Mail;
 
 use App\Models\Quote;
+use App\Models\Setting;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
@@ -20,9 +21,13 @@ class QuoteClientMail extends Mailable
 
     public function envelope(): Envelope
     {
-        return new Envelope(
-            subject: 'Offerte van Proud Innovations B.V. — '.$this->quote->quote_number,
+        $subjectTemplate = Setting::get(
+            'mail_subject_quote',
+            'Offerte van Proud Innovations B.V. — {quote_number}'
         );
+        $subject = str_replace('{quote_number}', $this->quote->quote_number, $subjectTemplate);
+
+        return new Envelope(subject: $subject);
     }
 
     public function content(): Content
