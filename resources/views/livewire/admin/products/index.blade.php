@@ -32,7 +32,7 @@
 
     {{-- Table --}}
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-        <table class="w-full text-sm">
+        <div class="overflow-x-auto"><table class="w-full text-sm min-w-[600px]">
             <thead>
                 <tr class="bg-gray-50 border-b border-gray-200 text-left">
                     <th class="px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Naam</th>
@@ -100,6 +100,6 @@
                     </tr>
                 @endforelse
             </tbody>
-        </table>
+        </table></div>
     </div>
 </div>

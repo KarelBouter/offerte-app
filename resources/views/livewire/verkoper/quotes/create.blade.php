@@ -601,7 +601,7 @@
             <div class="px-5 py-3 border-b border-gray-100 bg-gray-50">
                 <h3 class="text-sm font-semibold text-gray-700 uppercase tracking-wide">Configuratie</h3>
             </div>
-            <table class="w-full text-sm">
+            <div class="overflow-x-auto"><table class="w-full text-sm min-w-[600px]">
                 <thead>
                     <tr class="border-b border-gray-100 text-left">
                         <th class="px-5 py-2.5 text-xs font-semibold text-gray-500">Product</th>
@@ -648,7 +648,7 @@
                     </tr>
                     @endif
                 </tfoot>
-            </table>
+            </table></div>
         </div>
 
         {{-- Notes --}}

@@ -34,7 +34,7 @@
                 <h2 class="text-sm font-semibold text-orange-800">Vereist opvolging ({{ $actionItems->count() }})</h2>
             </div>
             <div class="overflow-x-auto">
-            <table class="w-full text-sm min-w-[480px]">
+            <table class="w-full text-sm min-w-[600px]">
                 <thead class="bg-gray-50 border-b border-gray-100">
                     <tr>
                         <th class="px-4 py-2.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide w-8">#</th>
@@ -170,7 +170,7 @@
                 <a href="{{ route('verkoper.offertes.index') }}" class="text-xs text-blue-600 hover:underline">Alle offertes →</a>
             </div>
             <div class="overflow-x-auto">
-            <table class="w-full text-sm min-w-[480px]">
+            <table class="w-full text-sm min-w-[600px]">
                 <thead>
                     <tr class="border-b border-gray-100 text-left">
                         <th class="px-4 py-2 text-xs font-semibold text-gray-500">Nummer</th>
@@ -241,7 +241,7 @@
                     <p class="px-5 py-8 text-center text-gray-400 text-sm">Geen openstaande taken.</p>
                 @else
                     <div class="overflow-x-auto">
-                    <table class="w-full text-sm min-w-[480px]">
+                    <table class="w-full text-sm min-w-[600px]">
                         <tbody class="divide-y divide-gray-50">
                             @foreach($openTaken as $taak)
                             <tr class="hover:bg-gray-50">

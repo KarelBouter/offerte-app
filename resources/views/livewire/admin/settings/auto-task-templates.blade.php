@@ -47,7 +47,7 @@
                 Nog geen taaktemplates aangemaakt. Klik op "Nieuw template" om te beginnen.
             </div>
         @else
-            <table class="w-full text-sm">
+            <div class="overflow-x-auto"><table class="w-full text-sm min-w-[600px]">
                 <thead>
                     <tr class="border-b border-gray-200 bg-gray-50">
                         <th class="px-4 py-3 text-left font-medium text-gray-600">Naam</th>
@@ -107,7 +107,7 @@
                     </tr>
                     @endforeach
                 </tbody>
-            </table>
+            </table></div>
         @endif
     </div>
 
