@@ -125,7 +125,7 @@
         De donkere achtergrond zit BINNEN deze container (na de sidebar-div),
         zodat die nooit over de sidebar zelf valt.
     --}}
-    <div x-cloak x-show="open" class="fixed inset-0 z-40 flex lg:hidden">
+    <div x-cloak x-show="open" class="fixed inset-0 z-40 flex">
         {{-- Sidebar --}}
         <div class="relative z-10 flex flex-col w-64 flex-shrink-0" style="background-color: #1B3A6B;">
             <div class="flex items-center justify-between px-6 py-5 border-b border-blue-900">
