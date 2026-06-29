@@ -31,7 +31,7 @@
  </p>
  </div>
 
- <div class="overflow-x-auto flex gap-2 pb-1 flex-shrink-0">
+ <div class="flex flex-wrap gap-2 mt-1">
  {{-- Status dropdown --}}
  @if(auth()->user()->canChangeQuoteStatus())
  <div class="relative" x-data="{ open: false }">
