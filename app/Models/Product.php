@@ -23,6 +23,8 @@ class Product extends Model
         'poe_wattage_output',
         'poe_wattage_input',
         'price_per_meter',
+        'switch_ports_total',
+        'switch_ports_poe',
     ];
 
     protected function casts(): array
@@ -33,6 +35,24 @@ class Product extends Model
             'is_price_on_quote' => 'boolean',
             'is_active'         => 'boolean',
         ];
+    }
+
+    public function getSwitchPortsAvailableAttribute(): int
+    {
+        if (!$this->switch_ports_total) return 0;
+        return $this->switch_ports_total - 1;
+    }
+
+    public function getSwitchPortsStandardAvailableAttribute(): int
+    {
+        if (!$this->switch_ports_total) return 0;
+        $standardPorts = $this->switch_ports_total - ($this->switch_ports_poe ?? 0);
+        return max(0, $standardPorts - 1);
+    }
+
+    public function getSwitchPortsPoeAvailableAttribute(): int
+    {
+        return $this->switch_ports_poe ?? 0;
     }
 
     public function dependencies(): HasMany

@@ -28,6 +28,8 @@ class Form extends Component
     public ?int $poe_wattage_output = null;
     public ?int $poe_wattage_input = null;
     public ?float $price_per_meter = null;
+    public ?int $switch_ports_total = null;
+    public ?int $switch_ports_poe = null;
 
     public function mount(?Product $product = null): void
     {
@@ -47,7 +49,9 @@ class Form extends Component
             $this->is_price_on_quote = (bool) $product->is_price_on_quote;
             $this->poe_wattage_output = $product->poe_wattage_output;
             $this->poe_wattage_input  = $product->poe_wattage_input;
-            $this->price_per_meter = $product->price_per_meter ? (float) $product->price_per_meter : null;
+            $this->price_per_meter    = $product->price_per_meter ? (float) $product->price_per_meter : null;
+            $this->switch_ports_total = $product->switch_ports_total;
+            $this->switch_ports_poe   = $product->switch_ports_poe;
         }
     }
 
@@ -65,9 +69,11 @@ class Form extends Component
                 'max_quantity' => 'nullable|integer|min:1|gte:min_quantity',
                 'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
                 'sort_order' => 'required|integer|min:0',
-                'poe_wattage_output' => 'nullable|integer|min:0',
-                'poe_wattage_input'  => 'nullable|integer|min:0',
-                'price_per_meter'    => 'nullable|numeric|min:0',
+                'poe_wattage_output'  => 'nullable|integer|min:0',
+                'poe_wattage_input'   => 'nullable|integer|min:0',
+                'price_per_meter'     => 'nullable|numeric|min:0',
+                'switch_ports_total'  => 'nullable|integer|min:1',
+                'switch_ports_poe'    => 'nullable|integer|min:0|lte:switch_ports_total',
             ],
             [
                 'name.required' => 'Naam is verplicht.',
@@ -106,9 +112,11 @@ class Form extends Component
             'sort_order'         => $this->sort_order,
             'is_active'          => $this->is_active,
             'is_price_on_quote'  => $this->is_price_on_quote,
-            'poe_wattage_output' => $this->poe_wattage_output,
-            'poe_wattage_input'  => $this->poe_wattage_input,
-            'price_per_meter'    => $this->price_per_meter,
+            'poe_wattage_output'  => $this->poe_wattage_output,
+            'poe_wattage_input'   => $this->poe_wattage_input,
+            'price_per_meter'     => $this->price_per_meter,
+            'switch_ports_total'  => $this->switch_ports_total,
+            'switch_ports_poe'    => $this->switch_ports_poe,
         ];
 
         if ($this->image) {

@@ -484,9 +484,9 @@ class Create extends Component
             }
         }
 
-        // Switch meeschalen op aantal kassas
+        // Switch meeschalen op aantal kassas op basis van poortdata
         if ($this->numberOfKassas > 0) {
-            $poortsNeeded = 2 + ($this->numberOfKassas * 2);
+            $poortsNeeded = 1 + ($this->numberOfKassas * 2); // 1 server + kassas + pinautomaten
 
             $poeNeeded = false;
             $currentIds = array_map('intval', array_keys($items));
@@ -494,15 +494,44 @@ class Create extends Component
                 $poeNeeded = true;
             }
 
-            if ($poortsNeeded > 4) {
-                $qty = $poortsNeeded <= 16 ? (int) ceil(($poortsNeeded - 4) / 8) : (int) ceil(($poortsNeeded - 4) / 8);
-                $switchName = $poeNeeded ? 'Flex 2.5G PoE' : 'Flex 2.5G';
-                $switch = Product::where('name', 'like', "%{$switchName}%")->first();
-                if ($switch) {
-                    $items[(string) $switch->id] = [
+            $switches = Product::where('is_active', true)
+                ->whereNotNull('switch_ports_total')
+                ->orderBy('switch_ports_total')
+                ->get();
+
+            if ($switches->isNotEmpty()) {
+                $gekozenSwitches = [];
+
+                // Poging 1: één switch die alles aankan
+                foreach ($switches as $sw) {
+                    if ($poeNeeded && ($sw->switch_ports_poe ?? 0) === 0) continue;
+                    if (($sw->switch_ports_total - 1) >= $poortsNeeded) {
+                        $gekozenSwitches[$sw->id] = 1;
+                        break;
+                    }
+                }
+
+                // Poging 2: meerdere van de grootste geschikte switch
+                if (empty($gekozenSwitches)) {
+                    $beste = $switches
+                        ->filter(fn($s) => !$poeNeeded || ($s->switch_ports_poe ?? 0) > 0)
+                        ->sortByDesc('switch_ports_total')
+                        ->first();
+
+                    if ($beste) {
+                        $beschikbaarPerStuk = $beste->switch_ports_total - 1;
+                        $gekozenSwitches[$beste->id] = (int) ceil($poortsNeeded / $beschikbaarPerStuk);
+                    }
+                }
+
+                foreach ($gekozenSwitches as $switchId => $qty) {
+                    $sw          = $switches->firstWhere('id', $switchId);
+                    $beschikbaar = ($sw->switch_ports_total - 1) * $qty;
+                    $poePoorten  = ($sw->switch_ports_poe ?? 0) * $qty;
+                    $items[(string) $switchId] = [
                         'quantity'            => $qty,
                         'is_auto_added'       => true,
-                        'auto_added_reason'   => "Automatisch op basis van {$this->numberOfKassas} kassa's ({$poortsNeeded} poorten benodigd)",
+                        'auto_added_reason'   => "Automatisch: {$this->numberOfKassas} kassa's ({$poortsNeeded} poorten nodig, {$beschikbaar} beschikbaar" . ($poeNeeded ? ", {$poePoorten} PoE" : '') . ')',
                         'is_recommended'      => false,
                         'is_optional_declined'=> false,
                     ];
@@ -635,17 +664,27 @@ class Create extends Component
 
         $totalPoeInput  = 0;
         $totalPoeOutput = 0;
+        $totalPoorten   = 0;
+        $poortsNodig    = $this->numberOfKassas > 0 ? 1 + ($this->numberOfKassas * 2) : 0;
 
         foreach ($allItems as $productId => $item) {
             $product = $products[(int) $productId] ?? null;
             if (!$product) continue;
             $qty = $item['quantity'];
+
             if ($product->poe_wattage_output) {
                 $totalPoeOutput += $product->poe_wattage_output * $qty;
             }
             if ($product->poe_wattage_input) {
                 $totalPoeInput += $product->poe_wattage_input * $qty;
             }
+            if ($product->switch_ports_total) {
+                $totalPoorten += ($product->switch_ports_total - 1) * $qty;
+            }
+        }
+
+        if ($poortsNodig > 0 && $totalPoorten > 0 && $totalPoorten < $poortsNodig) {
+            $warnings[] = "Onvoldoende switchpoorten: {$poortsNodig} nodig, {$totalPoorten} beschikbaar. Voeg een extra switch toe.";
         }
 
         if ($totalPoeInput > 0 && $totalPoeOutput === 0) {

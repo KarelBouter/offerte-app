@@ -112,6 +112,43 @@
                     @error('unit') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                 </div>
 
+                {{-- Switch poorten --}}
+                <div class="sm:col-span-2">
+                    <h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3 mt-2">Switch poorten (optioneel — alleen invullen voor switches)</h4>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Totaal aantal poorten</label>
+                            <input wire:model.live="switch_ports_total" type="number" min="1"
+                                   class="w-full rounded-lg border-gray-300 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                   placeholder="bijv. 8"/>
+                            @error('switch_ports_total') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                                Waarvan PoE poorten
+                                <span class="text-xs text-gray-400 font-normal">— de rest is standaard</span>
+                            </label>
+                            <input wire:model.live="switch_ports_poe" type="number" min="0"
+                                   class="w-full rounded-lg border-gray-300 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                   placeholder="bijv. 8"/>
+                            @error('switch_ports_poe') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                        </div>
+                    </div>
+                    @if($switch_ports_total)
+                    <div class="mt-3 bg-blue-50 border border-blue-100 rounded-lg px-4 py-3 text-xs text-blue-700 space-y-1">
+                        <p>Totaal poorten: <strong>{{ $switch_ports_total }}</strong></p>
+                        <p>Waarvan PoE: <strong>{{ $switch_ports_poe ?? 0 }}</strong> &nbsp;|&nbsp; Standaard: <strong>{{ $switch_ports_total - ($switch_ports_poe ?? 0) }}</strong></p>
+                        <p>Gereserveerd voor uplink: <strong>1 standaard poort</strong></p>
+                        <p class="border-t border-blue-200 pt-1 mt-1">
+                            Beschikbaar voor apparaten:
+                            <strong>{{ $switch_ports_poe ?? 0 }} PoE</strong> +
+                            <strong>{{ max(0, ($switch_ports_total - ($switch_ports_poe ?? 0)) - 1) }} standaard</strong>
+                            = <strong>{{ $switch_ports_total - 1 }} poorten totaal</strong>
+                        </p>
+                    </div>
+                    @endif
+                </div>
+
                 {{-- PoE wattage --}}
                 <div class="sm:col-span-2">
                     <h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3 mt-2">PoE (optioneel)</h4>
