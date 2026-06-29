@@ -9,7 +9,7 @@
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
     <style>
 [x-cloak]{display:none!important}
-@media (max-width: 1279px) { #desktop-sidebar { display: none !important; } }
+@media (max-width: 1179px) { #desktop-sidebar { display: none !important; } }
 </style>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('scripts')
