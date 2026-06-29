@@ -26,9 +26,9 @@
                         <td class="px-5 py-3.5 text-gray-400 whitespace-nowrap">
                             {{ $n->created_at->diffForHumans() }}
                         </td>
-                        <td class="px-5 py-3.5 font-medium text-gray-800">{{ $n->title }}</td>
-                        <td class="px-5 py-3.5 text-gray-600">{{ $n->body }}</td>
-                        <td class="px-5 py-3.5">
+                        <td class="px-5 py-3.5 font-medium text-gray-800 whitespace-nowrap">{{ $n->title }}</td>
+                        <td class="px-5 py-3.5 text-gray-600 whitespace-nowrap">{{ $n->body }}</td>
+                        <td class="px-5 py-3.5 whitespace-nowrap">
                             @if($n->read_at)
                                 <span class="text-xs text-gray-400">{{ $n->read_at->format('d-m-Y H:i') }}</span>
                             @else

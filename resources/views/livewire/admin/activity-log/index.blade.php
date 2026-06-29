@@ -49,10 +49,10 @@
                         <td class="px-4 py-3 text-gray-600 whitespace-nowrap">
                             {{ $log->created_at->format('d-m-Y H:i:s') }}
                         </td>
-                        <td class="px-4 py-3 text-gray-800">
+                        <td class="px-4 py-3 text-gray-800 whitespace-nowrap">
                             {{ $log->user?->name ?? '—' }}
                         </td>
-                        <td class="px-4 py-3">
+                        <td class="px-4 py-3 whitespace-nowrap">
                             <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium
                                 {{ str_starts_with($log->action, 'quote')   ? 'bg-blue-100 text-blue-700'   : '' }}
                                 {{ str_starts_with($log->action, 'product') ? 'bg-purple-100 text-purple-700' : '' }}
@@ -62,8 +62,8 @@
                                 {{ $log->action }}
                             </span>
                         </td>
-                        <td class="px-4 py-3 text-gray-700">{{ $log->description }}</td>
-                        <td class="px-4 py-3 text-gray-500 font-mono text-xs">{{ $log->ip_address ?? '—' }}</td>
+                        <td class="px-4 py-3 text-gray-700 whitespace-nowrap">{{ $log->description }}</td>
+                        <td class="px-4 py-3 text-gray-500 font-mono text-xs whitespace-nowrap">{{ $log->ip_address ?? '—' }}</td>
                     </tr>
                 @empty
                     <tr>

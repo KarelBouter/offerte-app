@@ -76,18 +76,18 @@
                         $canDelete = $isAdmin || $isOwner;
                     @endphp
                     <tr class="hover:bg-gray-50 transition-colors {{ $task->status === 'afgerond' ? 'opacity-60' : '' }}">
-                        <td class="px-5 py-3.5">
+                        <td class="px-5 py-3.5 whitespace-nowrap">
                             <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium {{ $statusColors[$task->status] ?? 'bg-gray-100 text-gray-600' }}">
                                 {{ $statusLabels[$task->status] ?? $task->status }}
                             </span>
                         </td>
-                        <td class="px-5 py-3.5">
+                        <td class="px-5 py-3.5 whitespace-nowrap">
                             <a href="{{ route('taken.show', $task) }}"
                                class="font-medium text-gray-800 hover:text-blue-600 {{ $task->status === 'afgerond' ? 'line-through' : '' }}">
                                 {{ $task->title }}
                             </a>
                         </td>
-                        <td class="px-5 py-3.5 text-gray-500">
+                        <td class="px-5 py-3.5 text-gray-500 whitespace-nowrap">
                             @if($task->quote)
                                 <a href="{{ route('verkoper.offertes.show', $task->quote) }}"
                                    class="text-blue-600 hover:text-blue-800 text-xs font-mono">
@@ -97,8 +97,8 @@
                                 <span class="text-gray-300">—</span>
                             @endif
                         </td>
-                        <td class="px-5 py-3.5 text-gray-600">{{ $task->assignedTo?->name ?? '—' }}</td>
-                        <td class="px-5 py-3.5">
+                        <td class="px-5 py-3.5 text-gray-600 whitespace-nowrap">{{ $task->assignedTo?->name ?? '—' }}</td>
+                        <td class="px-5 py-3.5 whitespace-nowrap">
                             @if($task->due_date)
                                 <span class="{{ $task->due_date->isPast() && $task->status !== 'afgerond' ? 'text-red-600 font-medium' : ($task->due_date->diffInDays(now()) <= 2 && $task->status !== 'afgerond' ? 'text-orange-600' : 'text-gray-500') }}">
                                     {{ $task->due_date->format('d-m-Y') }}
@@ -107,8 +107,8 @@
                                 <span class="text-gray-300">—</span>
                             @endif
                         </td>
-                        <td class="px-5 py-3.5 text-gray-500">{{ $task->createdBy?->name ?? '—' }}</td>
-                        <td class="px-5 py-3.5 text-right">
+                        <td class="px-5 py-3.5 text-gray-500 whitespace-nowrap">{{ $task->createdBy?->name ?? '—' }}</td>
+                        <td class="px-5 py-3.5 text-right whitespace-nowrap">
                             <div class="flex items-center justify-end gap-2">
                                 <a href="{{ route('taken.show', $task) }}"
                                    class="text-blue-600 hover:text-blue-800 text-xs font-medium">Bekijken</a>

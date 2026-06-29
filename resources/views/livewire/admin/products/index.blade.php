@@ -46,13 +46,13 @@
             <tbody class="divide-y divide-gray-100">
                 @forelse($products as $product)
                     <tr class="{{ $product->is_active ? 'bg-white' : 'bg-gray-50' }} hover:bg-gray-50 transition-colors">
-                        <td class="px-6 py-4">
+                        <td class="px-6 py-4 whitespace-nowrap">
                             <span class="font-medium {{ $product->is_active ? 'text-gray-900' : 'text-gray-400' }}">
                                 {{ $product->name }}
                             </span>
                         </td>
-                        <td class="px-6 py-4 text-gray-500">{{ $product->category }}</td>
-                        <td class="px-6 py-4">
+                        <td class="px-6 py-4 text-gray-500 whitespace-nowrap">{{ $product->category }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">
                             @if($product->is_price_on_quote)
                                 <span class="text-amber-600 font-medium">Op offerte</span>
                             @else
@@ -61,8 +61,8 @@
                                 </span>
                             @endif
                         </td>
-                        <td class="px-6 py-4 text-gray-500">{{ $product->unit }}</td>
-                        <td class="px-6 py-4">
+                        <td class="px-6 py-4 text-gray-500 whitespace-nowrap">{{ $product->unit }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">
                             @if($product->is_active)
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700">
                                     Actief
@@ -73,7 +73,7 @@
                                 </span>
                             @endif
                         </td>
-                        <td class="px-6 py-4 text-right">
+                        <td class="px-6 py-4 text-right whitespace-nowrap">
                             <div class="flex items-center justify-end gap-4">
                                 <a href="{{ route('beheer.producten.edit', $product) }}"
                                    class="text-blue-600 hover:text-blue-800 font-medium transition-colors">

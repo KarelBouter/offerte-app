@@ -164,7 +164,7 @@
                     <tbody class="divide-y divide-gray-50">
                         @foreach($onetimeItems as $item)
                         <tr class="{{ $item->is_auto_added ? 'bg-blue-50/30' : '' }}">
-                            <td class="px-5 py-3">
+                            <td class="px-5 py-3 whitespace-nowrap">
                                 <div class="flex items-center gap-2">
                                     <span class="font-medium text-gray-800">{{ $item->product->name }}</span>
                                     @if($item->is_auto_added)
@@ -175,11 +175,11 @@
                                     <p class="text-xs text-gray-400 mt-0.5">{{ $item->auto_added_reason }}</p>
                                 @endif
                             </td>
-                            <td class="px-5 py-3 text-center text-gray-600">{{ $item->quantity }}</td>
-                            <td class="px-5 py-3 text-right text-gray-600">
+                            <td class="px-5 py-3 text-center text-gray-600 whitespace-nowrap">{{ $item->quantity }}</td>
+                            <td class="px-5 py-3 text-right text-gray-600 whitespace-nowrap">
                                 € {{ number_format($item->unit_price_snapshot, 2, ',', '.') }}
                             </td>
-                            <td class="px-5 py-3 text-right font-semibold text-gray-800">
+                            <td class="px-5 py-3 text-right font-semibold text-gray-800 whitespace-nowrap">
                                 € {{ number_format($item->unit_price_snapshot * $item->quantity, 2, ',', '.') }}
                             </td>
                         </tr>
@@ -188,19 +188,19 @@
                     <tfoot class="border-t-2 border-gray-200 bg-gray-50">
                         <tr>
                             <td colspan="3" class="px-5 py-3 text-sm font-semibold text-gray-700">Subtotaal excl. BTW</td>
-                            <td class="px-5 py-3 text-right text-sm font-bold text-gray-800">
+                            <td class="px-5 py-3 text-right text-sm font-bold text-gray-800 whitespace-nowrap">
                                 € {{ number_format($quote->total_onetime_excl_vat, 2, ',', '.') }}
                             </td>
                         </tr>
                         <tr>
                             <td colspan="3" class="px-5 py-2 text-xs text-gray-500">BTW 21%</td>
-                            <td class="px-5 py-2 text-right text-xs text-gray-500">
+                            <td class="px-5 py-2 text-right text-xs text-gray-500 whitespace-nowrap">
                                 € {{ number_format($quote->total_onetime_excl_vat * 0.21, 2, ',', '.') }}
                             </td>
                         </tr>
                         <tr class="border-t border-gray-200">
                             <td colspan="3" class="px-5 py-3 text-sm font-bold text-gray-800">Totaal incl. BTW</td>
-                            <td class="px-5 py-3 text-right text-sm font-bold text-gray-800">
+                            <td class="px-5 py-3 text-right text-sm font-bold text-gray-800 whitespace-nowrap">
                                 € {{ number_format($quote->total_onetime_excl_vat * 1.21, 2, ',', '.') }}
                             </td>
                         </tr>
@@ -229,12 +229,12 @@
                     <tbody class="divide-y divide-gray-50">
                         @foreach($yearlyItems as $item)
                         <tr>
-                            <td class="px-5 py-3 font-medium text-gray-800">{{ $item->product->name }}</td>
-                            <td class="px-5 py-3 text-center text-gray-600">{{ $item->quantity }}</td>
-                            <td class="px-5 py-3 text-right text-gray-600">
+                            <td class="px-5 py-3 font-medium text-gray-800 whitespace-nowrap">{{ $item->product->name }}</td>
+                            <td class="px-5 py-3 text-center text-gray-600 whitespace-nowrap">{{ $item->quantity }}</td>
+                            <td class="px-5 py-3 text-right text-gray-600 whitespace-nowrap">
                                 € {{ number_format($item->unit_price_snapshot, 2, ',', '.') }}
                             </td>
-                            <td class="px-5 py-3 text-right font-semibold text-gray-800">
+                            <td class="px-5 py-3 text-right font-semibold text-gray-800 whitespace-nowrap">
                                 € {{ number_format($item->unit_price_snapshot * $item->quantity, 2, ',', '.') }}
                             </td>
                         </tr>
@@ -243,7 +243,7 @@
                     <tfoot class="border-t-2 border-gray-200 bg-gray-50">
                         <tr>
                             <td colspan="3" class="px-5 py-3 text-sm font-bold text-gray-800">Per jaar excl. BTW</td>
-                            <td class="px-5 py-3 text-right text-sm font-bold text-gray-800">
+                            <td class="px-5 py-3 text-right text-sm font-bold text-gray-800 whitespace-nowrap">
                                 € {{ number_format($quote->total_yearly_excl_vat, 2, ',', '.') }}
                             </td>
                         </tr>
@@ -433,12 +433,12 @@
                                 $sl = ['open'=>'Open','in_behandeling'=>'In behandeling','afgerond'=>'Afgerond'];
                             @endphp
                             <tr class="{{ $task->status === 'afgerond' ? 'opacity-60' : '' }} hover:bg-gray-50 transition-colors">
-                                <td class="px-5 py-3">
+                                <td class="px-5 py-3 whitespace-nowrap">
                                     <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium {{ $sc[$task->status] ?? 'bg-gray-100 text-gray-600' }}">
                                         {{ $sl[$task->status] ?? $task->status }}
                                     </span>
                                 </td>
-                                <td class="px-5 py-3">
+                                <td class="px-5 py-3 whitespace-nowrap">
                                     <a href="{{ route('taken.show', $task) }}"
                                        class="font-medium text-gray-800 hover:text-blue-600 {{ $task->status === 'afgerond' ? 'line-through' : '' }}">
                                         {{ $task->title }}
@@ -447,10 +447,10 @@
                                         <p class="text-xs text-gray-400 mt-0.5">Door {{ $task->createdBy->name }}</p>
                                     @endif
                                 </td>
-                                <td class="px-5 py-3 text-gray-500 text-xs">
+                                <td class="px-5 py-3 text-gray-500 text-xs whitespace-nowrap">
                                     {{ $task->assignedTo?->name ?? '—' }}
                                 </td>
-                                <td class="px-5 py-3 text-xs">
+                                <td class="px-5 py-3 text-xs whitespace-nowrap">
                                     @if($task->due_date)
                                         <span class="{{ $task->due_date->isPast() && $task->status !== 'afgerond' ? 'text-red-600 font-medium' : 'text-gray-500' }}">
                                             {{ $task->due_date->format('d-m-Y') }}
@@ -459,7 +459,7 @@
                                         <span class="text-gray-300">—</span>
                                     @endif
                                 </td>
-                                <td class="px-5 py-3 text-right">
+                                <td class="px-5 py-3 text-right whitespace-nowrap">
                                     <a href="{{ route('taken.show', $task) }}"
                                        class="text-blue-600 hover:text-blue-800 text-xs font-medium">
                                         Bekijken

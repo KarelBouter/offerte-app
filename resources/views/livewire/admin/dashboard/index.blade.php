@@ -50,22 +50,22 @@
                     @foreach($actionItems as $item)
                         @php $q = $item['quote']; @endphp
                         <tr class="hover:bg-gray-50">
-                            <td class="px-4 py-3 text-center">
+                            <td class="px-4 py-3 text-center whitespace-nowrap">
                                 <span class="inline-flex items-center justify-center w-5 h-5 rounded-full text-xs font-bold
                                     {{ $item['priority'] === 1 ? 'bg-red-100 text-red-700' : ($item['priority'] === 2 ? 'bg-orange-100 text-orange-700' : 'bg-yellow-100 text-yellow-700') }}">
                                     {{ $item['priority'] }}
                                 </span>
                             </td>
-                            <td class="px-4 py-3 font-mono text-xs font-medium text-gray-700">{{ $q->quote_number }}</td>
-                            <td class="px-4 py-3 font-medium text-gray-800">{{ $q->customer?->company_name ?? '—' }}</td>
-                            <td class="px-4 py-3 text-gray-500">{{ $q->user?->name ?? '—' }}</td>
-                            <td class="px-4 py-3">
+                            <td class="px-4 py-3 font-mono text-xs font-medium text-gray-700 whitespace-nowrap">{{ $q->quote_number }}</td>
+                            <td class="px-4 py-3 font-medium text-gray-800 whitespace-nowrap">{{ $q->customer?->company_name ?? '—' }}</td>
+                            <td class="px-4 py-3 text-gray-500 whitespace-nowrap">{{ $q->user?->name ?? '—' }}</td>
+                            <td class="px-4 py-3 whitespace-nowrap">
                                 <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium {{ $statusColors[$q->status] ?? '' }}">
                                     {{ $statusLabels[$q->status] ?? $q->status }}
                                 </span>
                             </td>
-                            <td class="px-4 py-3 text-gray-500 text-xs">{{ $item['reason'] }}</td>
-                            <td class="px-4 py-3 text-right">
+                            <td class="px-4 py-3 text-gray-500 text-xs whitespace-nowrap">{{ $item['reason'] }}</td>
+                            <td class="px-4 py-3 text-right whitespace-nowrap">
                                 <a href="{{ route('verkoper.offertes.show', $q) }}"
                                    class="text-xs font-medium text-blue-600 hover:text-blue-800">Bekijken</a>
                             </td>
@@ -183,17 +183,17 @@
                 <tbody class="divide-y divide-gray-50">
                     @forelse($recentQuotes as $q)
                     <tr class="hover:bg-gray-50">
-                        <td class="px-4 py-2.5 font-mono text-xs font-medium">
+                        <td class="px-4 py-2.5 font-mono text-xs font-medium whitespace-nowrap">
                             <a href="{{ route('verkoper.offertes.show', $q) }}" class="text-blue-600 hover:underline">{{ $q->quote_number }}</a>
                         </td>
-                        <td class="px-4 py-2.5 text-gray-700 text-xs">{{ $q->customer?->company_name ?? '—' }}</td>
-                        <td class="px-4 py-2.5 text-gray-500 text-xs">{{ $q->user?->name ?? '—' }}</td>
-                        <td class="px-4 py-2.5">
+                        <td class="px-4 py-2.5 text-gray-700 text-xs whitespace-nowrap">{{ $q->customer?->company_name ?? '—' }}</td>
+                        <td class="px-4 py-2.5 text-gray-500 text-xs whitespace-nowrap">{{ $q->user?->name ?? '—' }}</td>
+                        <td class="px-4 py-2.5 whitespace-nowrap">
                             <span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium {{ $statusColors[$q->status] ?? '' }}">
                                 {{ $statusLabels[$q->status] ?? $q->status }}
                             </span>
                         </td>
-                        <td class="px-4 py-2.5 text-gray-400 text-xs">{{ $q->created_at->format('d-m-Y') }}</td>
+                        <td class="px-4 py-2.5 text-gray-400 text-xs whitespace-nowrap">{{ $q->created_at->format('d-m-Y') }}</td>
                     </tr>
                     @empty
                     <tr><td colspan="5" class="px-4 py-8 text-center text-gray-400 text-sm">Nog geen offertes.</td></tr>
@@ -245,7 +245,7 @@
                         <tbody class="divide-y divide-gray-50">
                             @foreach($openTaken as $taak)
                             <tr class="hover:bg-gray-50">
-                                <td class="px-5 py-2.5">
+                                <td class="px-5 py-2.5 whitespace-nowrap">
                                     <a href="{{ route('taken.show', $taak) }}"
                                        class="font-medium text-gray-800 hover:text-blue-600 text-xs">
                                         {{ $taak->title }}
@@ -257,10 +257,10 @@
                                         </p>
                                     @endif
                                 </td>
-                                <td class="px-5 py-2.5 text-xs text-gray-500">
+                                <td class="px-5 py-2.5 text-xs text-gray-500 whitespace-nowrap">
                                     {{ $taak->assignedTo?->name ?? '—' }}
                                 </td>
-                                <td class="px-5 py-2.5 text-xs text-right">
+                                <td class="px-5 py-2.5 text-xs text-right whitespace-nowrap">
                                     @if($taak->due_date)
                                         <span class="{{ $taak->due_date->isPast() ? 'text-red-600 font-medium' : 'text-gray-400' }}">
                                             {{ $taak->due_date->format('d-m-Y') }}

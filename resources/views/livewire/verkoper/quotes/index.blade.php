@@ -58,10 +58,10 @@
             <tbody class="divide-y divide-gray-100">
                 @forelse($quotes as $quote)
                     <tr class="hover:bg-gray-50 transition-colors">
-                        <td class="px-5 py-3.5 font-mono text-xs font-medium text-gray-800">{{ $quote->quote_number }}</td>
-                        <td class="px-5 py-3.5 font-medium text-gray-800">{{ $quote->customer?->company_name ?? '—' }}</td>
-                        <td class="px-5 py-3.5 text-gray-500">{{ $quote->user?->name ?? '—' }}</td>
-                        <td class="px-5 py-3.5">
+                        <td class="px-5 py-3.5 font-mono text-xs font-medium text-gray-800 whitespace-nowrap">{{ $quote->quote_number }}</td>
+                        <td class="px-5 py-3.5 font-medium text-gray-800 whitespace-nowrap">{{ $quote->customer?->company_name ?? '—' }}</td>
+                        <td class="px-5 py-3.5 text-gray-500 whitespace-nowrap">{{ $quote->user?->name ?? '—' }}</td>
+                        <td class="px-5 py-3.5 whitespace-nowrap">
                             @php
                                 $colors = ['concept'=>'bg-gray-100 text-gray-600','verzonden'=>'bg-blue-100 text-blue-700','ondertekend'=>'bg-green-100 text-green-700','verlopen'=>'bg-orange-100 text-orange-700','geannuleerd'=>'bg-red-100 text-red-700'];
                             @endphp
@@ -69,11 +69,11 @@
                                 {{ $statusLabels[$quote->status] ?? $quote->status }}
                             </span>
                         </td>
-                        <td class="px-5 py-3.5 text-gray-500">{{ $quote->created_at->format('d-m-Y') }}</td>
-                        <td class="px-5 py-3.5 text-gray-500">{{ $quote->valid_until ? \Carbon\Carbon::parse($quote->valid_until)->format('d-m-Y') : '—' }}</td>
-                        <td class="px-5 py-3.5 text-right text-gray-700">€ {{ number_format($quote->total_onetime_excl_vat, 2, ',', '.') }}</td>
-                        <td class="px-5 py-3.5 text-right text-gray-700">€ {{ number_format($quote->total_yearly_excl_vat, 2, ',', '.') }}</td>
-                        <td class="px-5 py-3.5 text-right">
+                        <td class="px-5 py-3.5 text-gray-500 whitespace-nowrap">{{ $quote->created_at->format('d-m-Y') }}</td>
+                        <td class="px-5 py-3.5 text-gray-500 whitespace-nowrap">{{ $quote->valid_until ? \Carbon\Carbon::parse($quote->valid_until)->format('d-m-Y') : '—' }}</td>
+                        <td class="px-5 py-3.5 text-right text-gray-700 whitespace-nowrap">€ {{ number_format($quote->total_onetime_excl_vat, 2, ',', '.') }}</td>
+                        <td class="px-5 py-3.5 text-right text-gray-700 whitespace-nowrap">€ {{ number_format($quote->total_yearly_excl_vat, 2, ',', '.') }}</td>
+                        <td class="px-5 py-3.5 text-right whitespace-nowrap">
                             <div class="flex items-center justify-end gap-3">
                                 <a href="{{ route('verkoper.offertes.show', $quote) }}" class="text-blue-600 hover:text-blue-800 font-medium">Bekijken</a>
                                 @if($quote->status === 'concept')

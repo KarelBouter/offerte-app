@@ -24,11 +24,11 @@
             <tbody class="divide-y divide-gray-100">
                 @forelse($customers as $customer)
                     <tr class="hover:bg-gray-50">
-                        <td class="px-4 py-3 font-medium text-gray-800">{{ $customer->company_name }}</td>
-                        <td class="px-4 py-3 text-gray-600">{{ $customer->contact_name }}</td>
-                        <td class="px-4 py-3 text-gray-600">{{ $customer->contact_email }}</td>
-                        <td class="px-4 py-3 text-gray-500">{{ $customer->quotes_count }}</td>
-                        <td class="px-4 py-3 text-right">
+                        <td class="px-4 py-3 font-medium text-gray-800 whitespace-nowrap">{{ $customer->company_name }}</td>
+                        <td class="px-4 py-3 text-gray-600 whitespace-nowrap">{{ $customer->contact_name }}</td>
+                        <td class="px-4 py-3 text-gray-600 whitespace-nowrap">{{ $customer->contact_email }}</td>
+                        <td class="px-4 py-3 text-gray-500 whitespace-nowrap">{{ $customer->quotes_count }}</td>
+                        <td class="px-4 py-3 text-right whitespace-nowrap">
                             <a href="{{ route('verkoper.klanten.show', $customer) }}"
                                class="text-blue-600 hover:text-blue-800 text-xs font-medium">
                                 Bekijken →
