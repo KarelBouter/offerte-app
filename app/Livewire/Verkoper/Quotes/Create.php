@@ -47,6 +47,10 @@ class Create extends Component
     public string $discountType  = '';
     public string $discountValue = '';
 
+    // ── Environment / configurator helpers ─────────────────────────────────
+    public int   $numberOfKassas = 0;
+    public array $meterInputs    = []; // [productId => meters]
+
     // ── Products that are auto-add only (not shown in manual configurator) ─
     private const AUTO_ONLY_PRODUCTS = [
         'Firewall',
@@ -84,12 +88,16 @@ class Create extends Component
             $this->discountType  = $quote->discount_type ?? '';
             $this->discountValue = $quote->discount_value ? (string) $quote->discount_value : '';
 
+            $cableProductIds = Product::whereNotNull('price_per_meter')->pluck('id')->all();
+
             foreach ($quote->items()->where('is_auto_added', false)->with('product')->get() as $item) {
                 $product = $item->product;
                 if ($product->category === 'Hardware' && str_starts_with($product->name, 'Optie')) {
                     $this->hwChoice = (string) $item->product_id;
                 } elseif ($product->category === 'Service') {
                     $this->svcChoice = (string) $item->product_id;
+                } elseif (in_array($item->product_id, $cableProductIds)) {
+                    $this->meterInputs[(string) $item->product_id] = $item->quantity;
                 } else {
                     $this->qtyInputs[(string) $item->product_id] = $item->quantity;
                 }
@@ -160,6 +168,16 @@ class Create extends Component
         if (!$this->discountType) {
             $this->discountValue = '';
         }
+    }
+
+    public function updatedNumberOfKassas(): void
+    {
+        $this->syncAndEvaluate();
+    }
+
+    public function updatedMeterInputs($value, $key): void
+    {
+        $this->syncAndEvaluate();
     }
 
     public function declineRecommended(string $productId): void
@@ -276,10 +294,15 @@ class Create extends Component
             $product = Product::find((int) $productId);
             if (!$product) continue;
 
+            // Cable products: save meters as quantity
+            $savedQty = $product->price_per_meter
+                ? (int) ($this->meterInputs[(string) $productId] ?? $item['quantity'])
+                : $item['quantity'];
+
             QuoteItem::create([
                 'quote_id'            => $quote->id,
                 'product_id'          => (int) $productId,
-                'quantity'            => $item['quantity'],
+                'quantity'            => $savedQty,
                 'unit_price_snapshot' => $product->unit_price,
                 'is_auto_added'       => $item['is_auto_added'],
                 'auto_added_reason'   => $item['auto_added_reason'] ?? null,
@@ -452,6 +475,41 @@ class Create extends Component
             }
         }
 
+        // Cable products: quantity = meters
+        foreach ($this->meterInputs as $productId => $meters) {
+            $meters = (int) $meters;
+            if ($meters > 0 && !in_array((int) $productId, $autoAddedIds)) {
+                $items[(string) $productId] = ['quantity' => $meters, 'is_auto_added' => false,
+                    'auto_added_reason' => null, 'is_recommended' => false, 'is_optional_declined' => false];
+            }
+        }
+
+        // Switch meeschalen op aantal kassas
+        if ($this->numberOfKassas > 0) {
+            $poortsNeeded = 2 + ($this->numberOfKassas * 2);
+
+            $poeNeeded = false;
+            $currentIds = array_map('intval', array_keys($items));
+            if (!empty($currentIds) && Product::whereNotNull('poe_wattage_input')->whereIn('id', $currentIds)->exists()) {
+                $poeNeeded = true;
+            }
+
+            if ($poortsNeeded > 4) {
+                $qty = $poortsNeeded <= 16 ? (int) ceil(($poortsNeeded - 4) / 8) : (int) ceil(($poortsNeeded - 4) / 8);
+                $switchName = $poeNeeded ? 'Flex 2.5G PoE' : 'Flex 2.5G';
+                $switch = Product::where('name', 'like', "%{$switchName}%")->first();
+                if ($switch) {
+                    $items[(string) $switch->id] = [
+                        'quantity'            => $qty,
+                        'is_auto_added'       => true,
+                        'auto_added_reason'   => "Automatisch op basis van {$this->numberOfKassas} kassa's ({$poortsNeeded} poorten benodigd)",
+                        'is_recommended'      => false,
+                        'is_optional_declined'=> false,
+                    ];
+                }
+            }
+        }
+
         return $items;
     }
 
@@ -522,7 +580,12 @@ class Create extends Component
                 continue;
             }
 
-            $total = $product->unit_price * $qty;
+            if ($product->price_per_meter) {
+                // qty = meters for cable products; total = starttarief + (meters × rate)
+                $total = (float) $product->unit_price + ($qty * (float) $product->price_per_meter);
+            } else {
+                $total = $product->unit_price * $qty;
+            }
 
             if ($product->unit === 'jaar') {
                 $yearlyTotal += $total;
@@ -560,6 +623,40 @@ class Create extends Component
         ];
     }
 
+    public function getPoEWarnings(): array
+    {
+        $warnings = [];
+        $allItems = $this->getAllItems();
+        if (empty($allItems)) {
+            return $warnings;
+        }
+
+        $products = Product::whereIn('id', array_keys($allItems))->get()->keyBy('id');
+
+        $totalPoeInput  = 0;
+        $totalPoeOutput = 0;
+
+        foreach ($allItems as $productId => $item) {
+            $product = $products[(int) $productId] ?? null;
+            if (!$product) continue;
+            $qty = $item['quantity'];
+            if ($product->poe_wattage_output) {
+                $totalPoeOutput += $product->poe_wattage_output * $qty;
+            }
+            if ($product->poe_wattage_input) {
+                $totalPoeInput += $product->poe_wattage_input * $qty;
+            }
+        }
+
+        if ($totalPoeInput > 0 && $totalPoeOutput === 0) {
+            $warnings[] = 'Er zijn PoE-apparaten geselecteerd maar geen PoE-switch. Voeg een PoE-switch toe.';
+        } elseif ($totalPoeInput > $totalPoeOutput && $totalPoeOutput > 0) {
+            $warnings[] = "PoE-verbruik ({$totalPoeInput}W) overschrijdt de capaciteit van de PoE-switch ({$totalPoeOutput}W). Kies een zwaardere switch of verminder het aantal PoE-apparaten.";
+        }
+
+        return $warnings;
+    }
+
     // ── Render ─────────────────────────────────────────────────────────────
 
     public function render()
@@ -586,6 +683,7 @@ class Create extends Component
             'prices'             => $this->calculatePrices(),
             'previewNumber'      => $previewNumber,
             'autoAddedIds'       => $this->getAutoAddedProductIds(),
+            'poeWarnings'        => $this->getPoEWarnings(),
         ])->layout($layout, ['title' => $title]);
     }
 }

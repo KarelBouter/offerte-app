@@ -111,6 +111,49 @@
                     </select>
                     @error('unit') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                 </div>
+
+                {{-- PoE wattage --}}
+                <div class="sm:col-span-2">
+                    <h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3 mt-2">PoE (optioneel)</h4>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                                PoE output (W)
+                                <span class="text-xs text-gray-400 font-normal">— voor switches: max. te leveren wattage</span>
+                            </label>
+                            <input wire:model="poe_wattage_output" type="number" min="0"
+                                   class="w-full rounded-lg border-gray-300 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                   placeholder="bijv. 196"/>
+                            @error('poe_wattage_output') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                                PoE input (W)
+                                <span class="text-xs text-gray-400 font-normal">— voor AP's/camera's: verbruik per stuk</span>
+                            </label>
+                            <input wire:model="poe_wattage_input" type="number" min="0"
+                                   class="w-full rounded-lg border-gray-300 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                   placeholder="bijv. 20"/>
+                            @error('poe_wattage_input') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Prijs per meter --}}
+                <div class="sm:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                        Prijs per meter (optioneel)
+                        <span class="text-xs text-gray-400 font-normal">— voor kabelproducten: unit_price is dan het starttarief</span>
+                    </label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400 text-sm">€</span>
+                        <input wire:model="price_per_meter" type="number" step="0.01" min="0"
+                               class="w-full pl-7 rounded-lg border-gray-300 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                               placeholder="bijv. 1.00"/>
+                    </div>
+                    <p class="text-xs text-gray-400 mt-1">Als dit is ingevuld, vraagt de offerte bouwer om een lengte in meters. Totaalprijs = starttarief + (meters × prijs per meter).</p>
+                    @error('price_per_meter') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                </div>
             </div>
         </div>
 

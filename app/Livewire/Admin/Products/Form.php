@@ -25,6 +25,9 @@ class Form extends Component
     public int $sort_order = 0;
     public bool $is_active = true;
     public bool $is_price_on_quote = false;
+    public ?int $poe_wattage_output = null;
+    public ?int $poe_wattage_input = null;
+    public ?float $price_per_meter = null;
 
     public function mount(?Product $product = null): void
     {
@@ -42,6 +45,9 @@ class Form extends Component
             $this->sort_order = $product->sort_order;
             $this->is_active = (bool) $product->is_active;
             $this->is_price_on_quote = (bool) $product->is_price_on_quote;
+            $this->poe_wattage_output = $product->poe_wattage_output;
+            $this->poe_wattage_input  = $product->poe_wattage_input;
+            $this->price_per_meter = $product->price_per_meter ? (float) $product->price_per_meter : null;
         }
     }
 
@@ -59,6 +65,9 @@ class Form extends Component
                 'max_quantity' => 'nullable|integer|min:1|gte:min_quantity',
                 'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
                 'sort_order' => 'required|integer|min:0',
+                'poe_wattage_output' => 'nullable|integer|min:0',
+                'poe_wattage_input'  => 'nullable|integer|min:0',
+                'price_per_meter'    => 'nullable|numeric|min:0',
             ],
             [
                 'name.required' => 'Naam is verplicht.',
@@ -94,9 +103,12 @@ class Form extends Component
             'unit' => $this->unit,
             'min_quantity' => $this->min_quantity,
             'max_quantity' => $this->max_quantity,
-            'sort_order' => $this->sort_order,
-            'is_active' => $this->is_active,
-            'is_price_on_quote' => $this->is_price_on_quote,
+            'sort_order'         => $this->sort_order,
+            'is_active'          => $this->is_active,
+            'is_price_on_quote'  => $this->is_price_on_quote,
+            'poe_wattage_output' => $this->poe_wattage_output,
+            'poe_wattage_input'  => $this->poe_wattage_input,
+            'price_per_meter'    => $this->price_per_meter,
         ];
 
         if ($this->image) {

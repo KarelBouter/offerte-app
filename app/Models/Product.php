@@ -20,14 +20,18 @@ class Product extends Model
         'is_price_on_quote',
         'is_active',
         'sort_order',
+        'poe_wattage_output',
+        'poe_wattage_input',
+        'price_per_meter',
     ];
 
     protected function casts(): array
     {
         return [
-            'unit_price' => 'decimal:2',
+            'unit_price'      => 'decimal:2',
+            'price_per_meter' => 'decimal:2',
             'is_price_on_quote' => 'boolean',
-            'is_active' => 'boolean',
+            'is_active'         => 'boolean',
         ];
     }
 

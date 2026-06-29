@@ -167,6 +167,24 @@
         {{-- LEFT: Product configurator --}}
         <div class="flex-1 space-y-5 min-w-0">
 
+            {{-- ── OMGEVING ──────────────────────────────────────────── --}}
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
+                <h3 class="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-3">Omgeving</h3>
+                <div class="flex items-center gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Aantal kassas</label>
+                        <input wire:model.live="numberOfKassas" type="number" min="0"
+                               class="w-24 rounded-lg border-gray-300 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500"/>
+                    </div>
+                    @if($numberOfKassas > 0)
+                        <p class="text-xs text-gray-400 mt-5">
+                            {{ 2 + ($numberOfKassas * 2) }} poorten benodigd
+                            ({{ $numberOfKassas }}× kassa + {{ $numberOfKassas }}× pin + 1× uplink + 1× server)
+                        </p>
+                    @endif
+                </div>
+            </div>
+
             {{-- Exclude warnings --}}
             @foreach($excludeMessages as $msg)
                 <div class="flex items-start gap-3 bg-amber-50 border border-amber-200 rounded-lg px-4 py-3 text-sm text-amber-800">
@@ -247,35 +265,53 @@
                     @foreach($productsByCategory['Netwerk'] as $p)
                         @if(!in_array($p->name, $autoOnlyNames))
                         @php $isAutoAdded = in_array($p->id, $autoAddedIds); @endphp
-                        <div class="flex items-center gap-4 rounded-xl border p-4 transition-colors
-                            {{ $isAutoAdded ? 'border-blue-200 bg-blue-50 opacity-75' : 'border-gray-200' }}">
-                            <div class="flex-1">
-                                <p class="text-sm font-medium {{ $isAutoAdded ? 'text-blue-700' : 'text-gray-800' }}">
-                                    {{ $p->name }}
-                                    @if($isAutoAdded)
-                                        <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-700">
-                                            Automatisch toegevoegd
-                                        </span>
-                                    @endif
-                                </p>
-                                <p class="text-xs mt-0.5 {{ $isAutoAdded ? 'text-blue-600' : 'text-gray-400' }}">
-                                    @if($isAutoAdded)
-                                        {{ $autoItems[$p->id]['auto_added_reason'] ?? 'Vereist door de geselecteerde configuratie' }}
-                                    @else
-                                        {{ Str::limit($p->description, 80) }}
-                                    @endif
-                                </p>
+                        <div class="rounded-xl border transition-colors {{ $isAutoAdded ? 'border-blue-200 bg-blue-50 opacity-75' : 'border-gray-200' }}">
+                            <div class="flex items-center gap-4 p-4">
+                                <div class="flex-1">
+                                    <p class="text-sm font-medium {{ $isAutoAdded ? 'text-blue-700' : 'text-gray-800' }}">
+                                        {{ $p->name }}
+                                        @if($isAutoAdded)
+                                            <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-700">
+                                                Automatisch toegevoegd
+                                            </span>
+                                        @endif
+                                    </p>
+                                    <p class="text-xs mt-0.5 {{ $isAutoAdded ? 'text-blue-600' : 'text-gray-400' }}">
+                                        @if($isAutoAdded)
+                                            {{ $autoItems[$p->id]['auto_added_reason'] ?? 'Vereist door de geselecteerde configuratie' }}
+                                        @else
+                                            {{ Str::limit($p->description, 80) }}
+                                        @endif
+                                    </p>
+                                </div>
+                                <span class="text-sm {{ $p->is_price_on_quote ? 'text-amber-600' : ($isAutoAdded ? 'text-blue-600' : 'text-gray-700') }} font-medium">
+                                    {{ $p->is_price_on_quote ? 'Op offerte' : '€ '.number_format($p->unit_price, 2, ',', '.') }}
+                                    @if($p->price_per_meter)<span class="text-xs text-gray-400">+ € {{ number_format($p->price_per_meter, 2, ',', '.') }}/m</span>@endif
+                                </span>
+                                @if(!$p->price_per_meter)
+                                <div class="flex items-center gap-2">
+                                    <label class="text-xs {{ $isAutoAdded ? 'text-blue-500' : 'text-gray-500' }}">Aantal</label>
+                                    <input wire:model.live="qtyInputs.{{ $p->id }}" type="number" min="0" value="0"
+                                           @disabled($isAutoAdded)
+                                           class="w-16 rounded-lg border-gray-300 text-sm shadow-sm text-center focus:ring-blue-500
+                                                  {{ $isAutoAdded ? 'bg-blue-100 border-blue-200 text-blue-700 cursor-not-allowed' : '' }}"/>
+                                </div>
+                                @endif
                             </div>
-                            <span class="text-sm {{ $p->is_price_on_quote ? 'text-amber-600' : ($isAutoAdded ? 'text-blue-600' : 'text-gray-700') }} font-medium">
-                                {{ $p->is_price_on_quote ? 'Op offerte' : '€ '.number_format($p->unit_price, 2, ',', '.') }}
-                            </span>
-                            <div class="flex items-center gap-2">
-                                <label class="text-xs {{ $isAutoAdded ? 'text-blue-500' : 'text-gray-500' }}">Aantal</label>
-                                <input wire:model.live="qtyInputs.{{ $p->id }}" type="number" min="0" value="0"
-                                       @disabled($isAutoAdded)
-                                       class="w-16 rounded-lg border-gray-300 text-sm shadow-sm text-center focus:ring-blue-500
-                                              {{ $isAutoAdded ? 'bg-blue-100 border-blue-200 text-blue-700 cursor-not-allowed' : '' }}"/>
+                            @if($p->price_per_meter && !$isAutoAdded)
+                            <div class="px-4 pb-3 flex items-center gap-2 border-t border-gray-100">
+                                <label class="text-xs text-gray-500">Lengte:</label>
+                                <input wire:model.live="meterInputs.{{ $p->id }}" type="number" min="0" step="1"
+                                       class="w-20 rounded-lg border-gray-300 text-sm shadow-sm text-center focus:ring-blue-500"
+                                       placeholder="0"/>
+                                <span class="text-xs text-gray-400">meter</span>
+                                @if(isset($meterInputs[$p->id]) && $meterInputs[$p->id] > 0)
+                                    <span class="text-xs text-gray-600 font-medium">
+                                        = € {{ number_format($p->unit_price + ($meterInputs[$p->id] * $p->price_per_meter), 2, ',', '.') }}
+                                    </span>
+                                @endif
                             </div>
+                            @endif
                         </div>
                         @endif
                     @endforeach
@@ -344,35 +380,53 @@
                 <div class="p-4 space-y-3">
                     @foreach($installProducts as $p)
                     @php $isAutoAdded = in_array($p->id, $autoAddedIds); @endphp
-                    <div class="flex items-center gap-4 rounded-xl border p-4 transition-colors
-                        {{ $isAutoAdded ? 'border-blue-200 bg-blue-50 opacity-75' : 'border-gray-200' }}">
-                        <div class="flex-1">
-                            <p class="text-sm font-medium {{ $isAutoAdded ? 'text-blue-700' : 'text-gray-800' }}">
-                                {{ $p->name }}
-                                @if($isAutoAdded)
-                                    <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-700">
-                                        Automatisch toegevoegd
-                                    </span>
-                                @endif
-                            </p>
-                            <p class="text-xs mt-0.5 {{ $isAutoAdded ? 'text-blue-600' : 'text-gray-400' }}">
-                                @if($isAutoAdded)
-                                    {{ $autoItems[$p->id]['auto_added_reason'] ?? 'Vereist door de geselecteerde configuratie' }}
-                                @else
-                                    {{ Str::limit($p->description, 80) }}
-                                @endif
-                            </p>
+                    <div class="rounded-xl border transition-colors {{ $isAutoAdded ? 'border-blue-200 bg-blue-50 opacity-75' : 'border-gray-200' }}">
+                        <div class="flex items-center gap-4 p-4">
+                            <div class="flex-1">
+                                <p class="text-sm font-medium {{ $isAutoAdded ? 'text-blue-700' : 'text-gray-800' }}">
+                                    {{ $p->name }}
+                                    @if($isAutoAdded)
+                                        <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-700">
+                                            Automatisch toegevoegd
+                                        </span>
+                                    @endif
+                                </p>
+                                <p class="text-xs mt-0.5 {{ $isAutoAdded ? 'text-blue-600' : 'text-gray-400' }}">
+                                    @if($isAutoAdded)
+                                        {{ $autoItems[$p->id]['auto_added_reason'] ?? 'Vereist door de geselecteerde configuratie' }}
+                                    @else
+                                        {{ Str::limit($p->description, 80) }}
+                                    @endif
+                                </p>
+                            </div>
+                            <span class="text-sm font-semibold {{ $p->is_price_on_quote ? 'text-amber-600' : ($isAutoAdded ? 'text-blue-600' : 'text-gray-700') }}">
+                                {{ $p->is_price_on_quote ? 'Op offerte' : '€ '.number_format($p->unit_price, 2, ',', '.') }}
+                                @if($p->price_per_meter)<span class="text-xs text-gray-400 font-normal">+ € {{ number_format($p->price_per_meter, 2, ',', '.') }}/m</span>@endif
+                            </span>
+                            @if(!$p->price_per_meter)
+                            <div class="flex items-center gap-2">
+                                <label class="text-xs {{ $isAutoAdded ? 'text-blue-500' : 'text-gray-500' }}">Aantal</label>
+                                <input wire:model.live="qtyInputs.{{ $p->id }}" type="number" min="0" value="0"
+                                       @disabled($isAutoAdded)
+                                       class="w-16 rounded-lg border-gray-300 text-sm shadow-sm text-center focus:ring-blue-500
+                                              {{ $isAutoAdded ? 'bg-blue-100 border-blue-200 text-blue-700 cursor-not-allowed' : '' }}"/>
+                            </div>
+                            @endif
                         </div>
-                        <span class="text-sm font-semibold {{ $p->is_price_on_quote ? 'text-amber-600' : ($isAutoAdded ? 'text-blue-600' : 'text-gray-700') }}">
-                            {{ $p->is_price_on_quote ? 'Op offerte' : '€ '.number_format($p->unit_price, 2, ',', '.') }}
-                        </span>
-                        <div class="flex items-center gap-2">
-                            <label class="text-xs {{ $isAutoAdded ? 'text-blue-500' : 'text-gray-500' }}">Aantal</label>
-                            <input wire:model.live="qtyInputs.{{ $p->id }}" type="number" min="0" value="0"
-                                   @disabled($isAutoAdded)
-                                   class="w-16 rounded-lg border-gray-300 text-sm shadow-sm text-center focus:ring-blue-500
-                                          {{ $isAutoAdded ? 'bg-blue-100 border-blue-200 text-blue-700 cursor-not-allowed' : '' }}"/>
+                        @if($p->price_per_meter && !$isAutoAdded)
+                        <div class="px-4 pb-3 flex items-center gap-2 border-t border-gray-100">
+                            <label class="text-xs text-gray-500">Lengte:</label>
+                            <input wire:model.live="meterInputs.{{ $p->id }}" type="number" min="0" step="1"
+                                   class="w-20 rounded-lg border-gray-300 text-sm shadow-sm text-center focus:ring-blue-500"
+                                   placeholder="0"/>
+                            <span class="text-xs text-gray-400">meter</span>
+                            @if(isset($meterInputs[$p->id]) && $meterInputs[$p->id] > 0)
+                                <span class="text-xs text-gray-600 font-medium">
+                                    = € {{ number_format($p->unit_price + ($meterInputs[$p->id] * $p->price_per_meter), 2, ',', '.') }}
+                                </span>
+                            @endif
                         </div>
+                        @endif
                     </div>
                     @endforeach
                 </div>
@@ -466,6 +520,16 @@
                           class="w-full rounded-lg border-gray-300 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500"
                           placeholder="Notities voor intern gebruik…"></textarea>
             </div>
+
+            {{-- PoE waarschuwingen --}}
+            @if(count($poeWarnings) > 0)
+            <div class="bg-orange-50 border border-orange-200 rounded-xl p-4 space-y-1">
+                <p class="text-sm font-semibold text-orange-800">PoE — let op</p>
+                @foreach($poeWarnings as $warning)
+                    <p class="text-sm text-orange-700">{{ $warning }}</p>
+                @endforeach
+            </div>
+            @endif
 
             <div class="flex items-center justify-between pt-2">
                 <button wire:click="prevStep"
@@ -694,7 +758,10 @@
                     @endif
                     @if($prices['yearlyExclVat'] > 0)
                     <tr class="bg-gray-50">
-                        <td colspan="3" class="px-5 py-2.5 text-sm font-semibold text-gray-700">Servicecontract per jaar excl. BTW</td>
+                        <td colspan="3" class="px-5 py-2.5 text-sm font-semibold text-gray-700">
+                            Servicecontract per jaar excl. BTW
+                            <span class="text-xs font-normal text-gray-400 ml-2">(≈ € {{ number_format($prices['yearlyExclVat'] / 12, 2, ',', '.') }}/maand)</span>
+                        </td>
                         <td class="px-5 py-2.5 text-right text-sm font-bold text-gray-800">€ {{ number_format($prices['yearlyExclVat'], 2, ',', '.') }}</td>
                     </tr>
                     @endif

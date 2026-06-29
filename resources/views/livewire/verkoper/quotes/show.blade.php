@@ -267,7 +267,10 @@
  </tbody>
  <tfoot class="border-t-2 border-gray-200 bg-gray-50">
  <tr>
- <td colspan="3" class="px-5 py-3 text-sm font-bold text-gray-800">Per jaar excl. BTW</td>
+ <td colspan="3" class="px-5 py-3 text-sm font-bold text-gray-800">
+ Per jaar excl. BTW
+ <span class="text-xs font-normal text-gray-400 ml-2">(≈ € {{ number_format($quote->total_yearly_excl_vat / 12, 2, ',', '.') }}/maand)</span>
+ </td>
  <td class="px-5 py-3 text-right text-sm font-bold text-gray-800 whitespace-nowrap">
  € {{ number_format($quote->total_yearly_excl_vat, 2, ',', '.') }}
  </td>
@@ -359,7 +362,7 @@
  @if($quote->total_yearly_excl_vat > 0)
  <div class="border-t border-gray-100 pt-3">
  <div class="flex justify-between text-gray-500 text-xs">
- <span>Per jaar excl. BTW</span>
+ <span>Per jaar excl. BTW <span class="text-gray-400">(≈ € {{ number_format($quote->total_yearly_excl_vat / 12, 2, ',', '.') }}/mnd)</span></span>
  <span>€ {{ number_format($quote->total_yearly_excl_vat, 2, ',', '.') }}</span>
  </div>
  <div class="flex justify-between font-bold text-gray-800 border-t border-gray-100 pt-2 mt-1">
