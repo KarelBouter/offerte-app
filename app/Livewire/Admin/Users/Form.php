@@ -40,7 +40,7 @@ class Form extends Component
         ];
 
         if ($isNew || $this->password !== '') {
-            $rules['password']             = 'required|string|min:8|same:passwordConfirmation';
+            $rules['password']             = ['required', 'string', 'min:12', 'same:passwordConfirmation'];
             $rules['passwordConfirmation'] = 'required|string';
         }
 
@@ -51,7 +51,7 @@ class Form extends Component
             'email.unique'                  => 'Dit e-mailadres is al in gebruik.',
             'role.required'                 => 'Rol is verplicht.',
             'password.required'             => 'Wachtwoord is verplicht.',
-            'password.min'                  => 'Wachtwoord moet minimaal 8 tekens bevatten.',
+            'password.min'                  => 'Wachtwoord moet minimaal 12 tekens bevatten.',
             'password.same'                 => 'Wachtwoorden komen niet overeen.',
             'passwordConfirmation.required' => 'Wachtwoordbevestiging is verplicht.',
         ]);

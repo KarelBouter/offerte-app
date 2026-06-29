@@ -48,6 +48,10 @@ class PublicQuoteSignController extends Controller
                 return back()->with('error', 'Ongeldige handtekening.');
             }
 
+            if (strlen($imageData) > 1024 * 1024) {
+                return back()->with('error', 'Handtekening is te groot (max 1 MB).');
+            }
+
             $signaturePath = 'signatures/' . $quote->id . '_' . time() . '.png';
             Storage::disk('local')->put($signaturePath, $imageData);
 

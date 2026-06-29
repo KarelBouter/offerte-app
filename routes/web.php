@@ -63,11 +63,13 @@ Route::prefix('beheer')->name('beheer.')->middleware(['auth', 'verified', 'role:
 });
 
 // ── Publieke offerte-link (geen auth vereist) ──────────────────────────────────
-Route::get('/offerte/{token}', \App\Http\Controllers\PublicQuoteController::class)->name('quote.public');
-Route::post('/offerte/{token}/ondertekenen', \App\Http\Controllers\PublicQuoteSignController::class)->name('quote.sign');
-Route::get('/offerte/{token}/bedankt', function (string $token) {
-    $quote = \App\Models\Quote::where('sign_token', $token)->with('customer')->firstOrFail();
-    return view('public.quote-signed', compact('quote'));
-})->name('quote.signed');
+Route::middleware('throttle:30,1')->group(function () {
+    Route::get('/offerte/{token}', \App\Http\Controllers\PublicQuoteController::class)->name('quote.public');
+    Route::post('/offerte/{token}/ondertekenen', \App\Http\Controllers\PublicQuoteSignController::class)->name('quote.sign');
+    Route::get('/offerte/{token}/bedankt', function (string $token) {
+        $quote = \App\Models\Quote::where('sign_token', $token)->with('customer')->firstOrFail();
+        return view('public.quote-signed', compact('quote'));
+    })->name('quote.signed');
+});
 
 require __DIR__.'/auth.php';
