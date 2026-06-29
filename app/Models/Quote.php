@@ -19,6 +19,9 @@ class Quote extends Model
         'revision',
         'valid_until',
         'notes',
+        'discount_type',
+        'discount_value',
+        'onetime_subtotal_excl_vat',
         'total_onetime_excl_vat',
         'total_yearly_excl_vat',
         'signed_at',
@@ -35,14 +38,27 @@ class Quote extends Model
     protected function casts(): array
     {
         return [
-            'revision'               => 'integer',
-            'valid_until'            => 'date',
-            'signed_at'              => 'datetime',
-            'cosigned_at'            => 'datetime',
-            'sign_token_expires_at'  => 'datetime',
-            'total_onetime_excl_vat' => 'decimal:2',
-            'total_yearly_excl_vat'  => 'decimal:2',
+            'revision'                  => 'integer',
+            'valid_until'               => 'date',
+            'signed_at'                 => 'datetime',
+            'cosigned_at'               => 'datetime',
+            'sign_token_expires_at'     => 'datetime',
+            'discount_value'            => 'decimal:2',
+            'onetime_subtotal_excl_vat' => 'decimal:2',
+            'total_onetime_excl_vat'    => 'decimal:2',
+            'total_yearly_excl_vat'     => 'decimal:2',
         ];
+    }
+
+    public function getDiscountAmount(float $onetimeSubtotal): float
+    {
+        if (!$this->discount_type || !$this->discount_value) {
+            return 0.0;
+        }
+        if ($this->discount_type === 'percentage') {
+            return round($onetimeSubtotal * ((float) $this->discount_value / 100), 2);
+        }
+        return min((float) $this->discount_value, $onetimeSubtotal);
     }
 
     public function generateSignToken(): string

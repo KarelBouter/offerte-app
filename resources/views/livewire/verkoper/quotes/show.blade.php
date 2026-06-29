@@ -186,12 +186,37 @@
  @endforeach
  </tbody>
  <tfoot class="border-t-2 border-gray-200 bg-gray-50">
+ @if($quote->discount_type && $quote->discount_value && $quote->onetime_subtotal_excl_vat)
+ <tr>
+ <td colspan="3" class="px-5 py-3 text-sm font-semibold text-gray-700">Subtotaal excl. BTW</td>
+ <td class="px-5 py-3 text-right text-sm font-bold text-gray-800 whitespace-nowrap">
+ € {{ number_format($quote->onetime_subtotal_excl_vat, 2, ',', '.') }}
+ </td>
+ </tr>
+ <tr>
+ <td colspan="3" class="px-5 py-2.5 text-sm font-medium text-green-700">
+ Korting ({{ $quote->discount_type === 'percentage'
+ ? number_format($quote->discount_value, 2, ',', '.').'%'
+ : '€ '.number_format($quote->discount_value, 2, ',', '.') }})
+ </td>
+ <td class="px-5 py-2.5 text-right text-sm font-medium text-green-700 whitespace-nowrap">
+ &minus; € {{ number_format($quote->onetime_subtotal_excl_vat - $quote->total_onetime_excl_vat, 2, ',', '.') }}
+ </td>
+ </tr>
+ <tr>
+ <td colspan="3" class="px-5 py-3 text-sm font-semibold text-gray-700">Totaal excl. BTW</td>
+ <td class="px-5 py-3 text-right text-sm font-bold text-gray-800 whitespace-nowrap">
+ € {{ number_format($quote->total_onetime_excl_vat, 2, ',', '.') }}
+ </td>
+ </tr>
+ @else
  <tr>
  <td colspan="3" class="px-5 py-3 text-sm font-semibold text-gray-700">Subtotaal excl. BTW</td>
  <td class="px-5 py-3 text-right text-sm font-bold text-gray-800 whitespace-nowrap">
  € {{ number_format($quote->total_onetime_excl_vat, 2, ',', '.') }}
  </td>
  </tr>
+ @endif
  <tr>
  <td colspan="3" class="px-5 py-2 text-xs text-gray-500">BTW 21%</td>
  <td class="px-5 py-2 text-right text-xs text-gray-500 whitespace-nowrap">

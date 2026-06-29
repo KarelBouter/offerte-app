@@ -44,6 +44,8 @@ class Create extends Component
 
     // ── Step 3: Review ─────────────────────────────────────────────────────
     public string $validUntil = '';
+    public string $discountType  = '';
+    public string $discountValue = '';
 
     // ── Products that are auto-add only (not shown in manual configurator) ─
     private const AUTO_ONLY_PRODUCTS = [
@@ -78,7 +80,9 @@ class Create extends Component
             $this->installationAddress = $quote->installation_address ?? '';
             $this->differentInstallAddress = !empty($quote->installation_address);
             $this->notes = $quote->notes ?? '';
-            $this->validUntil = $quote->valid_until->format('Y-m-d');
+            $this->validUntil    = $quote->valid_until->format('Y-m-d');
+            $this->discountType  = $quote->discount_type ?? '';
+            $this->discountValue = $quote->discount_value ? (string) $quote->discount_value : '';
 
             foreach ($quote->items()->where('is_auto_added', false)->with('product')->get() as $item) {
                 $product = $item->product;
@@ -149,6 +153,13 @@ class Create extends Component
     public function updatedQtyInputs($value, $key): void
     {
         $this->syncAndEvaluate();
+    }
+
+    public function updatedDiscountType(): void
+    {
+        if (!$this->discountType) {
+            $this->discountValue = '';
+        }
     }
 
     public function declineRecommended(string $productId): void
@@ -232,28 +243,32 @@ class Create extends Component
         $prices = $this->calculatePrices();
         $installAddr = $this->differentInstallAddress ? $this->installationAddress : null;
 
+        $discountData = [
+            'discount_type'             => $this->discountType ?: null,
+            'discount_value'            => ($this->discountType && $this->discountValue !== '') ? (float) $this->discountValue : null,
+            'onetime_subtotal_excl_vat' => $prices['onetimeSubtotal'],
+            'total_onetime_excl_vat'    => $prices['onetimeExclVat'],
+            'total_yearly_excl_vat'     => $prices['yearlyExclVat'],
+        ];
+
         if ($this->existingQuoteId) {
             $quote = Quote::findOrFail($this->existingQuoteId);
-            $quote->update([
-                'customer_id'            => $customer->id,
-                'installation_address'   => $installAddr,
-                'valid_until'            => $this->validUntil,
-                'notes'                  => $this->notes ?: null,
-                'total_onetime_excl_vat' => $prices['onetimeExclVat'],
-                'total_yearly_excl_vat'  => $prices['yearlyExclVat'],
-            ]);
+            $quote->update(array_merge([
+                'customer_id'          => $customer->id,
+                'installation_address' => $installAddr,
+                'valid_until'          => $this->validUntil,
+                'notes'                => $this->notes ?: null,
+            ], $discountData));
             $quote->items()->delete();
         } else {
-            $quote = Quote::create([
-                'user_id'                => auth()->id(),
-                'customer_id'            => $customer->id,
-                'installation_address'   => $installAddr,
-                'status'                 => 'concept',
-                'valid_until'            => $this->validUntil,
-                'notes'                  => $this->notes ?: null,
-                'total_onetime_excl_vat' => $prices['onetimeExclVat'],
-                'total_yearly_excl_vat'  => $prices['yearlyExclVat'],
-            ]);
+            $quote = Quote::create(array_merge([
+                'user_id'              => auth()->id(),
+                'customer_id'          => $customer->id,
+                'installation_address' => $installAddr,
+                'status'               => 'concept',
+                'valid_until'          => $this->validUntil,
+                'notes'                => $this->notes ?: null,
+            ], $discountData));
         }
 
         $sortOrder = 0;
@@ -519,11 +534,26 @@ class Create extends Component
                 'unit_price' => $product->unit_price, 'total' => $total, 'item' => $item];
         }
 
+        $discountAmount = 0.0;
+        if ($this->discountType && $this->discountValue !== '') {
+            $val = (float) $this->discountValue;
+            if ($val > 0) {
+                if ($this->discountType === 'percentage') {
+                    $discountAmount = round($onetimeTotal * ($val / 100), 2);
+                } else {
+                    $discountAmount = min($val, $onetimeTotal);
+                }
+            }
+        }
+        $onetimeAfterDiscount = $onetimeTotal - $discountAmount;
+
         return [
             'lineItems'       => $lineItems,
-            'onetimeExclVat'  => $onetimeTotal,
-            'onetimeVat'      => $onetimeTotal * 0.21,
-            'onetimeInclVat'  => $onetimeTotal * 1.21,
+            'onetimeSubtotal' => $onetimeTotal,
+            'discountAmount'  => $discountAmount,
+            'onetimeExclVat'  => $onetimeAfterDiscount,
+            'onetimeVat'      => $onetimeAfterDiscount * 0.21,
+            'onetimeInclVat'  => $onetimeAfterDiscount * 1.21,
             'yearlyExclVat'   => $yearlyTotal,
             'yearlyVat'       => $yearlyTotal * 0.21,
             'yearlyInclVat'   => $yearlyTotal * 1.21,

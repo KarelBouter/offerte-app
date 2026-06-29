@@ -298,6 +298,20 @@ p { margin-bottom: 3mm; font-size: 9pt; }
                 </tr>
                 @endif
             @endforeach
+            @if($quote->discount_type && $quote->discount_value && $quote->onetime_subtotal_excl_vat)
+            <tr>
+                <td>Subtotaal eenmalig (excl. BTW)</td>
+                <td class="rechts">&euro; {{ number_format($quote->onetime_subtotal_excl_vat, 2, ',', '.') }}</td>
+            </tr>
+            <tr>
+                <td style="color: #2a7a2a;">
+                    Korting ({{ $quote->discount_type === 'percentage'
+                        ? number_format($quote->discount_value, 2, ',', '.').'%'
+                        : '&euro; '.number_format($quote->discount_value, 2, ',', '.') }})
+                </td>
+                <td class="rechts" style="color: #2a7a2a;">&minus; &euro; {{ number_format($quote->onetime_subtotal_excl_vat - $quote->total_onetime_excl_vat, 2, ',', '.') }}</td>
+            </tr>
+            @endif
             <tr class="totaal">
                 <td>Totaal eenmalig (excl. BTW)</td>
                 <td class="rechts">&euro; {{ number_format($quote->total_onetime_excl_vat, 2, ',', '.') }}</td>

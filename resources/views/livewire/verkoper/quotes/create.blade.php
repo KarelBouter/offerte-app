@@ -515,10 +515,20 @@
                         </div>
 
                         {{-- Eenmalig --}}
-                        @if($prices['onetimeExclVat'] > 0)
+                        @if($prices['onetimeSubtotal'] > 0)
                         <div class="border-t border-gray-100 pt-3 space-y-1.5">
+                            @if($prices['discountAmount'] > 0)
                             <div class="flex justify-between text-xs text-gray-500">
                                 <span>Subtotaal eenmalig</span>
+                                <span>€ {{ number_format($prices['onetimeSubtotal'], 2, ',', '.') }}</span>
+                            </div>
+                            <div class="flex justify-between text-xs text-green-700 font-medium">
+                                <span>Korting</span>
+                                <span>&minus; € {{ number_format($prices['discountAmount'], 2, ',', '.') }}</span>
+                            </div>
+                            @endif
+                            <div class="flex justify-between text-xs text-gray-500">
+                                <span>{{ $prices['discountAmount'] > 0 ? 'Na korting excl. BTW' : 'Subtotaal eenmalig' }}</span>
                                 <span>€ {{ number_format($prices['onetimeExclVat'], 2, ',', '.') }}</span>
                             </div>
                             <div class="flex justify-between text-xs text-gray-500">
@@ -596,6 +606,35 @@
             </div>
         </div>
 
+        {{-- Kortingsoptie --}}
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
+            <h3 class="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-4">Korting op eenmalige kosten</h3>
+            <div class="flex flex-col sm:flex-row gap-4">
+                <div class="flex-1">
+                    <label class="block text-xs font-medium text-gray-500 mb-1">Type korting</label>
+                    <select wire:model.live="discountType"
+                            class="w-full rounded-lg border-gray-300 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        <option value="">Geen korting</option>
+                        <option value="percentage">Percentage (%)</option>
+                        <option value="fixed">Vast bedrag (€)</option>
+                    </select>
+                </div>
+                @if($discountType)
+                <div class="flex-1">
+                    <label class="block text-xs font-medium text-gray-500 mb-1">
+                        {{ $discountType === 'percentage' ? 'Percentage (%)' : 'Bedrag (€)' }}
+                    </label>
+                    <input wire:model.live="discountValue" type="number" min="0" step="0.01"
+                           class="w-full rounded-lg border-gray-300 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                           placeholder="{{ $discountType === 'percentage' ? 'bijv. 10' : 'bijv. 500,00' }}"/>
+                </div>
+                @endif
+            </div>
+            @if($discountType)
+            <p class="mt-3 text-xs text-amber-600">Korting geldt uitsluitend op eenmalige kosten. Het servicecontract wordt niet gekort.</p>
+            @endif
+        </div>
+
         {{-- Configuration table --}}
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
             <div class="px-5 py-3 border-b border-gray-100 bg-gray-50">
@@ -635,11 +674,23 @@
                     @endforeach
                 </tbody>
                 <tfoot class="border-t-2 border-gray-200">
-                    @if($prices['onetimeExclVat'] > 0)
-                    <tr class="bg-gray-50">
-                        <td colspan="3" class="px-5 py-2.5 text-sm font-semibold text-gray-700">Totaal eenmalig excl. BTW</td>
-                        <td class="px-5 py-2.5 text-right text-sm font-bold text-gray-800">€ {{ number_format($prices['onetimeExclVat'], 2, ',', '.') }}</td>
-                    </tr>
+                    @if($prices['onetimeSubtotal'] > 0)
+                        @if($prices['discountAmount'] > 0)
+                        <tr class="bg-gray-50">
+                            <td colspan="3" class="px-5 py-2.5 text-sm text-gray-600">Subtotaal eenmalig excl. BTW</td>
+                            <td class="px-5 py-2.5 text-right text-sm text-gray-600">€ {{ number_format($prices['onetimeSubtotal'], 2, ',', '.') }}</td>
+                        </tr>
+                        <tr class="bg-gray-50">
+                            <td colspan="3" class="px-5 py-2.5 text-sm font-medium text-green-700">
+                                Korting ({{ $discountType === 'percentage' ? number_format((float)$discountValue, 2, ',', '.').'%' : '€ '.number_format((float)$discountValue, 2, ',', '.') }})
+                            </td>
+                            <td class="px-5 py-2.5 text-right text-sm font-medium text-green-700">&minus; € {{ number_format($prices['discountAmount'], 2, ',', '.') }}</td>
+                        </tr>
+                        @endif
+                        <tr class="bg-gray-50">
+                            <td colspan="3" class="px-5 py-2.5 text-sm font-semibold text-gray-700">Totaal eenmalig excl. BTW</td>
+                            <td class="px-5 py-2.5 text-right text-sm font-bold text-gray-800">€ {{ number_format($prices['onetimeExclVat'], 2, ',', '.') }}</td>
+                        </tr>
                     @endif
                     @if($prices['yearlyExclVat'] > 0)
                     <tr class="bg-gray-50">
