@@ -15,7 +15,7 @@
  ];
 @endphp
 
-<div class="space-y-6 overflow-x-hidden">
+<div class="space-y-6">
 
  {{-- ── Actie vereist ─────────────────────────────────────────────────── --}}
  @if($actionItems->isEmpty())
@@ -26,7 +26,7 @@
  <span class="text-sm font-medium">Geen offertes vereisen op dit moment actie</span>
  </div>
  @else
- <div class="bg-white rounded-xl border-l-4 border-orange-400 border border-orange-200">
+ <div class="bg-white rounded-xl border-l-4 border-orange-400 border border-orange-200 overflow-hidden">
  <div class="px-5 py-3 bg-orange-50 border-b border-orange-200 flex items-center gap-2">
  <svg class="w-4 h-4 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
@@ -164,7 +164,7 @@
  <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
 
  {{-- Recente offertes --}}
- <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+ <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
  <div class="px-5 py-3 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
  <h2 class="text-sm font-semibold text-gray-700">Recente offertes</h2>
  <a href="{{ route('verkoper.offertes.index') }}" class="text-xs text-blue-600 hover:underline">Alle offertes →</a>
@@ -232,7 +232,7 @@
  </div>
 
  {{-- Openstaande taken --}}
- <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+ <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
  <div class="px-5 py-3 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
  <h2 class="text-sm font-semibold text-gray-700">Alle openstaande taken</h2>
  <a href="{{ route('taken.index', ['tab' => 'alle']) }}" class="text-xs text-blue-600 hover:underline">Alle taken →</a>

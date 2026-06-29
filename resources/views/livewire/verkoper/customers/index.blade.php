@@ -1,4 +1,4 @@
-<div class="overflow-x-hidden">
+<div>
  <div class="flex items-center justify-between mb-6">
  <h1 class="text-2xl font-bold text-gray-800">Klanten</h1>
  <input
@@ -9,7 +9,8 @@
  >
  </div>
 
- <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+ <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+ <div class="overflow-x-auto">
  <table class="w-full text-sm">
  <thead class="bg-gray-50 border-b border-gray-200">
  <tr>
@@ -39,6 +40,7 @@
  @endforelse
  </tbody>
  </table>
+ </div>
  </div>
 
  <div class="mt-4">
