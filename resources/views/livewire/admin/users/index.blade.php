@@ -15,15 +15,15 @@
         </a>
     </div>
 
-    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-visible">
-        <div class="overflow-x-auto"><table class="w-full text-sm min-w-[600px]">
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <table class="w-full text-sm">
             <thead>
                 <tr class="bg-gray-50 border-b border-gray-200 text-left">
                     <th class="px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Naam</th>
-                    <th class="px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">E-mailadres</th>
-                    <th class="px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Rol</th>
+                    <th class="px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide hidden sm:table-cell">E-mailadres</th>
+                    <th class="px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide hidden md:table-cell">Rol</th>
                     <th class="px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Status</th>
-                    <th class="px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Aangemaakt</th>
+                    <th class="px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide hidden md:table-cell">Aangemaakt</th>
                     <th class="px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide text-right">Acties</th>
                 </tr>
             </thead>
@@ -31,8 +31,8 @@
                 @forelse($users as $user)
                 <tr class="hover:bg-gray-50 transition-colors {{ !$user->is_active ? 'opacity-60' : '' }}">
                     <td class="px-5 py-3.5 font-medium text-gray-800 whitespace-nowrap">{{ $user->name }}</td>
-                    <td class="px-5 py-3.5 text-gray-500 whitespace-nowrap">{{ $user->email }}</td>
-                    <td class="px-5 py-3.5 whitespace-nowrap">
+                    <td class="px-5 py-3.5 text-gray-500 whitespace-nowrap hidden sm:table-cell">{{ $user->email }}</td>
+                    <td class="px-5 py-3.5 whitespace-nowrap hidden md:table-cell">
                         <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium
                             {{ $user->role === 'admin' ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700' }}">
                             {{ $user->role === 'admin' ? 'Beheerder' : 'Verkoper' }}
@@ -44,7 +44,7 @@
                             {{ $user->is_active ? 'Actief' : 'Inactief' }}
                         </span>
                     </td>
-                    <td class="px-5 py-3.5 text-gray-400 whitespace-nowrap">{{ $user->created_at->format('d-m-Y') }}</td>
+                    <td class="px-5 py-3.5 text-gray-400 whitespace-nowrap hidden md:table-cell">{{ $user->created_at->format('d-m-Y') }}</td>
                     <td class="px-5 py-3.5 text-right whitespace-nowrap">
                         <div class="flex items-center justify-end gap-3">
                             <a href="{{ route('beheer.gebruikers.edit', $user) }}"
@@ -67,6 +67,6 @@
                 </tr>
                 @endforelse
             </tbody>
-        </table></div>
+        </table>
     </div>
 </div>

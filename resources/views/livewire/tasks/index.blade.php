@@ -55,16 +55,16 @@
     </div>
 
     {{-- Tabel --}}
-    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-visible">
-        <div class="overflow-x-auto"><table class="w-full text-sm min-w-[600px]">
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <table class="w-full text-sm">
             <thead>
                 <tr class="bg-gray-50 border-b border-gray-200 text-left">
                     <th class="px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Status</th>
                     <th class="px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Taak</th>
-                    <th class="px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Gekoppeld aan</th>
-                    <th class="px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Toegewezen aan</th>
-                    <th class="px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Deadline</th>
-                    <th class="px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Aangemaakt door</th>
+                    <th class="px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide hidden sm:table-cell">Gekoppeld aan</th>
+                    <th class="px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide hidden md:table-cell">Toegewezen aan</th>
+                    <th class="px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide hidden lg:table-cell">Deadline</th>
+                    <th class="px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide hidden lg:table-cell">Aangemaakt door</th>
                     <th class="px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide text-right">Acties</th>
                 </tr>
             </thead>
@@ -87,7 +87,7 @@
                                 {{ $task->title }}
                             </a>
                         </td>
-                        <td class="px-5 py-3.5 text-gray-500 whitespace-nowrap">
+                        <td class="px-5 py-3.5 text-gray-500 whitespace-nowrap hidden sm:table-cell">
                             @if($task->quote)
                                 <a href="{{ route('verkoper.offertes.show', $task->quote) }}"
                                    class="text-blue-600 hover:text-blue-800 text-xs font-mono">
@@ -97,8 +97,8 @@
                                 <span class="text-gray-300">—</span>
                             @endif
                         </td>
-                        <td class="px-5 py-3.5 text-gray-600 whitespace-nowrap">{{ $task->assignedTo?->name ?? '—' }}</td>
-                        <td class="px-5 py-3.5 whitespace-nowrap">
+                        <td class="px-5 py-3.5 text-gray-600 whitespace-nowrap hidden md:table-cell">{{ $task->assignedTo?->name ?? '—' }}</td>
+                        <td class="px-5 py-3.5 whitespace-nowrap hidden lg:table-cell">
                             @if($task->due_date)
                                 <span class="{{ $task->due_date->isPast() && $task->status !== 'afgerond' ? 'text-red-600 font-medium' : ($task->due_date->diffInDays(now()) <= 2 && $task->status !== 'afgerond' ? 'text-orange-600' : 'text-gray-500') }}">
                                     {{ $task->due_date->format('d-m-Y') }}
@@ -107,7 +107,7 @@
                                 <span class="text-gray-300">—</span>
                             @endif
                         </td>
-                        <td class="px-5 py-3.5 text-gray-500 whitespace-nowrap">{{ $task->createdBy?->name ?? '—' }}</td>
+                        <td class="px-5 py-3.5 text-gray-500 whitespace-nowrap hidden lg:table-cell">{{ $task->createdBy?->name ?? '—' }}</td>
                         <td class="px-5 py-3.5 text-right whitespace-nowrap">
                             <div class="flex items-center justify-end gap-2">
                                 <a href="{{ route('taken.show', $task) }}"
@@ -146,6 +146,6 @@
                     </tr>
                 @endforelse
             </tbody>
-        </table></div>
+        </table>
     </div>
 </div>

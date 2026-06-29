@@ -147,7 +147,7 @@
 
             {{-- Eenmalige kosten --}}
             @if($onetimeItems->isNotEmpty())
-            <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-visible">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                 <div class="px-5 py-3 border-b border-gray-100 bg-gray-50">
                     <h2 class="text-sm font-semibold text-gray-700 uppercase tracking-wide">Eenmalige kosten</h2>
                 </div>
@@ -212,7 +212,7 @@
 
             {{-- Servicecontract --}}
             @if($yearlyItems->isNotEmpty())
-            <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-visible">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                 <div class="px-5 py-3 border-b border-gray-100 bg-gray-50">
                     <h2 class="text-sm font-semibold text-gray-700 uppercase tracking-wide">Servicecontract (jaarlijks)</h2>
                 </div>
@@ -309,7 +309,7 @@
             </div>
 
             {{-- Price summary --}}
-            <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-visible">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                 <div class="px-4 py-3 border-b border-gray-100" style="background-color: #1B3A6B;">
                     <h2 class="text-sm font-semibold text-white">Samenvatting</h2>
                 </div>
@@ -414,7 +414,7 @@
                 <p class="text-sm text-gray-400">Nog geen taken gekoppeld aan deze offerte.</p>
             </div>
         @else
-            <div class="bg-white rounded-xl border border-gray-200 overflow-visible">
+            <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
                 <div class="overflow-x-auto">
                 <table class="w-full text-sm min-w-[600px]">
                     <thead>
