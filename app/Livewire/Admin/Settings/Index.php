@@ -24,6 +24,10 @@ class Index extends Component
     public ?string $currentLogoPath        = null;
     public $company_signature              = null;
     public ?string $currentSignaturePath   = null;
+    public bool   $require_signature              = true;
+    public string $payment_onetime_mode           = '100_vooraf';
+    public string $payment_service_days           = '14';
+    public bool   $payment_service_yearly_advance = true;
 
     public function mount(): void
     {
@@ -37,7 +41,11 @@ class Index extends Component
         $this->quote_validity_days    = Setting::get('quote_validity_days', '30');
         $this->default_quote_note     = Setting::get('default_quote_note', '');
         $this->currentLogoPath        = Setting::get('logo_path');
-        $this->currentSignaturePath   = Setting::get('company_signature_path');
+        $this->currentSignaturePath           = Setting::get('company_signature_path');
+        $this->require_signature              = (bool) Setting::get('require_signature', '1');
+        $this->payment_onetime_mode           = Setting::get('payment_onetime_mode', '100_vooraf');
+        $this->payment_service_days           = Setting::get('payment_service_days', '14');
+        $this->payment_service_yearly_advance = (bool) Setting::get('payment_service_yearly_advance', '1');
     }
 
     public function save(): void
@@ -54,6 +62,8 @@ class Index extends Component
             'default_quote_note'     => 'nullable|string|max:1000',
             'logo'                   => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             'company_signature'      => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'payment_onetime_mode'   => 'required|in:100_vooraf,50_50',
+            'payment_service_days'   => 'required|integer|min:1|max:90',
         ], [
             'company_name.required'           => 'Bedrijfsnaam is verplicht.',
             'company_address.required'        => 'Vestigingsadres is verplicht.',
@@ -96,6 +106,10 @@ class Index extends Component
         Setting::set('vat_percentage', $this->vat_percentage);
         Setting::set('quote_validity_days', $this->quote_validity_days);
         Setting::set('default_quote_note', $this->default_quote_note);
+        Setting::set('require_signature',              $this->require_signature ? '1' : '0');
+        Setting::set('payment_onetime_mode',           $this->payment_onetime_mode);
+        Setting::set('payment_service_days',           $this->payment_service_days);
+        Setting::set('payment_service_yearly_advance', $this->payment_service_yearly_advance ? '1' : '0');
 
         session()->flash('success', 'Instellingen opgeslagen.');
     }

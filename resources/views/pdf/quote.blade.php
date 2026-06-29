@@ -208,12 +208,29 @@ p { margin-bottom: 3mm; font-size: 9pt; }
 
 <div class="artikel">
     <h2>Artikel 7 &mdash; Betaalvoorwaarden</h2>
+    @php
+        $onetimeMode      = $settings->get('payment_onetime_mode', '100_vooraf');
+        $serviceDays      = (int) $settings->get('payment_service_days', '14');
+        $serviceYearlyAdv = (bool) $settings->get('payment_service_yearly_advance', '1');
+    @endphp
     <table class="data-tabel">
         <thead><tr><th>Moment</th><th>Betaling</th></tr></thead>
         <tbody>
-            <tr><td>Bij start project</td><td>Volledige betaling hardware incl. add-ons en installatiekosten</td></tr>
-            <tr><td>Bij oplevering</td><td>Betaling eerste jaar servicecontract (vooruitbetaald)</td></tr>
-            <tr><td>Jaarlijks vanaf jaar 2</td><td>Servicecontract jaarlijks voorafgaand vooruitbetaald</td></tr>
+            @if($onetimeMode === '50_50')
+                <tr><td>Bij akkoord / opdrachtverstrekking</td><td>50% van de eenmalige kosten (hardware, installatie &amp; add-ons)</td></tr>
+                <tr><td>Op dag van oplevering</td><td>Resterende 50% van de eenmalige kosten</td></tr>
+            @else
+                <tr><td>Bij akkoord / start project</td><td>Volledige betaling hardware incl. add-ons en installatiekosten</td></tr>
+            @endif
+            <tr>
+                <td>Bij oplevering</td>
+                <td>Betaling eerste jaar servicecontract@if($serviceYearlyAdv) (vooruitbetaald)@endif &mdash; betalingstermijn {{ $serviceDays }} dagen</td>
+            </tr>
+            @if($serviceYearlyAdv)
+                <tr><td>Jaarlijks vanaf jaar 2</td><td>Servicecontract jaarlijks voorafgaand vooruitbetaald &mdash; betalingstermijn {{ $serviceDays }} dagen</td></tr>
+            @else
+                <tr><td>Jaarlijks vanaf jaar 2</td><td>Servicecontract jaarlijks gefactureerd &mdash; betalingstermijn {{ $serviceDays }} dagen</td></tr>
+            @endif
         </tbody>
     </table>
     <p>{!! nl2br(e($settings->get('pdf_tekst_artikel_7', ''))) !!}</p>

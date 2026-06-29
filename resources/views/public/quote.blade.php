@@ -173,16 +173,54 @@
     </div>
     @endif
 
-    {{-- Ondertekening --}}
+    {{-- Betaalinformatie --}}
+    @if($onetimeItems->count() || $yearlyItems->count())
+    <div class="bg-blue-50 border border-blue-200 rounded-xl p-6">
+        <h2 class="text-sm font-semibold text-blue-800 uppercase tracking-wide mb-3">Betaalinformatie</h2>
+        <div class="text-sm text-blue-900 space-y-2">
+            @if($onetimeItems->count())
+                @if($paymentOnetimeMode === '50_50')
+                    <p>
+                        <span class="font-medium">Eenmalige kosten (hardware &amp; installatie):</span>
+                        50% (€&nbsp;{{ number_format($onetimeItems->sum(fn($i) => $i->quantity * $i->unit_price) / 2, 2, ',', '.') }}&nbsp;excl. BTW) wordt gefactureerd bij akkoord.
+                        De overige 50% (€&nbsp;{{ number_format($onetimeItems->sum(fn($i) => $i->quantity * $i->unit_price) / 2, 2, ',', '.') }}&nbsp;excl. BTW) is verschuldigd op de dag van oplevering.
+                    </p>
+                @else
+                    <p>
+                        <span class="font-medium">Eenmalige kosten (hardware &amp; installatie):</span>
+                        100% (€&nbsp;{{ number_format($onetimeItems->sum(fn($i) => $i->quantity * $i->unit_price), 2, ',', '.') }}&nbsp;excl. BTW) wordt gefactureerd bij akkoord / start project.
+                    </p>
+                @endif
+            @endif
+            @if($yearlyItems->count())
+                <p>
+                    <span class="font-medium">Servicecontract:</span>
+                    Jaarlijks
+                    @if($paymentServiceYearlyAdvance) vooraf @endif
+                    gefactureerd met een betalingstermijn van {{ $paymentServiceDays }} dagen.
+                </p>
+            @endif
+        </div>
+    </div>
+    @endif
+
+    {{-- Ondertekening / akkoord --}}
     @if($quote->status !== 'ondertekend')
     <div class="bg-white border border-gray-200 rounded-xl p-6" id="ondertekening">
-        <h2 class="text-lg font-semibold text-gray-800 mb-1">Offerte ondertekenen</h2>
+        <h2 class="text-lg font-semibold text-gray-800 mb-1">
+            @if($requireSignature) Offerte ondertekenen @else Offerte accorderen @endif
+        </h2>
         <p class="text-sm text-gray-500 mb-5">
-            Bent u akkoord met deze offerte? Vul uw naam in en plaats uw handtekening.
+            @if($requireSignature)
+                Bent u akkoord met deze offerte? Vul uw naam in en plaats uw handtekening.
+            @else
+                Bent u akkoord met deze offerte? Vul uw naam in en vink het akkoordvakje aan.
+            @endif
         </p>
 
         <form method="POST" action="{{ route('quote.sign', $quote->sign_token) }}" id="signForm">
             @csrf
+            <input type="hidden" name="require_signature" value="{{ $requireSignature ? '1' : '0' }}">
 
             @if(session('error'))
                 <div class="mb-4 bg-red-50 border border-red-200 text-red-700 rounded-lg px-4 py-3 text-sm">
@@ -208,6 +246,7 @@
                 @enderror
             </div>
 
+            @if($requireSignature)
             <div class="mb-4">
                 <label class="block text-sm font-medium text-gray-700 mb-1">
                     Handtekening * <span class="text-gray-400 font-normal">(teken hieronder met muis of vinger)</span>
@@ -231,6 +270,7 @@
                 @enderror
                 <input type="hidden" name="signature" id="signatureInput">
             </div>
+            @endif
 
             <div class="mb-5 flex items-start gap-3">
                 <input type="checkbox" id="akkoord" required
@@ -246,18 +286,19 @@
                 id="submitBtn"
                 class="w-full bg-blue-700 hover:bg-blue-800 text-white font-semibold text-sm px-6 py-3 rounded-lg transition-colors"
             >
-                Offerte ondertekenen
+                @if($requireSignature) Offerte ondertekenen @else Akkoord geven @endif
             </button>
         </form>
     </div>
 
+    @if($requireSignature)
     <script>
     (function () {
-        const canvas  = document.getElementById('signatureCanvas');
-        const ctx     = canvas.getContext('2d');
-        const input   = document.getElementById('signatureInput');
+        const canvas   = document.getElementById('signatureCanvas');
+        const ctx      = canvas.getContext('2d');
+        const input    = document.getElementById('signatureInput');
         const clearBtn = document.getElementById('clearSignature');
-        const form    = document.getElementById('signForm');
+        const form     = document.getElementById('signForm');
 
         let drawing = false;
         let hasDrawn = false;
@@ -283,27 +324,9 @@
             return { x: src.clientX - rect.left, y: src.clientY - rect.top };
         }
 
-        function startDraw(e) {
-            e.preventDefault();
-            drawing = true;
-            const p = getPos(e);
-            ctx.beginPath();
-            ctx.moveTo(p.x, p.y);
-        }
-
-        function draw(e) {
-            e.preventDefault();
-            if (!drawing) return;
-            const p = getPos(e);
-            ctx.lineTo(p.x, p.y);
-            ctx.stroke();
-            hasDrawn = true;
-        }
-
-        function endDraw(e) {
-            e.preventDefault();
-            drawing = false;
-        }
+        function startDraw(e) { e.preventDefault(); drawing = true; const p = getPos(e); ctx.beginPath(); ctx.moveTo(p.x, p.y); }
+        function draw(e)      { e.preventDefault(); if (!drawing) return; const p = getPos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); hasDrawn = true; }
+        function endDraw(e)   { e.preventDefault(); drawing = false; }
 
         canvas.addEventListener('mousedown',  startDraw);
         canvas.addEventListener('mousemove',  draw);
@@ -315,7 +338,7 @@
 
         clearBtn.addEventListener('click', function () {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            hasDrawn  = false;
+            hasDrawn    = false;
             input.value = '';
         });
 
@@ -329,12 +352,13 @@
         });
     })();
     </script>
+    @endif
 
     @else
     <div class="bg-green-50 border border-green-200 rounded-xl p-6 text-center">
-        <p class="text-green-800 font-semibold text-lg mb-1">Ondertekend</p>
+        <p class="text-green-800 font-semibold text-lg mb-1">Akkoord gegeven</p>
         <p class="text-green-700 text-sm">
-            Ondertekend door <strong>{{ $quote->signed_by_name }}</strong>
+            Bevestigd door <strong>{{ $quote->signed_by_name }}</strong>
             op {{ $quote->signed_at->format('d-m-Y \o\m H:i') }}.
         </p>
     </div>

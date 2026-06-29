@@ -25,36 +25,54 @@ class PublicQuoteSignController extends Controller
                 ->with('error', 'Deze offerte is al ondertekend.');
         }
 
-        $request->validate([
-            'signature'   => 'required|string',
-            'signer_name' => 'required|string|max:255',
-        ], [
-            'signature.required'   => 'Handtekening is verplicht.',
-            'signer_name.required' => 'Naam is verplicht.',
-        ]);
+        $requireSignature = $request->input('require_signature', '1') === '1';
 
-        $dataUrl = $request->input('signature');
-        if (!str_starts_with($dataUrl, 'data:image/png;base64,')) {
-            return back()->with('error', 'Ongeldige handtekening.');
+        if ($requireSignature) {
+            $request->validate([
+                'signature'   => 'required|string',
+                'signer_name' => 'required|string|max:255',
+            ], [
+                'signature.required'   => 'Handtekening is verplicht.',
+                'signer_name.required' => 'Naam is verplicht.',
+            ]);
+
+            $dataUrl = $request->input('signature');
+            if (!str_starts_with($dataUrl, 'data:image/png;base64,')) {
+                return back()->with('error', 'Ongeldige handtekening.');
+            }
+
+            $base64    = substr($dataUrl, strlen('data:image/png;base64,'));
+            $imageData = base64_decode($base64);
+
+            if ($imageData === false || strlen($imageData) < 100) {
+                return back()->with('error', 'Ongeldige handtekening.');
+            }
+
+            $signaturePath = 'signatures/' . $quote->id . '_' . time() . '.png';
+            Storage::disk('local')->put($signaturePath, $imageData);
+
+            $quote->update([
+                'status'         => 'ondertekend',
+                'signed_at'      => now(),
+                'signed_by_name' => $request->input('signer_name'),
+                'signature_path' => $signaturePath,
+                'signed_ip'      => $request->ip(),
+            ]);
+        } else {
+            $request->validate([
+                'signer_name' => 'required|string|max:255',
+            ], [
+                'signer_name.required' => 'Naam is verplicht.',
+            ]);
+
+            $quote->update([
+                'status'         => 'ondertekend',
+                'signed_at'      => now(),
+                'signed_by_name' => $request->input('signer_name'),
+                'signature_path' => null,
+                'signed_ip'      => $request->ip(),
+            ]);
         }
-
-        $base64    = substr($dataUrl, strlen('data:image/png;base64,'));
-        $imageData = base64_decode($base64);
-
-        if ($imageData === false || strlen($imageData) < 100) {
-            return back()->with('error', 'Ongeldige handtekening.');
-        }
-
-        $signaturePath = 'signatures/' . $quote->id . '_' . time() . '.png';
-        Storage::disk('local')->put($signaturePath, $imageData);
-
-        $quote->update([
-            'status'         => 'ondertekend',
-            'signed_at'      => now(),
-            'signed_by_name' => $request->input('signer_name'),
-            'signature_path' => $signaturePath,
-            'signed_ip'      => $request->ip(),
-        ]);
 
         app(QuotePdfService::class)->generate($quote->fresh(['customer', 'items.product', 'user']));
 

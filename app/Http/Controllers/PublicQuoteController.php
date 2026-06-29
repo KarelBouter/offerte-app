@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Quote;
+use App\Models\Setting;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -32,6 +33,20 @@ class PublicQuoteController extends Controller
             fn ($item) => $item->product && $item->product->is_price_on_quote
         );
 
-        return view('public.quote', compact('quote', 'onetimeItems', 'yearlyItems', 'onQuoteItems'));
+        $requireSignature            = (bool) Setting::get('require_signature', '1');
+        $paymentOnetimeMode          = Setting::get('payment_onetime_mode', '100_vooraf');
+        $paymentServiceDays          = (int)  Setting::get('payment_service_days', '14');
+        $paymentServiceYearlyAdvance = (bool) Setting::get('payment_service_yearly_advance', '1');
+
+        return view('public.quote', compact(
+            'quote',
+            'onetimeItems',
+            'yearlyItems',
+            'onQuoteItems',
+            'requireSignature',
+            'paymentOnetimeMode',
+            'paymentServiceDays',
+            'paymentServiceYearlyAdvance',
+        ));
     }
 }

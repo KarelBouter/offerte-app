@@ -151,6 +151,84 @@
             </div>
         </div>
 
+        {{-- Handtekening & betaalafspraken --}}
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <h2 class="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-5">Handtekening &amp; betaalafspraken</h2>
+
+            <div class="space-y-5">
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Akkoord bij offerte</label>
+                    <div class="space-y-2">
+                        <label class="flex items-start gap-3 cursor-pointer">
+                            <input type="radio" wire:model="require_signature" value="1"
+                                   class="mt-0.5 h-4 w-4 text-blue-600 border-gray-300">
+                            <span class="text-sm text-gray-700">
+                                <span class="font-medium">Handtekening vereist</span><br>
+                                <span class="text-gray-500 text-xs">Klant tekent digitaal in het ondertekeningsvak. De handtekening wordt opgeslagen en in de PDF opgenomen.</span>
+                            </span>
+                        </label>
+                        <label class="flex items-start gap-3 cursor-pointer">
+                            <input type="radio" wire:model="require_signature" value="0"
+                                   class="mt-0.5 h-4 w-4 text-blue-600 border-gray-300">
+                            <span class="text-sm text-gray-700">
+                                <span class="font-medium">Akkoord via checkbox volstaat</span><br>
+                                <span class="text-gray-500 text-xs">Klant vinkt alleen de akkoord-checkbox aan. Geen tekencanvas. Geschikt voor eenvoudigere overeenkomsten.</span>
+                            </span>
+                        </label>
+                    </div>
+                </div>
+
+                <hr class="border-gray-100">
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Betaalafspraken eenmalige kosten</label>
+                    <div class="space-y-2">
+                        <label class="flex items-start gap-3 cursor-pointer">
+                            <input type="radio" wire:model="payment_onetime_mode" value="100_vooraf"
+                                   class="mt-0.5 h-4 w-4 text-blue-600 border-gray-300">
+                            <span class="text-sm text-gray-700">
+                                <span class="font-medium">100% bij akkoord / start project</span><br>
+                                <span class="text-gray-500 text-xs">Volledige betaling van hardware, installatie en add-ons vóór aanvang werkzaamheden.</span>
+                            </span>
+                        </label>
+                        <label class="flex items-start gap-3 cursor-pointer">
+                            <input type="radio" wire:model="payment_onetime_mode" value="50_50"
+                                   class="mt-0.5 h-4 w-4 text-blue-600 border-gray-300">
+                            <span class="text-sm text-gray-700">
+                                <span class="font-medium">50% bij akkoord &mdash; 50% bij oplevering</span><br>
+                                <span class="text-gray-500 text-xs">De helft van de eenmalige kosten wordt gefactureerd bij ondertekening/akkoord, de andere helft op de dag van oplevering.</span>
+                            </span>
+                        </label>
+                    </div>
+                </div>
+
+                <hr class="border-gray-100">
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Servicecontract</label>
+                    <div class="space-y-3">
+                        <div class="flex items-center gap-3">
+                            <input type="checkbox" wire:model="payment_service_yearly_advance" id="service_yearly_advance"
+                                   class="h-4 w-4 rounded border-gray-300 text-blue-600">
+                            <label for="service_yearly_advance" class="text-sm text-gray-700">
+                                Jaarlijks vooraf betaald
+                                <span class="text-gray-400 font-normal text-xs">(servicecontract wordt per jaar vooruitbetaald)</span>
+                            </label>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <label class="text-sm text-gray-700 whitespace-nowrap">Betalingstermijn servicecontract:</label>
+                            <input wire:model="payment_service_days" type="number" min="1" max="90"
+                                   class="w-20 rounded-lg border-gray-300 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500"/>
+                            <span class="text-sm text-gray-500">dagen</span>
+                        </div>
+                        @error('payment_service_days') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
         {{-- Handtekening Proud Innovations --}}
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
             <h2 class="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-3">Handtekening (namens Proud Innovations)</h2>
