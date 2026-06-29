@@ -224,7 +224,7 @@ p { margin-bottom: 3mm; font-size: 9pt; }
             @endif
             <tr>
                 <td>Bij oplevering</td>
-                <td>Betaling eerste jaar servicecontract@if($serviceYearlyAdv) (vooruitbetaald)@endif &mdash; betalingstermijn {{ $serviceDays }} dagen</td>
+                <td>Betaling eerste jaar servicecontract{{ $serviceYearlyAdv ? ' (vooruitbetaald)' : '' }} &mdash; betalingstermijn {{ $serviceDays }} dagen</td>
             </tr>
             @if($serviceYearlyAdv)
                 <tr><td>Jaarlijks vanaf jaar 2</td><td>Servicecontract jaarlijks voorafgaand vooruitbetaald &mdash; betalingstermijn {{ $serviceDays }} dagen</td></tr>
