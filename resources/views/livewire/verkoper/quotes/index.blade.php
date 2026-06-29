@@ -1,4 +1,4 @@
-<div class="overflow-x-hidden">
+<div>
  <x-breadcrumb :items="[['label' => 'Offertes']]"/>
 
  {{-- Toolbar --}}
