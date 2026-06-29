@@ -203,15 +203,33 @@
                 @php $ups = ($productsByCategory['Hardware'] ?? collect())->firstWhere('name', 'UPS') @endphp
                 @if($ups)
                 <div class="px-4 pb-4">
-                    <label class="flex items-center gap-3 rounded-xl border border-gray-200 p-4 cursor-pointer hover:bg-gray-50 transition-colors">
+                    @php $upsAutoAdded = in_array($ups->id, $autoAddedIds); @endphp
+                    <label class="flex items-center gap-3 rounded-xl border p-4 transition-colors
+                        {{ $upsAutoAdded
+                            ? 'border-blue-200 bg-blue-50 cursor-not-allowed opacity-75'
+                            : 'border-gray-200 cursor-pointer hover:bg-gray-50' }}">
                         <input wire:model.live="qtyInputs.{{ $ups->id }}"
                                type="checkbox" value="1"
-                               class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"/>
+                               @disabled($upsAutoAdded)
+                               class="rounded border-gray-300 text-blue-600 focus:ring-blue-500
+                                      {{ $upsAutoAdded ? 'cursor-not-allowed' : '' }}"/>
                         <div class="flex-1">
-                            <span class="text-sm font-medium text-gray-800">{{ $ups->name }}</span>
+                            <span class="text-sm font-medium {{ $upsAutoAdded ? 'text-blue-700' : 'text-gray-800' }}">
+                                {{ $ups->name }}
+                            </span>
+                            @if($upsAutoAdded)
+                                <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-700">
+                                    Automatisch toegevoegd
+                                </span>
+                            @endif
                             <span class="text-xs text-gray-400 ml-2">{{ $ups->description }}</span>
+                            @if($upsAutoAdded)
+                                <p class="text-xs text-blue-600 mt-0.5">
+                                    {{ $autoItems[$ups->id]['auto_added_reason'] ?? 'Vereist door de geselecteerde configuratie' }}
+                                </p>
+                            @endif
                         </div>
-                        <span class="text-sm font-semibold text-gray-700">
+                        <span class="text-sm font-semibold {{ $upsAutoAdded ? 'text-blue-600' : 'text-gray-700' }}">
                             € {{ number_format($ups->unit_price, 2, ',', '.') }}
                         </span>
                     </label>
@@ -228,18 +246,35 @@
                 <div class="p-4 space-y-3">
                     @foreach($productsByCategory['Netwerk'] as $p)
                         @if(!in_array($p->name, $autoOnlyNames))
-                        <div class="flex items-center gap-4 rounded-xl border border-gray-200 p-4">
+                        @php $isAutoAdded = in_array($p->id, $autoAddedIds); @endphp
+                        <div class="flex items-center gap-4 rounded-xl border p-4 transition-colors
+                            {{ $isAutoAdded ? 'border-blue-200 bg-blue-50 opacity-75' : 'border-gray-200' }}">
                             <div class="flex-1">
-                                <p class="text-sm font-medium text-gray-800">{{ $p->name }}</p>
-                                <p class="text-xs text-gray-400 mt-0.5">{{ Str::limit($p->description, 80) }}</p>
+                                <p class="text-sm font-medium {{ $isAutoAdded ? 'text-blue-700' : 'text-gray-800' }}">
+                                    {{ $p->name }}
+                                    @if($isAutoAdded)
+                                        <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-700">
+                                            Automatisch toegevoegd
+                                        </span>
+                                    @endif
+                                </p>
+                                <p class="text-xs mt-0.5 {{ $isAutoAdded ? 'text-blue-600' : 'text-gray-400' }}">
+                                    @if($isAutoAdded)
+                                        {{ $autoItems[$p->id]['auto_added_reason'] ?? 'Vereist door de geselecteerde configuratie' }}
+                                    @else
+                                        {{ Str::limit($p->description, 80) }}
+                                    @endif
+                                </p>
                             </div>
-                            <span class="text-sm text-amber-600 font-medium">
+                            <span class="text-sm {{ $p->is_price_on_quote ? 'text-amber-600' : ($isAutoAdded ? 'text-blue-600' : 'text-gray-700') }} font-medium">
                                 {{ $p->is_price_on_quote ? 'Op offerte' : '€ '.number_format($p->unit_price, 2, ',', '.') }}
                             </span>
                             <div class="flex items-center gap-2">
-                                <label class="text-xs text-gray-500">Aantal</label>
+                                <label class="text-xs {{ $isAutoAdded ? 'text-blue-500' : 'text-gray-500' }}">Aantal</label>
                                 <input wire:model.live="qtyInputs.{{ $p->id }}" type="number" min="0" value="0"
-                                       class="w-16 rounded-lg border-gray-300 text-sm shadow-sm text-center focus:ring-blue-500"/>
+                                       @disabled($isAutoAdded)
+                                       class="w-16 rounded-lg border-gray-300 text-sm shadow-sm text-center focus:ring-blue-500
+                                              {{ $isAutoAdded ? 'bg-blue-100 border-blue-200 text-blue-700 cursor-not-allowed' : '' }}"/>
                             </div>
                         </div>
                         @endif
@@ -261,16 +296,33 @@
                 </div>
                 <div class="p-4 space-y-3">
                     @foreach($cameras as $p)
-                    <div class="flex items-center gap-4 rounded-xl border border-gray-200 p-4">
+                    @php $isAutoAdded = in_array($p->id, $autoAddedIds); @endphp
+                    <div class="flex items-center gap-4 rounded-xl border p-4 transition-colors
+                        {{ $isAutoAdded ? 'border-blue-200 bg-blue-50 opacity-75' : 'border-gray-200' }}">
                         <div class="flex-1">
-                            <p class="text-sm font-medium text-gray-800">{{ $p->name }}</p>
-                            <p class="text-xs text-gray-400 mt-0.5">{{ Str::limit($p->description, 80) }}</p>
+                            <p class="text-sm font-medium {{ $isAutoAdded ? 'text-blue-700' : 'text-gray-800' }}">
+                                {{ $p->name }}
+                                @if($isAutoAdded)
+                                    <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-700">
+                                        Automatisch toegevoegd
+                                    </span>
+                                @endif
+                            </p>
+                            <p class="text-xs mt-0.5 {{ $isAutoAdded ? 'text-blue-600' : 'text-gray-400' }}">
+                                @if($isAutoAdded)
+                                    {{ $autoItems[$p->id]['auto_added_reason'] ?? 'Vereist door de geselecteerde configuratie' }}
+                                @else
+                                    {{ Str::limit($p->description, 80) }}
+                                @endif
+                            </p>
                         </div>
                         <span class="text-sm text-amber-600 font-medium">Op offerte</span>
                         <div class="flex items-center gap-2">
-                            <label class="text-xs text-gray-500">Aantal</label>
+                            <label class="text-xs {{ $isAutoAdded ? 'text-blue-500' : 'text-gray-500' }}">Aantal</label>
                             <input wire:model.live="qtyInputs.{{ $p->id }}" type="number" min="0" value="0"
-                                   class="w-16 rounded-lg border-gray-300 text-sm shadow-sm text-center focus:ring-blue-500"/>
+                                   @disabled($isAutoAdded)
+                                   class="w-16 rounded-lg border-gray-300 text-sm shadow-sm text-center focus:ring-blue-500
+                                          {{ $isAutoAdded ? 'bg-blue-100 border-blue-200 text-blue-700 cursor-not-allowed' : '' }}"/>
                         </div>
                     </div>
                     @endforeach
@@ -291,18 +343,35 @@
                 </div>
                 <div class="p-4 space-y-3">
                     @foreach($installProducts as $p)
-                    <div class="flex items-center gap-4 rounded-xl border border-gray-200 p-4">
+                    @php $isAutoAdded = in_array($p->id, $autoAddedIds); @endphp
+                    <div class="flex items-center gap-4 rounded-xl border p-4 transition-colors
+                        {{ $isAutoAdded ? 'border-blue-200 bg-blue-50 opacity-75' : 'border-gray-200' }}">
                         <div class="flex-1">
-                            <p class="text-sm font-medium text-gray-800">{{ $p->name }}</p>
-                            <p class="text-xs text-gray-400 mt-0.5">{{ Str::limit($p->description, 80) }}</p>
+                            <p class="text-sm font-medium {{ $isAutoAdded ? 'text-blue-700' : 'text-gray-800' }}">
+                                {{ $p->name }}
+                                @if($isAutoAdded)
+                                    <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-700">
+                                        Automatisch toegevoegd
+                                    </span>
+                                @endif
+                            </p>
+                            <p class="text-xs mt-0.5 {{ $isAutoAdded ? 'text-blue-600' : 'text-gray-400' }}">
+                                @if($isAutoAdded)
+                                    {{ $autoItems[$p->id]['auto_added_reason'] ?? 'Vereist door de geselecteerde configuratie' }}
+                                @else
+                                    {{ Str::limit($p->description, 80) }}
+                                @endif
+                            </p>
                         </div>
-                        <span class="text-sm font-semibold {{ $p->is_price_on_quote ? 'text-amber-600' : 'text-gray-700' }}">
+                        <span class="text-sm font-semibold {{ $p->is_price_on_quote ? 'text-amber-600' : ($isAutoAdded ? 'text-blue-600' : 'text-gray-700') }}">
                             {{ $p->is_price_on_quote ? 'Op offerte' : '€ '.number_format($p->unit_price, 2, ',', '.') }}
                         </span>
                         <div class="flex items-center gap-2">
-                            <label class="text-xs text-gray-500">Aantal</label>
+                            <label class="text-xs {{ $isAutoAdded ? 'text-blue-500' : 'text-gray-500' }}">Aantal</label>
                             <input wire:model.live="qtyInputs.{{ $p->id }}" type="number" min="0" value="0"
-                                   class="w-16 rounded-lg border-gray-300 text-sm shadow-sm text-center focus:ring-blue-500"/>
+                                   @disabled($isAutoAdded)
+                                   class="w-16 rounded-lg border-gray-300 text-sm shadow-sm text-center focus:ring-blue-500
+                                          {{ $isAutoAdded ? 'bg-blue-100 border-blue-200 text-blue-700 cursor-not-allowed' : '' }}"/>
                         </div>
                     </div>
                     @endforeach

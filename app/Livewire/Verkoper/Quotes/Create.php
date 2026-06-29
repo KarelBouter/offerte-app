@@ -427,9 +427,11 @@ class Create extends Component
                 'auto_added_reason' => null, 'is_recommended' => false, 'is_optional_declined' => false];
         }
 
+        $autoAddedIds = array_keys($this->autoItems);
+
         foreach ($this->qtyInputs as $productId => $qty) {
             $qty = (int) $qty;
-            if ($qty > 0) {
+            if ($qty > 0 && !in_array((int) $productId, $autoAddedIds)) {
                 $items[(string) $productId] = ['quantity' => $qty, 'is_auto_added' => false,
                     'auto_added_reason' => null, 'is_recommended' => false, 'is_optional_declined' => false];
             }
@@ -461,6 +463,11 @@ class Create extends Component
     }
 
     // ── Price calculation ──────────────────────────────────────────────────
+
+    public function getAutoAddedProductIds(): array
+    {
+        return array_keys($this->autoItems);
+    }
 
     public function getAllItems(): array
     {
@@ -548,6 +555,7 @@ class Create extends Component
             'autoOnlyNames'      => $autoOnlyNames,
             'prices'             => $this->calculatePrices(),
             'previewNumber'      => $previewNumber,
+            'autoAddedIds'       => $this->getAutoAddedProductIds(),
         ])->layout($layout, ['title' => $title]);
     }
 }
