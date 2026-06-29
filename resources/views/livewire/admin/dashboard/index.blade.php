@@ -33,7 +33,8 @@
                 </svg>
                 <h2 class="text-sm font-semibold text-orange-800">Vereist opvolging ({{ $actionItems->count() }})</h2>
             </div>
-            <table class="w-full text-sm">
+            <div class="overflow-x-auto">
+            <table class="w-full text-sm min-w-[480px]">
                 <thead class="bg-gray-50 border-b border-gray-100">
                     <tr>
                         <th class="px-4 py-2.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide w-8">#</th>
@@ -72,6 +73,7 @@
                     @endforeach
                 </tbody>
             </table>
+            </div>
         </div>
     @endif
 
@@ -167,7 +169,8 @@
                 <h2 class="text-sm font-semibold text-gray-700">Recente offertes</h2>
                 <a href="{{ route('verkoper.offertes.index') }}" class="text-xs text-blue-600 hover:underline">Alle offertes →</a>
             </div>
-            <table class="w-full text-sm">
+            <div class="overflow-x-auto">
+            <table class="w-full text-sm min-w-[480px]">
                 <thead>
                     <tr class="border-b border-gray-100 text-left">
                         <th class="px-4 py-2 text-xs font-semibold text-gray-500">Nummer</th>
@@ -197,6 +200,7 @@
                     @endforelse
                 </tbody>
             </table>
+            </div>
         </div>
 
         {{-- Recente activiteit + Openstaande taken --}}
@@ -236,7 +240,8 @@
                 @if($openTaken->isEmpty())
                     <p class="px-5 py-8 text-center text-gray-400 text-sm">Geen openstaande taken.</p>
                 @else
-                    <table class="w-full text-sm">
+                    <div class="overflow-x-auto">
+                    <table class="w-full text-sm min-w-[480px]">
                         <tbody class="divide-y divide-gray-50">
                             @foreach($openTaken as $taak)
                             <tr class="hover:bg-gray-50">
@@ -268,6 +273,7 @@
                             @endforeach
                         </tbody>
                     </table>
+                    </div>
                 @endif
             </div>
         </div>

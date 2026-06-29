@@ -162,7 +162,7 @@
          STAP 2: CONFIGURATOR
     ═══════════════════════════════════════════════════════════════════════ --}}
     @if($step === 2)
-    <div class="flex gap-6 items-start">
+    <div class="flex flex-col gap-6 items-start lg:flex-row">
 
         {{-- LEFT: Product configurator --}}
         <div class="flex-1 space-y-5 min-w-0">
@@ -481,7 +481,7 @@
         </div>
 
         {{-- RIGHT: Prijs sidebar --}}
-        <div class="w-72 flex-shrink-0 sticky top-6">
+        <div class="w-full lg:w-72 lg:flex-shrink-0 lg:sticky lg:top-6">
             <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                 <div class="px-4 py-3 border-b border-gray-100" style="background-color: #1B3A6B;">
                     <h3 class="text-sm font-semibold text-white">Prijsoverzicht</h3>
