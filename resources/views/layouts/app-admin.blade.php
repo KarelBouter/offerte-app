@@ -12,7 +12,7 @@
     <style>
 [x-cloak]{display:none!important}
 @media (max-width: 1180px) { #desktop-sidebar { display: none !important; visibility: hidden !important; opacity: 0 !important; width: 0 !important; overflow: hidden !important; } }
-@media (min-width: 1180px) { #hamburger-btn { display: none !important; } }
+@media (min-width: 1181px) { #hamburger-btn { display: none !important; } }
 </style>
 </head>
 <body class="font-sans antialiased bg-gray-100">
