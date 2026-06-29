@@ -32,7 +32,7 @@
  </div>
 
  {{-- Table --}}
- <div class="bg-white rounded-xl border border-gray-200">
+ <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
  <div class="overflow-x-auto"><table class="w-full text-sm text-left min-w-[600px]">
  <thead class="bg-gray-50 border-b border-gray-200">
  <tr>
