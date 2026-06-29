@@ -1,4 +1,4 @@
-<div>
+<div class="overflow-x-hidden">
  <x-breadcrumb :items="[['label' => 'Beheer', 'route' => 'beheer.dashboard'], ['label' => 'Activiteitenlog']]"/>
 
  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">

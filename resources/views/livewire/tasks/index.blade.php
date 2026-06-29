@@ -1,4 +1,4 @@
-<div>
+<div class="overflow-x-hidden">
  <x-breadcrumb :items="[['label' => 'Taken']]"/>
 
  {{-- Tabs --}}

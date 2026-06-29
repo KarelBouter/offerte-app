@@ -1,4 +1,4 @@
-<div>
+<div class="overflow-x-hidden">
  <x-breadcrumb :items="[['label' => 'Notificaties']]"/>
 
  <div class="flex items-center justify-between mb-5">
