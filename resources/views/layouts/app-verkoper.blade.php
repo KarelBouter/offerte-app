@@ -7,12 +7,12 @@
     <title>{{ $title ?? 'Offertes' }} — {{ config('app.name') }}</title>
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @stack('scripts')
     <style>
 [x-cloak]{display:none!important}
 @media (max-width: 1179px) { #desktop-sidebar { display: none !important; } }
 </style>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-    @stack('scripts')
 </head>
 <body class="font-sans antialiased bg-gray-100">
 
