@@ -1,7 +1,7 @@
 <div class="overflow-x-hidden">
  <x-breadcrumb :items="[['label' => 'Notificaties']]"/>
 
- <div class="flex items-center justify-between mb-5">
+ <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
  <h2 class="text-lg font-semibold text-gray-800">Notificaties</h2>
  <button wire:click="markAllRead"
  class="text-sm text-blue-600 hover:text-blue-800 font-medium">

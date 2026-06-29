@@ -2,13 +2,13 @@
  <x-breadcrumb :items="[['label' => 'Beheer', 'route' => 'beheer.dashboard'], ['label' => 'Producten']]"/>
 
  {{-- Toolbar --}}
- <div class="flex items-center justify-between mb-5">
+ <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
  <div class="flex items-center gap-3">
  <input
  wire:model.live.debounce.300ms="search"
  type="text"
  placeholder="Zoeken op naam of categorie…"
- class="w-72 rounded-lg border-gray-300 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500"
+ class="w-full sm:w-72 rounded-lg border-gray-300 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500"
  />
  <select
  wire:model.live="categoryFilter"

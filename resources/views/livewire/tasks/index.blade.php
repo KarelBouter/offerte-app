@@ -26,7 +26,7 @@
  <div class="flex flex-wrap items-center gap-3 mb-5">
  <input wire:model.live.debounce.300ms="search" type="text"
  placeholder="Zoek op taaknaam…"
- class="w-64 rounded-lg border-gray-300 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500"/>
+ class="w-full sm:w-64 rounded-lg border-gray-300 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500"/>
 
  <select wire:model.live="statusFilter"
  class="rounded-lg border-gray-300 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500">

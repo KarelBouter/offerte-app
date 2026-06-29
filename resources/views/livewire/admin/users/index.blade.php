@@ -1,10 +1,10 @@
 <div>
  <x-breadcrumb :items="[['label' => 'Beheer', 'route' => 'beheer.dashboard'], ['label' => 'Gebruikers']]"/>
 
- <div class="flex items-center justify-between mb-5">
+ <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
  <input wire:model.live.debounce.300ms="search" type="text"
  placeholder="Zoek op naam of e-mail…"
- class="w-72 rounded-lg border-gray-300 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500"/>
+ class="w-full sm:w-72 rounded-lg border-gray-300 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500"/>
  <a href="{{ route('beheer.gebruikers.create') }}"
  class="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-white shadow-sm"
  style="background-color: #1B3A6B;">
