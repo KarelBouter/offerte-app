@@ -16,7 +16,7 @@
 <div class="flex h-screen overflow-hidden" x-data="{ open: false }">
 
     {{-- Desktop sidebar: gewoon in de flow, verborgen onder lg --}}
-    <aside class="flex-shrink-0 flex-col w-64 hidden lg:flex" style="background-color: #1B3A6B;">
+    <aside class="flex-shrink-0 hidden lg:flex flex-col w-64" style="background-color: #1B3A6B;">
         <div class="px-6 py-5 border-b border-blue-900">
             <p class="text-base font-bold text-white leading-tight">Proud Innovations</p>
             <p class="text-xs text-blue-300 mt-0.5">Offerte Tool</p>
