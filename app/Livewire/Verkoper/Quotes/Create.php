@@ -49,7 +49,7 @@ class Create extends Component
 
     // ── Environment / configurator helpers ─────────────────────────────────
     public int   $numberOfKassas = 0;
-    public array $meterInputs    = []; // [productId => meters]
+    public array $cableRuns = []; // [productId => [runIndex => meters]]
 
     // ── Products that are auto-add only (not shown in manual configurator) ─
     private const AUTO_ONLY_PRODUCTS = [
@@ -97,7 +97,8 @@ class Create extends Component
                 } elseif ($product->category === 'Service') {
                     $this->svcChoice = (string) $item->product_id;
                 } elseif (in_array($item->product_id, $cableProductIds)) {
-                    $this->meterInputs[(string) $item->product_id] = $item->quantity;
+                    // Bij bewerken: laad als 1 run met het opgeslagen totaal aantal meters
+                    $this->cableRuns[(string) $item->product_id] = [$item->quantity];
                 } else {
                     $this->qtyInputs[(string) $item->product_id] = $item->quantity;
                 }
@@ -175,8 +176,20 @@ class Create extends Component
         $this->syncAndEvaluate();
     }
 
-    public function updatedMeterInputs($value, $key): void
+    public function updatedCableRuns($value, $key): void
     {
+        $this->syncAndEvaluate();
+    }
+
+    public function addCableRun(string $productId): void
+    {
+        $this->cableRuns[$productId][] = 0;
+    }
+
+    public function removeCableRun(string $productId, int $index): void
+    {
+        unset($this->cableRuns[$productId][$index]);
+        $this->cableRuns[$productId] = array_values($this->cableRuns[$productId]);
         $this->syncAndEvaluate();
     }
 
@@ -294,10 +307,16 @@ class Create extends Component
             $product = Product::find((int) $productId);
             if (!$product) continue;
 
-            // Cable products: save meters as quantity
-            $savedQty = $product->price_per_meter
-                ? (int) ($this->meterInputs[(string) $productId] ?? $item['quantity'])
-                : $item['quantity'];
+            // Cable products: quantity = aantal runs, auto_added_reason bevat meters per run
+            if ($product->price_per_meter) {
+                $runs = $item['cable_runs'] ?? [];
+                $savedQty = count(array_filter($runs, fn($m) => (int) $m > 0));
+                $totalMeters = array_sum(array_map('intval', $runs));
+                $autoReason = 'Kabelruns: '.implode('m, ', array_map('intval', $runs))."m — totaal {$totalMeters}m";
+            } else {
+                $savedQty = $item['quantity'];
+                $autoReason = $item['auto_added_reason'] ?? null;
+            }
 
             QuoteItem::create([
                 'quote_id'            => $quote->id,
@@ -305,7 +324,7 @@ class Create extends Component
                 'quantity'            => $savedQty,
                 'unit_price_snapshot' => $product->unit_price,
                 'is_auto_added'       => $item['is_auto_added'],
-                'auto_added_reason'   => $item['auto_added_reason'] ?? null,
+                'auto_added_reason'   => $autoReason,
                 'is_optional_declined'=> false,
                 'sort_order'          => $sortOrder++,
             ]);
@@ -475,12 +494,18 @@ class Create extends Component
             }
         }
 
-        // Cable products: quantity = meters
-        foreach ($this->meterInputs as $productId => $meters) {
-            $meters = (int) $meters;
-            if ($meters > 0 && !in_array((int) $productId, $autoAddedIds)) {
-                $items[(string) $productId] = ['quantity' => $meters, 'is_auto_added' => false,
-                    'auto_added_reason' => null, 'is_recommended' => false, 'is_optional_declined' => false];
+        // Cable products: quantity = aantal runs, extra data = meters per run
+        foreach ($this->cableRuns as $productId => $runs) {
+            $aantalRuns = count(array_filter($runs, fn($m) => (int) $m > 0));
+            if ($aantalRuns > 0 && !in_array((int) $productId, $autoAddedIds)) {
+                $items[(string) $productId] = [
+                    'quantity'             => $aantalRuns,
+                    'cable_runs'           => array_values($runs),
+                    'is_auto_added'        => false,
+                    'auto_added_reason'    => null,
+                    'is_recommended'       => false,
+                    'is_optional_declined' => false,
+                ];
             }
         }
 
@@ -610,8 +635,10 @@ class Create extends Component
             }
 
             if ($product->price_per_meter) {
-                // qty = meters for cable products; total = starttarief + (meters × rate)
-                $total = (float) $product->unit_price + ($qty * (float) $product->price_per_meter);
+                // qty = aantal runs; total = (runs × starttarief) + (totaal meters × prijs per meter)
+                $runs = $item['cable_runs'] ?? [];
+                $totalMeters = array_sum(array_map('intval', $runs));
+                $total = ($qty * (float) $product->unit_price) + ($totalMeters * (float) $product->price_per_meter);
             } else {
                 $total = $product->unit_price * $qty;
             }

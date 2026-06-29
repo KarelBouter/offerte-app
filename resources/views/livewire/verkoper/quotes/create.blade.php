@@ -299,16 +299,47 @@
                                 @endif
                             </div>
                             @if($p->price_per_meter && !$isAutoAdded)
-                            <div class="px-4 pb-3 flex items-center gap-2 border-t border-gray-100">
-                                <label class="text-xs text-gray-500">Lengte:</label>
-                                <input wire:model.live="meterInputs.{{ $p->id }}" type="number" min="0" step="1"
-                                       class="w-20 rounded-lg border-gray-300 text-sm shadow-sm text-center focus:ring-blue-500"
-                                       placeholder="0"/>
-                                <span class="text-xs text-gray-400">meter</span>
-                                @if(isset($meterInputs[$p->id]) && $meterInputs[$p->id] > 0)
-                                    <span class="text-xs text-gray-600 font-medium">
-                                        = € {{ number_format($p->unit_price + ($meterInputs[$p->id] * $p->price_per_meter), 2, ',', '.') }}
-                                    </span>
+                            <div class="px-4 pb-3 border-t border-gray-100 space-y-2 pt-2">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs font-medium text-gray-600">Kabelruns</span>
+                                    <button type="button" wire:click="addCableRun('{{ $p->id }}')"
+                                            class="text-xs text-blue-600 hover:text-blue-800 font-medium">
+                                        + Kabelrun toevoegen
+                                    </button>
+                                </div>
+                                @php $runs = $cableRuns[$p->id] ?? []; @endphp
+                                @if(empty($runs))
+                                    <p class="text-xs text-gray-400 italic">Klik op '+ Kabelrun toevoegen' om een kabel toe te voegen.</p>
+                                @else
+                                    @foreach($runs as $runIndex => $runMeters)
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-xs text-gray-500 w-16">Run {{ $runIndex + 1 }}:</span>
+                                        <input wire:model.live="cableRuns.{{ $p->id }}.{{ $runIndex }}"
+                                               type="number" min="0" step="1"
+                                               class="w-20 rounded-lg border-gray-300 text-sm shadow-sm text-center focus:ring-blue-500"
+                                               placeholder="0"/>
+                                        <span class="text-xs text-gray-400">meter</span>
+                                        @if((int)$runMeters > 0)
+                                            <span class="text-xs text-gray-500">
+                                                = € {{ number_format($p->unit_price + ((int)$runMeters * $p->price_per_meter), 2, ',', '.') }}
+                                            </span>
+                                        @endif
+                                        <button type="button" wire:click="removeCableRun('{{ $p->id }}', {{ $runIndex }})"
+                                                class="text-xs text-red-400 hover:text-red-600 ml-1">&#x2715;</button>
+                                    </div>
+                                    @endforeach
+                                    @php
+                                        $totalMeters = array_sum(array_map('intval', $runs));
+                                        $aantalRuns  = count(array_filter($runs, fn($m) => (int)$m > 0));
+                                    @endphp
+                                    @if($totalMeters > 0)
+                                    <div class="bg-gray-50 rounded-lg px-3 py-2 text-xs text-gray-600 mt-1">
+                                        <span class="font-medium">Totaal:</span>
+                                        {{ $aantalRuns }} {{ $aantalRuns === 1 ? 'run' : 'runs' }} &mdash;
+                                        {{ $totalMeters }}m kabel &mdash;
+                                        &euro; {{ number_format(($aantalRuns * $p->unit_price) + ($totalMeters * $p->price_per_meter), 2, ',', '.') }}
+                                    </div>
+                                    @endif
                                 @endif
                             </div>
                             @endif
@@ -414,16 +445,47 @@
                             @endif
                         </div>
                         @if($p->price_per_meter && !$isAutoAdded)
-                        <div class="px-4 pb-3 flex items-center gap-2 border-t border-gray-100">
-                            <label class="text-xs text-gray-500">Lengte:</label>
-                            <input wire:model.live="meterInputs.{{ $p->id }}" type="number" min="0" step="1"
-                                   class="w-20 rounded-lg border-gray-300 text-sm shadow-sm text-center focus:ring-blue-500"
-                                   placeholder="0"/>
-                            <span class="text-xs text-gray-400">meter</span>
-                            @if(isset($meterInputs[$p->id]) && $meterInputs[$p->id] > 0)
-                                <span class="text-xs text-gray-600 font-medium">
-                                    = € {{ number_format($p->unit_price + ($meterInputs[$p->id] * $p->price_per_meter), 2, ',', '.') }}
-                                </span>
+                        <div class="px-4 pb-3 border-t border-gray-100 space-y-2 pt-2">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-medium text-gray-600">Kabelruns</span>
+                                <button type="button" wire:click="addCableRun('{{ $p->id }}')"
+                                        class="text-xs text-blue-600 hover:text-blue-800 font-medium">
+                                    + Kabelrun toevoegen
+                                </button>
+                            </div>
+                            @php $runs = $cableRuns[$p->id] ?? []; @endphp
+                            @if(empty($runs))
+                                <p class="text-xs text-gray-400 italic">Klik op '+ Kabelrun toevoegen' om een kabel toe te voegen.</p>
+                            @else
+                                @foreach($runs as $runIndex => $runMeters)
+                                <div class="flex items-center gap-2">
+                                    <span class="text-xs text-gray-500 w-16">Run {{ $runIndex + 1 }}:</span>
+                                    <input wire:model.live="cableRuns.{{ $p->id }}.{{ $runIndex }}"
+                                           type="number" min="0" step="1"
+                                           class="w-20 rounded-lg border-gray-300 text-sm shadow-sm text-center focus:ring-blue-500"
+                                           placeholder="0"/>
+                                    <span class="text-xs text-gray-400">meter</span>
+                                    @if((int)$runMeters > 0)
+                                        <span class="text-xs text-gray-500">
+                                            = € {{ number_format($p->unit_price + ((int)$runMeters * $p->price_per_meter), 2, ',', '.') }}
+                                        </span>
+                                    @endif
+                                    <button type="button" wire:click="removeCableRun('{{ $p->id }}', {{ $runIndex }})"
+                                            class="text-xs text-red-400 hover:text-red-600 ml-1">&#x2715;</button>
+                                </div>
+                                @endforeach
+                                @php
+                                    $totalMeters = array_sum(array_map('intval', $runs));
+                                    $aantalRuns  = count(array_filter($runs, fn($m) => (int)$m > 0));
+                                @endphp
+                                @if($totalMeters > 0)
+                                <div class="bg-gray-50 rounded-lg px-3 py-2 text-xs text-gray-600 mt-1">
+                                    <span class="font-medium">Totaal:</span>
+                                    {{ $aantalRuns }} {{ $aantalRuns === 1 ? 'run' : 'runs' }} &mdash;
+                                    {{ $totalMeters }}m kabel &mdash;
+                                    &euro; {{ number_format(($aantalRuns * $p->unit_price) + ($totalMeters * $p->price_per_meter), 2, ',', '.') }}
+                                </div>
+                                @endif
                             @endif
                         </div>
                         @endif
