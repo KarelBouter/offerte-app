@@ -39,7 +39,7 @@
         </div>
     @endif
 
-    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-visible">
     <div class="overflow-x-auto">
         <table class="w-full text-sm min-w-[700px]">
             <thead>

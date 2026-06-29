@@ -9,7 +9,7 @@
         </button>
     </div>
 
-    <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+    <div class="bg-white rounded-xl border border-gray-200 overflow-visible">
         <div class="overflow-x-auto"><table class="w-full text-sm min-w-[600px]">
             <thead>
                 <tr class="bg-gray-50 border-b border-gray-200 text-left">

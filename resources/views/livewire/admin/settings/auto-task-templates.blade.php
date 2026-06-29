@@ -41,7 +41,7 @@
     </div>
 
     {{-- Tabel --}}
-    <div class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+    <div class="overflow-visible rounded-xl border border-gray-200 bg-white shadow-sm">
         @if($templates->isEmpty())
             <div class="px-6 py-10 text-center text-sm text-gray-400">
                 Nog geen taaktemplates aangemaakt. Klik op "Nieuw template" om te beginnen.
