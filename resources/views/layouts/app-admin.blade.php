@@ -12,6 +12,7 @@
     <style>
 [x-cloak]{display:none!important}
 @media (max-width: 1179px) { #desktop-sidebar { display: none !important; visibility: hidden !important; opacity: 0 !important; width: 0 !important; overflow: hidden !important; } }
+@media (min-width: 1180px) { #hamburger-btn { display: none !important; } }
 </style>
 </head>
 <body class="font-sans antialiased bg-gray-100">
@@ -235,7 +236,7 @@
             <div class="flex items-center justify-between px-4 lg:px-6 h-14">
                 <div class="flex items-center gap-3">
                     <button @click="open = true"
-                            class="lg:hidden p-2 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors">
+                            class="p-2 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors" id="hamburger-btn">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
                         </svg>
