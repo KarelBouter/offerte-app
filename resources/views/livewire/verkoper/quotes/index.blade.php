@@ -6,7 +6,7 @@
  <div class="flex flex-wrap items-center gap-3">
  <input wire:model.live.debounce.300ms="search" type="text"
  placeholder="Zoek op offertenummer of klantnaam…"
- class="w-72 rounded-lg border-gray-300 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500"/>
+ class="w-full sm:w-72 rounded-lg border-gray-300 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500"/>
  <select wire:model.live="statusFilter"
  class="rounded-lg border-gray-300 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500">
  <option value="">Alle statussen</option>
