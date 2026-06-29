@@ -151,7 +151,8 @@
                 <div class="px-5 py-3 border-b border-gray-100 bg-gray-50">
                     <h2 class="text-sm font-semibold text-gray-700 uppercase tracking-wide">Eenmalige kosten</h2>
                 </div>
-                <table class="w-full text-sm">
+                <div class="overflow-x-auto">
+                <table class="w-full text-sm min-w-[500px]">
                     <thead>
                         <tr class="border-b border-gray-100 text-left">
                             <th class="px-5 py-2.5 text-xs font-semibold text-gray-500">Product</th>
@@ -205,6 +206,7 @@
                         </tr>
                     </tfoot>
                 </table>
+                </div>
             </div>
             @endif
 
@@ -214,7 +216,8 @@
                 <div class="px-5 py-3 border-b border-gray-100 bg-gray-50">
                     <h2 class="text-sm font-semibold text-gray-700 uppercase tracking-wide">Servicecontract (jaarlijks)</h2>
                 </div>
-                <table class="w-full text-sm">
+                <div class="overflow-x-auto">
+                <table class="w-full text-sm min-w-[500px]">
                     <thead>
                         <tr class="border-b border-gray-100 text-left">
                             <th class="px-5 py-2.5 text-xs font-semibold text-gray-500">Product</th>
@@ -246,6 +249,7 @@
                         </tr>
                     </tfoot>
                 </table>
+                </div>
             </div>
             @endif
 
@@ -411,7 +415,8 @@
             </div>
         @else
             <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
-                <table class="w-full text-sm">
+                <div class="overflow-x-auto">
+                <table class="w-full text-sm min-w-[500px]">
                     <thead>
                         <tr class="bg-gray-50 border-b border-gray-100 text-left">
                             <th class="px-5 py-2.5 text-xs font-semibold text-gray-500 uppercase tracking-wide">Status</th>
@@ -464,6 +469,7 @@
                         @endforeach
                     </tbody>
                 </table>
+                </div>
             </div>
         @endif
     </div>

@@ -12,13 +12,36 @@
 </head>
 <body class="font-sans antialiased bg-gray-100">
 
-<div class="flex h-screen overflow-hidden">
+<div class="flex h-screen overflow-hidden" x-data="{ sidebarOpen: false }">
+
+    {{-- Mobiel overlay --}}
+    <div x-show="sidebarOpen"
+         x-transition:enter="transition-opacity ease-linear duration-200"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition-opacity ease-linear duration-200"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         @click="sidebarOpen = false"
+         class="fixed inset-0 z-20 bg-black/50 lg:hidden"
+         style="display: none;"></div>
 
     {{-- Sidebar --}}
-    <aside class="w-64 flex-shrink-0 flex flex-col" style="background-color: #1B3A6B;">
-        <div class="px-6 py-5 border-b border-blue-900">
-            <p class="text-base font-bold text-white leading-tight">Proud Innovations</p>
-            <p class="text-xs text-blue-300 mt-0.5">Offerte Tool — Beheer</p>
+    <aside class="fixed inset-y-0 left-0 z-30 w-64 flex flex-col transform transition-transform duration-200 ease-in-out
+                  lg:relative lg:translate-x-0 lg:flex-shrink-0"
+           :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'"
+           style="background-color: #1B3A6B;">
+
+        <div class="px-6 py-5 border-b border-blue-900 flex items-center justify-between">
+            <div>
+                <p class="text-base font-bold text-white leading-tight">Proud Innovations</p>
+                <p class="text-xs text-blue-300 mt-0.5">Offerte Tool — Beheer</p>
+            </div>
+            <button @click="sidebarOpen = false" class="lg:hidden text-blue-300 hover:text-white p-1">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
         </div>
 
         <nav class="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
@@ -28,13 +51,13 @@
                     ->whereIn('status', ['open', 'in_behandeling'])->count();
             @endphp
 
-            <a href="{{ route('beheer.dashboard') }}" wire:navigate
+            <a href="{{ route('beheer.dashboard') }}" wire:navigate @click="sidebarOpen = false"
                class="flex items-center px-4 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150
                       {{ request()->routeIs('beheer.dashboard') ? 'bg-white/15 text-white' : 'text-blue-200 hover:bg-white/10 hover:text-white' }}">
                 Dashboard
             </a>
 
-            <a href="{{ route('verkoper.offertes.index') }}" wire:navigate
+            <a href="{{ route('verkoper.offertes.index') }}" wire:navigate @click="sidebarOpen = false"
                class="flex items-center justify-between px-4 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150
                       {{ request()->routeIs('verkoper.offertes.*') ? 'bg-white/15 text-white' : 'text-blue-200 hover:bg-white/10 hover:text-white' }}">
                 <span>Offertes</span>
@@ -46,7 +69,7 @@
                 @endif
             </a>
 
-            <a href="{{ route('taken.index') }}" wire:navigate
+            <a href="{{ route('taken.index') }}" wire:navigate @click="sidebarOpen = false"
                class="flex items-center justify-between px-4 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150
                       {{ request()->routeIs('taken.*') ? 'bg-white/15 text-white' : 'text-blue-200 hover:bg-white/10 hover:text-white' }}">
                 <span>Taken</span>
@@ -58,46 +81,45 @@
                 @endif
             </a>
 
-            <a href="{{ route('verkoper.klanten.index') }}" wire:navigate
+            <a href="{{ route('verkoper.klanten.index') }}" wire:navigate @click="sidebarOpen = false"
                class="flex items-center px-4 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150
                       {{ request()->routeIs('verkoper.klanten.*') ? 'bg-white/15 text-white' : 'text-blue-200 hover:bg-white/10 hover:text-white' }}">
                 Klanten
             </a>
 
-            <a href="{{ route('beheer.producten.index') }}" wire:navigate
+            <a href="{{ route('beheer.producten.index') }}" wire:navigate @click="sidebarOpen = false"
                class="flex items-center px-4 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150
                       {{ request()->routeIs('beheer.producten.*') ? 'bg-white/15 text-white' : 'text-blue-200 hover:bg-white/10 hover:text-white' }}">
                 Producten
             </a>
 
-            <a href="{{ route('beheer.afhankelijkheden.index') }}" wire:navigate
+            <a href="{{ route('beheer.afhankelijkheden.index') }}" wire:navigate @click="sidebarOpen = false"
                class="flex items-center px-4 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150
                       {{ request()->routeIs('beheer.afhankelijkheden.*') ? 'bg-white/15 text-white' : 'text-blue-200 hover:bg-white/10 hover:text-white' }}">
                 Afhankelijkheden
             </a>
 
-            <a href="{{ route('beheer.gebruikers.index') }}" wire:navigate
+            <a href="{{ route('beheer.gebruikers.index') }}" wire:navigate @click="sidebarOpen = false"
                class="flex items-center px-4 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150
                       {{ request()->routeIs('beheer.gebruikers.*') ? 'bg-white/15 text-white' : 'text-blue-200 hover:bg-white/10 hover:text-white' }}">
                 Gebruikers
             </a>
 
-            <a href="{{ route('beheer.activiteit.index') }}" wire:navigate
+            <a href="{{ route('beheer.activiteit.index') }}" wire:navigate @click="sidebarOpen = false"
                class="flex items-center px-4 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150
                       {{ request()->routeIs('beheer.activiteit.*') ? 'bg-white/15 text-white' : 'text-blue-200 hover:bg-white/10 hover:text-white' }}">
                 Activiteitenlog
             </a>
 
-            <a href="{{ route('beheer.instellingen.index') }}" wire:navigate
+            <a href="{{ route('beheer.instellingen.index') }}" wire:navigate @click="sidebarOpen = false"
                class="flex items-center px-4 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150
                       {{ request()->routeIs('beheer.instellingen.*') ? 'bg-white/15 text-white' : 'text-blue-200 hover:bg-white/10 hover:text-white' }}">
                 Instellingen
             </a>
         </nav>
 
-        {{-- Actieknopen boven scheiding --}}
         <div class="px-3 pb-2 space-y-1">
-            <a href="{{ route('verkoper.offertes.create') }}" wire:navigate
+            <a href="{{ route('verkoper.offertes.create') }}" wire:navigate @click="sidebarOpen = false"
                class="flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150
                       {{ request()->routeIs('verkoper.offertes.create') ? 'bg-white text-blue-800' : 'bg-white/10 text-white hover:bg-white/20' }}">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -115,7 +137,7 @@
         </div>
 
         <div class="px-3 pt-3 border-t border-blue-900 space-y-0.5">
-            <a href="{{ route('profile.edit') }}" wire:navigate
+            <a href="{{ route('profile.edit') }}" wire:navigate @click="sidebarOpen = false"
                class="flex items-center px-4 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150
                       {{ request()->routeIs('profile.edit') ? 'bg-white/15 text-white' : 'text-blue-200 hover:bg-white/10 hover:text-white' }}">
                 Mijn profiel
@@ -137,23 +159,31 @@
     <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
 
         <header class="bg-white border-b border-gray-200 flex-shrink-0">
-            <div class="flex items-center justify-between px-6 h-14">
-                <h1 class="text-base font-semibold text-gray-800">{{ $title ?? 'Beheer' }}</h1>
+            <div class="flex items-center justify-between px-4 lg:px-6 h-14">
+                <div class="flex items-center gap-3">
+                    <button @click="sidebarOpen = true"
+                            class="lg:hidden p-2 rounded-lg text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                        </svg>
+                    </button>
+                    <h1 class="text-base font-semibold text-gray-800">{{ $title ?? 'Beheer' }}</h1>
+                </div>
                 <div class="flex items-center gap-3">
                     <livewire:notification-bell />
-                    <span class="text-sm text-gray-500">{{ Auth::user()->name }}</span>
+                    <span class="text-sm text-gray-500 hidden sm:inline">{{ Auth::user()->name }}</span>
                 </div>
             </div>
         </header>
 
         <main class="flex-1 overflow-y-auto">
             @isset($breadcrumbs)
-                <div class="px-6 pt-4 pb-0">
+                <div class="px-4 lg:px-6 pt-4 pb-0">
                     {{ $breadcrumbs }}
                 </div>
             @endisset
 
-            <div class="p-6">
+            <div class="p-4 lg:p-6">
                 @if(session('success'))
                     <div class="mb-5 flex items-center gap-3 bg-green-50 border border-green-200 text-green-800 rounded-lg px-4 py-3 text-sm">
                         <svg class="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>

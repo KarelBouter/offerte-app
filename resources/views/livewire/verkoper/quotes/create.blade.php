@@ -568,7 +568,7 @@
 
         {{-- Quote meta --}}
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
-            <div class="grid grid-cols-2 gap-4 text-sm">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                 <div>
                     <p class="text-xs text-gray-400 uppercase tracking-wide mb-1">Offertenummer</p>
                     <p class="font-mono font-semibold text-gray-800">{{ $previewNumber }}</p>
@@ -585,7 +585,7 @@
         {{-- Customer summary --}}
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
             <h3 class="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-3">Klant</h3>
-            <div class="grid grid-cols-2 gap-3 text-sm">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
                 <div><p class="text-xs text-gray-400">Bedrijfsnaam</p><p class="font-medium text-gray-800">{{ $companyName }}</p></div>
                 <div><p class="text-xs text-gray-400">KvK</p><p class="text-gray-700">{{ $kvkNumber }}</p></div>
                 <div><p class="text-xs text-gray-400">Adres</p><p class="text-gray-700">{{ $address }}</p></div>
