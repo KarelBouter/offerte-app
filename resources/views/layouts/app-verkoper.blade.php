@@ -13,7 +13,7 @@
 </head>
 <body class="font-sans antialiased bg-gray-100">
 
-<div class="flex h-screen" x-data="{ open: false }">
+<div class="flex h-screen overflow-hidden" x-data="{ open: false }">
 
     {{-- Desktop sidebar: gewoon in de flow, verborgen onder lg --}}
     <aside class="flex-shrink-0 flex flex-col w-64" style="background-color: #1B3A6B;">
@@ -185,7 +185,7 @@
     </div>
 
     {{-- Main --}}
-    <div class="flex-1 flex flex-col min-w-0 min-h-0">
+    <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
         <header class="bg-white border-b border-gray-200 flex-shrink-0">
             <div class="flex items-center justify-between px-4 lg:px-6 h-14">
                 <div class="flex items-center gap-3">
