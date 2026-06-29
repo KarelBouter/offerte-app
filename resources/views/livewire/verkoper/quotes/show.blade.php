@@ -16,9 +16,9 @@
  @endif
 
  {{-- ── Header bar ──────────────────────────────────────────────────────── --}}
- <div class="flex items-start justify-between mb-6 gap-4">
- <div>
- <div class="flex items-center gap-3">
+ <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between mb-6 gap-3">
+ <div class="min-w-0">
+ <div class="flex items-center gap-3 flex-wrap">
  <h1 class="text-xl font-semibold text-gray-800 font-mono">{{ $quote->quote_number }}</h1>
  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold {{ $statusColors[$quote->status] ?? 'bg-gray-100 text-gray-600' }}">
  {{ $statusLabels[$quote->status] ?? $quote->status }}
@@ -31,7 +31,7 @@
  </p>
  </div>
 
- <div class="overflow-x-auto flex gap-2 pb-1 -mx-4 px-4">
+ <div class="overflow-x-auto flex gap-2 pb-1 flex-shrink-0">
  {{-- Status dropdown --}}
  @if(auth()->user()->canChangeQuoteStatus())
  <div class="relative" x-data="{ open: false }">

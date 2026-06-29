@@ -174,7 +174,7 @@
  <a href="{{ route('verkoper.offertes.index') }}" class="text-xs text-blue-600 hover:underline">Alle offertes →</a>
  </div>
  <div class="overflow-x-auto">
- <table class="w-full text-sm min-w-[600px]">
+ <table class="w-full text-sm min-w-[700px]">
  <thead>
  <tr class="border-b border-gray-100 text-left">
  <th class="px-5 py-2.5 text-xs font-semibold text-gray-500">Nummer</th>
