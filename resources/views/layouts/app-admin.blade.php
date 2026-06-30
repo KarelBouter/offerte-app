@@ -93,6 +93,11 @@
                       {{ request()->routeIs('beheer.instellingen.*') ? 'bg-white/15 text-white' : 'text-blue-200 hover:bg-white/10 hover:text-white' }}">
                 Instellingen
             </a>
+            <a href="{{ route('werkbon.index') }}" wire:navigate
+               class="flex items-center px-4 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150
+                      {{ request()->routeIs('werkbon.*') ? 'bg-white/15 text-white' : 'text-blue-200 hover:bg-white/10 hover:text-white' }}">
+                Werkbonnen
+            </a>
         </nav>
         <div class="px-3 pb-2 space-y-1">
             <a href="{{ route('verkoper.offertes.create') }}" wire:navigate
@@ -205,6 +210,11 @@
                    class="flex items-center px-4 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150
                           {{ request()->routeIs('beheer.instellingen.*') ? 'bg-white/15 text-white' : 'text-blue-200 hover:bg-white/10 hover:text-white' }}">
                     Instellingen
+                </a>
+                <a href="{{ route('werkbon.index') }}" wire:navigate @click="open = false"
+                   class="flex items-center px-4 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150
+                          {{ request()->routeIs('werkbon.*') ? 'bg-white/15 text-white' : 'text-blue-200 hover:bg-white/10 hover:text-white' }}">
+                    Werkbonnen
                 </a>
             </nav>
             <div class="px-3 pb-2 space-y-1">

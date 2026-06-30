@@ -40,6 +40,16 @@ class User extends Authenticatable
         return $this->role === 'samensteller';
     }
 
+    public function isWerkvoorbereider(): bool
+    {
+        return $this->role === 'werkvoorbereider';
+    }
+
+    public function canEditWerkbon(): bool
+    {
+        return in_array($this->role, ['admin', 'verkoper', 'werkvoorbereider']);
+    }
+
     public function canSendQuotes(): bool
     {
         return in_array($this->role, ['admin', 'verkoper']);

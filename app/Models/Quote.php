@@ -34,14 +34,17 @@ class Quote extends Model
         'sign_token_expires_at',
         'pdf_path',
         'inclusief_overeenkomst',
+        'werkbon_laatst_bewerkt_op',
+        'werkbon_laatst_bewerkt_door',
     ];
 
     protected function casts(): array
     {
         return [
-            'revision'                  => 'integer',
-            'inclusief_overeenkomst'    => 'boolean',
-            'valid_until'               => 'date',
+            'revision'                    => 'integer',
+            'inclusief_overeenkomst'      => 'boolean',
+            'werkbon_laatst_bewerkt_op'   => 'datetime',
+            'valid_until'                 => 'date',
             'signed_at'                 => 'datetime',
             'cosigned_at'               => 'datetime',
             'sign_token_expires_at'     => 'datetime',
@@ -113,6 +116,11 @@ class Quote extends Model
     public function tasks(): HasMany
     {
         return $this->hasMany(Task::class);
+    }
+
+    public function werkbonBewerker(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'werkbon_laatst_bewerkt_door');
     }
 
     public function versions(): HasMany

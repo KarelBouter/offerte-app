@@ -25,6 +25,7 @@
                             class="w-full rounded-lg border-gray-300 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500">
                         <option value="verkoper">Verkoper</option>
                         <option value="samensteller">Samensteller</option>
+                        <option value="werkvoorbereider">Werkvoorbereider</option>
                         <option value="admin">Beheerder</option>
                     </select>
                     @error('role') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror

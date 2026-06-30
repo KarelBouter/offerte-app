@@ -17,6 +17,7 @@ class QuoteItem extends Model
         'cable_runs',
         'installatie_notitie',
         'werkbon_aantekening',
+        'werkbon_verborgen',
         'is_optional_declined',
         'sort_order',
     ];
@@ -25,9 +26,10 @@ class QuoteItem extends Model
     {
         return [
             'unit_price_snapshot' => 'decimal:2',
-            'is_auto_added' => 'boolean',
+            'is_auto_added'      => 'boolean',
             'is_optional_declined' => 'boolean',
-            'cable_runs' => 'array',
+            'werkbon_verborgen'  => 'boolean',
+            'cable_runs'         => 'array',
         ];
     }
 

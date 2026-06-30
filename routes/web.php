@@ -13,9 +13,11 @@ Route::get('/', function () {
 // Slimme dashboard redirect op basis van rol
 Route::get('/dashboard', function () {
     $role = auth()->user()->role;
-    return $role === 'admin'
-        ? redirect()->route('beheer.dashboard')
-        : redirect()->route('verkoper.dashboard');
+    return match($role) {
+        'admin'             => redirect()->route('beheer.dashboard'),
+        'werkvoorbereider'  => redirect()->route('werkbon.index'),
+        default             => redirect()->route('verkoper.dashboard'),
+    };
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware(['auth', 'verified'])->group(function () {
@@ -27,6 +29,12 @@ Route::middleware(['auth', 'verified', 'role:admin,verkoper,samensteller'])->gro
     Route::get('/taken', \App\Livewire\Tasks\Index::class)->name('taken.index');
     Route::get('/taken/{task}', \App\Livewire\Tasks\Show::class)->name('taken.show');
     Route::get('/notificaties', \App\Livewire\Notifications\Index::class)->name('notificaties.index');
+});
+
+// ── Werkbon (admin + verkoper + werkvoorbereider) ─────────────────────────────
+Route::middleware(['auth', 'verified', 'role:admin,verkoper,werkvoorbereider'])->group(function () {
+    Route::get('/werkbon', \App\Livewire\Werkbon\Index::class)->name('werkbon.index');
+    Route::get('/werkbon/{quote}/bewerken', \App\Livewire\Werkbon\Edit::class)->name('werkbon.edit');
 });
 
 // ── Verkoper ──────────────────────────────────────────────────────────────────

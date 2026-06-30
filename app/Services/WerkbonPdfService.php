@@ -18,6 +18,11 @@ class WerkbonPdfService
             ->filter(fn($i) => $i->product !== null)
             ->sortBy('sort_order')
             ->filter(function ($item) {
+                // Expliciete override per item heeft prioriteit
+                if ($item->werkbon_verborgen !== null) {
+                    return !$item->werkbon_verborgen;
+                }
+                // Fallback op product-instelling
                 $zichtbaarheid = $item->product->werkbon_zichtbaarheid ?? 'automatisch';
                 if ($zichtbaarheid === 'verbergen') {
                     return !empty($item->installatie_notitie) || !empty($item->werkbon_aantekening);
