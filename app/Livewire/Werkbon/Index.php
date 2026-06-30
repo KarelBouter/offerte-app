@@ -31,7 +31,7 @@ class Index extends Component
             ->when($this->search, function ($q) {
                 $q->where(function ($q2) {
                     $q2->where('quote_number', 'like', '%' . $this->search . '%')
-                       ->orWhereHas('customer', fn($c) => $c->where('name', 'like', '%' . $this->search . '%'));
+                       ->orWhereHas('customer', fn($c) => $c->where('company_name', 'like', '%' . $this->search . '%'));
                 });
             })
             ->when($this->statusFilter, fn($q) => $q->where('status', $this->statusFilter))

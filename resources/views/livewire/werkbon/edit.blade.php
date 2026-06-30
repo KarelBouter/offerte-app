@@ -18,7 +18,7 @@
             <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
                 <p class="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-3">Offerte</p>
                 <p class="font-semibold text-gray-900">{{ $quote->quote_number }} <span class="text-gray-400 font-normal text-sm">v{{ $quote->revision }}</span></p>
-                <p class="text-sm text-gray-600 mt-1">{{ $quote->customer?->name ?? '—' }}</p>
+                <p class="text-sm text-gray-600 mt-1">{{ $quote->customer?->company_name ?? '—' }}</p>
                 @if($quote->installation_address)
                     <p class="text-xs text-gray-500 mt-1">{{ $quote->installation_address }}</p>
                 @endif

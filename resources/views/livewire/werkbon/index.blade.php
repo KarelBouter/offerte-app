@@ -32,7 +32,7 @@
                             {{ $quote->quote_number }}
                             <span class="ml-1 text-xs text-gray-400">v{{ $quote->revision }}</span>
                         </td>
-                        <td class="px-4 py-3 text-gray-700">{{ $quote->customer?->name ?? '—' }}</td>
+                        <td class="px-4 py-3 text-gray-700">{{ $quote->customer?->company_name ?? '—' }}</td>
                         <td class="px-4 py-3 hidden sm:table-cell">
                             @php
                                 $statusClass = match($quote->status) {
