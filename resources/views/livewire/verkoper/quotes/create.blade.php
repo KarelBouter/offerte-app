@@ -412,7 +412,9 @@
                                 @endif
                             </p>
                         </div>
-                        <span class="text-sm text-amber-600 font-medium">Op offerte</span>
+                        <span class="text-sm font-medium {{ $p->is_price_on_quote ? 'text-amber-600' : ($isAutoAdded ? 'text-blue-600' : 'text-gray-700') }}">
+                            {{ $p->is_price_on_quote ? 'Op offerte' : '€ '.number_format($p->unit_price, 2, ',', '.') }}
+                        </span>
                         <div class="flex items-center gap-2">
                             <label class="text-xs {{ $isAutoAdded ? 'text-blue-500' : 'text-gray-500' }}">Aantal</label>
                             <input wire:model.live="qtyInputs.{{ $p->id }}" type="number" min="0" value="0"
