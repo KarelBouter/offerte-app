@@ -3,7 +3,6 @@
 namespace App\Livewire\Werkbon;
 
 use App\Models\Quote;
-use App\Models\QuoteItem;
 use App\Support\WerkbonAantekeningen;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
@@ -19,6 +18,11 @@ class Edit extends Component
     // Per quote_item_id (string key), only for cable products:
     public array $cableRunNames        = [];
 
+    // Afronding:
+    public bool   $werkbonAfgerond    = false;
+    public string $werkbonAfgerondOp  = '';
+    public string $werkbonAfgerondDoor = '';
+
     public function mount(Quote $quote): void
     {
         abort_unless(Auth::user()->canEditWerkbon(), 403);
@@ -26,6 +30,10 @@ class Edit extends Component
 
         $this->quote = $quote;
         $quote->load(['customer', 'items.product']);
+
+        $this->werkbonAfgerond     = (bool) $quote->werkbon_afgerond;
+        $this->werkbonAfgerondOp   = $quote->werkbon_afgerond_op?->format('Y-m-d') ?? '';
+        $this->werkbonAfgerondDoor = $quote->werkbon_afgerond_door ?? '';
 
         foreach ($quote->items as $item) {
             $key = (string) $item->product_id;
@@ -50,6 +58,16 @@ class Edit extends Component
         abort_unless(Auth::user()->canEditWerkbon(), 403);
         abort_unless($this->quote->status === 'ondertekend', 403, 'Een werkbon kan pas bewerkt worden zodra de offerte is ondertekend.');
 
+        $this->validate([
+            'werkbonAfgerondOp'   => $this->werkbonAfgerond ? 'required|date' : 'nullable|date',
+            'werkbonAfgerondDoor' => $this->werkbonAfgerond ? 'required|string|max:255' : 'nullable|string|max:255',
+        ], [
+            'werkbonAfgerondOp.required'   => 'Vul een datum van afronding in.',
+            'werkbonAfgerondOp.date'       => 'Voer een geldige datum in.',
+            'werkbonAfgerondDoor.required' => 'Vul de naam van de monteur / uitvoerder in.',
+            'werkbonAfgerondDoor.max'      => 'Naam mag maximaal 255 tekens bevatten.',
+        ]);
+
         $this->quote->load('items.product');
 
         foreach ($this->quote->items as $item) {
@@ -63,7 +81,6 @@ class Edit extends Component
                 'werkbon_verborgen'    => $verborgenStr === '' ? null : (bool)(int) $verborgenStr,
             ];
 
-            // Update cable run names if present
             if (isset($this->cableRunNames[$itemKey]) && $item->cable_runs) {
                 $runs = $item->cable_runs;
                 foreach ($this->cableRunNames[$itemKey] as $i => $naam) {
@@ -80,6 +97,9 @@ class Edit extends Component
         $this->quote->update([
             'werkbon_laatst_bewerkt_op'   => now(),
             'werkbon_laatst_bewerkt_door' => Auth::id(),
+            'werkbon_afgerond'            => $this->werkbonAfgerond,
+            'werkbon_afgerond_op'         => $this->werkbonAfgerond ? $this->werkbonAfgerondOp : null,
+            'werkbon_afgerond_door'       => $this->werkbonAfgerond ? $this->werkbonAfgerondDoor : null,
         ]);
 
         session()->flash('success', 'Werkbon opgeslagen.');

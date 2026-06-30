@@ -49,6 +49,44 @@
                 </div>
             @endif
 
+            {{-- Afronding --}}
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4" x-data="{ open: @json($werkbonAfgerond) }">
+                <p class="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-3">Afronding</p>
+
+                @if($quote->werkbon_afgerond)
+                    <div class="flex items-start gap-2 mb-3 p-2 rounded-lg bg-green-50 border border-green-200">
+                        <svg class="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                        <div>
+                            <p class="text-xs font-medium text-green-800">Afgerond op {{ $quote->werkbon_afgerond_op->format('d-m-Y') }}</p>
+                            <p class="text-xs text-green-700 mt-0.5">door {{ $quote->werkbon_afgerond_door }}</p>
+                        </div>
+                    </div>
+                @endif
+
+                <label class="flex items-center gap-2.5 cursor-pointer">
+                    <input type="checkbox" wire:model.live="werkbonAfgerond"
+                           x-model="open"
+                           class="rounded border-gray-300 text-green-600 shadow-sm focus:ring-green-500"/>
+                    <span class="text-sm font-medium text-gray-700">Werkbon afgerond</span>
+                </label>
+
+                <div x-show="open" x-cloak class="mt-3 space-y-3">
+                    <div>
+                        <label class="block text-xs font-medium text-gray-600 mb-1">Datum afronding <span class="text-red-500">*</span></label>
+                        <input type="date" wire:model="werkbonAfgerondOp"
+                               class="w-full rounded-lg border-gray-300 text-sm shadow-sm focus:border-green-500 focus:ring-green-500"/>
+                        @error('werkbonAfgerondOp') <p class="text-xs text-red-600 mt-1">{{ $message }}</p> @enderror
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-600 mb-1">Naam monteur / uitgevoerd door <span class="text-red-500">*</span></label>
+                        <input type="text" wire:model="werkbonAfgerondDoor"
+                               placeholder="Naam van de monteur of uitvoerder"
+                               class="w-full rounded-lg border-gray-300 text-sm shadow-sm focus:border-green-500 focus:ring-green-500"/>
+                        @error('werkbonAfgerondDoor') <p class="text-xs text-red-600 mt-1">{{ $message }}</p> @enderror
+                    </div>
+                </div>
+            </div>
+
             {{-- Werkbon PDF --}}
             @if(auth()->user()->canGeneratePdf())
                 <a href="{{ route('verkoper.offertes.werkbon', $quote) }}"

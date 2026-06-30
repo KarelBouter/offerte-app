@@ -36,6 +36,9 @@ class Quote extends Model
         'inclusief_overeenkomst',
         'werkbon_laatst_bewerkt_op',
         'werkbon_laatst_bewerkt_door',
+        'werkbon_afgerond',
+        'werkbon_afgerond_op',
+        'werkbon_afgerond_door',
     ];
 
     protected function casts(): array
@@ -43,6 +46,8 @@ class Quote extends Model
         return [
             'revision'                    => 'integer',
             'inclusief_overeenkomst'      => 'boolean',
+            'werkbon_afgerond'            => 'boolean',
+            'werkbon_afgerond_op'         => 'date',
             'werkbon_laatst_bewerkt_op'   => 'datetime',
             'valid_until'                 => 'date',
             'signed_at'                 => 'datetime',

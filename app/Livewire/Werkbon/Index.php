@@ -10,9 +10,15 @@ class Index extends Component
 {
     use WithPagination;
 
-    public string $search = '';
+    public string $search        = '';
+    public string $afgerondFilter = '';   // '' = alle, '1' = afgerond, '0' = niet afgerond
 
     public function updatingSearch(): void
+    {
+        $this->resetPage();
+    }
+
+    public function updatingAfgerondFilter(): void
     {
         $this->resetPage();
     }
@@ -29,6 +35,8 @@ class Index extends Component
                        ->orWhereHas('customer', fn($c) => $c->where('company_name', 'like', '%' . $this->search . '%'));
                 });
             })
+            ->when($this->afgerondFilter !== '', fn($q) => $q->where('werkbon_afgerond', (bool) $this->afgerondFilter))
+            ->orderBy('werkbon_afgerond')          // niet-afgerond (0) eerst
             ->orderByDesc('updated_at')
             ->paginate(20);
 
