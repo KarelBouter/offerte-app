@@ -347,7 +347,7 @@ class Create extends Component
                 'quote_id'             => $quote->id,
                 'product_id'           => (int) $productId,
                 'quantity'             => $savedQty,
-                'unit_price_snapshot'  => $product->unit_price,
+                'unit_price_snapshot'  => $product->is_price_on_quote ? 0 : $product->unit_price,
                 'is_auto_added'        => $item['is_auto_added'],
                 'auto_added_reason'    => $autoReason,
                 'cable_runs'           => $cableRunsData,

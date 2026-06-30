@@ -48,6 +48,15 @@ class Product extends Model
         ];
     }
 
+    protected static function booted(): void
+    {
+        static::saving(function (Product $product) {
+            if ($product->is_price_on_quote) {
+                $product->unit_price = 0;
+            }
+        });
+    }
+
     public function getSwitchPortsAvailableAttribute(): int
     {
         if (!$this->switch_ports_total) return 0;
