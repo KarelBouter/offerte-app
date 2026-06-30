@@ -3,6 +3,7 @@
 namespace App\Livewire\Verkoper\Quotes;
 
 use App\Models\Customer;
+use App\Models\KassaComponent;
 use App\Models\Product;
 use App\Models\ProductDependency;
 use App\Models\Quote;
@@ -523,13 +524,14 @@ class Create extends Component
 
         // Switch meeschalen op aantal kassas op basis van poortdata
         if ($this->numberOfKassas > 0) {
-            $poortsNeeded = 1 + ($this->numberOfKassas * 2); // 1 server + kassas + pinautomaten
+            $poortenPerKassa = KassaComponent::actief()->sum('poorten_per_kassa');
+            $poortsNeeded = 1 + ($this->numberOfKassas * $poortenPerKassa); // 1 uplink + kassacomponenten
 
             $poeNeeded = false;
             $currentIds = array_map('intval', array_keys($items));
-            if (!empty($currentIds) && Product::whereNotNull('poe_wattage_input')->whereIn('id', $currentIds)->exists()) {
-                $poeNeeded = true;
-            }
+            $poeViaProduct = !empty($currentIds) && Product::whereNotNull('poe_wattage_input')->whereIn('id', $currentIds)->exists();
+            $poeViaComponent = KassaComponent::actief()->where('poe_required', true)->exists();
+            $poeNeeded = $poeViaProduct || $poeViaComponent;
 
             $switches = Product::where('is_active', true)
                 ->whereNotNull('switch_ports_total')
@@ -707,7 +709,8 @@ class Create extends Component
         $totalPoeInput  = 0;
         $totalPoeOutput = 0;
         $totalPoorten   = 0;
-        $poortsNodig    = $this->numberOfKassas > 0 ? 1 + ($this->numberOfKassas * 2) : 0;
+        $poortenPerKassa = KassaComponent::actief()->sum('poorten_per_kassa');
+        $poortsNodig     = $this->numberOfKassas > 0 ? 1 + ($this->numberOfKassas * $poortenPerKassa) : 0;
 
         foreach ($allItems as $productId => $item) {
             $product = $products[(int) $productId] ?? null;

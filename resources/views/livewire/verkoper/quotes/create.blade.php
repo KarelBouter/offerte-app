@@ -177,9 +177,15 @@
                                class="w-24 rounded-lg border-gray-300 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500"/>
                     </div>
                     @if($numberOfKassas > 0)
+                    @php
+                        $actieveComponenten = \App\Models\KassaComponent::actief()->orderBy('sort_order')->get();
+                        $poortenPerKassa    = $actieveComponenten->sum('poorten_per_kassa');
+                        $totaalPoorten      = 1 + ($numberOfKassas * $poortenPerKassa);
+                        $componentTekst     = $actieveComponenten->map(fn($c) => "{$numberOfKassas}× {$c->naam}")->join(' + ');
+                    @endphp
                         <p class="text-xs text-gray-400 mt-5">
-                            {{ 2 + ($numberOfKassas * 2) }} poorten benodigd
-                            ({{ $numberOfKassas }}× kassa + {{ $numberOfKassas }}× pin + 1× uplink + 1× server)
+                            {{ $totaalPoorten }} poorten benodigd
+                            ({{ $componentTekst }} + 1× uplink)
                         </p>
                     @endif
                 </div>

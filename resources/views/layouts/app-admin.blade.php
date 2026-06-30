@@ -73,6 +73,11 @@
                       {{ request()->routeIs('beheer.afhankelijkheden.*') ? 'bg-white/15 text-white' : 'text-blue-200 hover:bg-white/10 hover:text-white' }}">
                 Afhankelijkheden
             </a>
+            <a href="{{ route('beheer.kassa-componenten.index') }}" wire:navigate
+               class="flex items-center px-4 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150
+                      {{ request()->routeIs('beheer.kassa-componenten.*') ? 'bg-white/15 text-white' : 'text-blue-200 hover:bg-white/10 hover:text-white' }}">
+                Kassa-componenten
+            </a>
             <a href="{{ route('beheer.gebruikers.index') }}" wire:navigate
                class="flex items-center px-4 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150
                       {{ request()->routeIs('beheer.gebruikers.*') ? 'bg-white/15 text-white' : 'text-blue-200 hover:bg-white/10 hover:text-white' }}">
@@ -180,6 +185,11 @@
                    class="flex items-center px-4 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150
                           {{ request()->routeIs('beheer.afhankelijkheden.*') ? 'bg-white/15 text-white' : 'text-blue-200 hover:bg-white/10 hover:text-white' }}">
                     Afhankelijkheden
+                </a>
+                <a href="{{ route('beheer.kassa-componenten.index') }}" wire:navigate @click="open = false"
+                   class="flex items-center px-4 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150
+                          {{ request()->routeIs('beheer.kassa-componenten.*') ? 'bg-white/15 text-white' : 'text-blue-200 hover:bg-white/10 hover:text-white' }}">
+                    Kassa-componenten
                 </a>
                 <a href="{{ route('beheer.gebruikers.index') }}" wire:navigate @click="open = false"
                    class="flex items-center px-4 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150

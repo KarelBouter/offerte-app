@@ -56,6 +56,7 @@ Route::prefix('beheer')->name('beheer.')->middleware(['auth', 'verified', 'role:
     Route::get('/producten/create', \App\Livewire\Admin\Products\Form::class)->name('producten.create');
     Route::get('/producten/{product}/edit', \App\Livewire\Admin\Products\Form::class)->name('producten.edit');
     Route::get('/afhankelijkheden', \App\Livewire\Admin\Dependencies\Index::class)->name('afhankelijkheden.index');
+    Route::get('/kassa-componenten', \App\Livewire\Admin\KassaComponenten\Index::class)->name('kassa-componenten.index');
     Route::get('/gebruikers', \App\Livewire\Admin\Users\Index::class)->name('gebruikers.index');
     Route::get('/gebruikers/create', \App\Livewire\Admin\Users\Form::class)->name('gebruikers.create');
     Route::get('/gebruikers/{user}/edit', \App\Livewire\Admin\Users\Form::class)->name('gebruikers.edit');
