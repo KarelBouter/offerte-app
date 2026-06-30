@@ -28,15 +28,17 @@ class Product extends Model
         'poorten_benodigd',
         'installatie_instructie',
         'werkbon_zichtbaarheid',
+        'vereist_servicecontract',
     ];
 
     protected function casts(): array
     {
         return [
-            'unit_price'      => 'decimal:2',
-            'price_per_meter' => 'decimal:2',
-            'is_price_on_quote' => 'boolean',
-            'is_active'         => 'boolean',
+            'unit_price'              => 'decimal:2',
+            'price_per_meter'         => 'decimal:2',
+            'is_price_on_quote'       => 'boolean',
+            'is_active'               => 'boolean',
+            'vereist_servicecontract' => 'boolean',
         ];
     }
 

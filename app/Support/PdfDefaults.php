@@ -47,5 +47,6 @@ class PdfDefaults
 
     const ARTIKEL_9_7 = 'Wijzigingen van of aanvullingen op deze overeenkomst zijn slechts geldig voor zover zij schriftelijk zijn overeengekomen en door beide partijen zijn ondertekend. Mondelinge afspraken, toezeggingen of mededelingen binden partijen niet, tenzij en voor zover zij schriftelijk zijn bevestigd.';
 
-    const ARTIKEL_10_FOOTER = 'Alle bedragen exclusief btw ({{vat_pct}}%). De eenmalige kosten worden gefactureerd bij start van het project. Het servicecontract wordt bij oplevering vooruitbetaald.';
+    const ARTIKEL_10_FOOTER      = 'Alle bedragen exclusief btw ({{vat_pct}}%). De eenmalige kosten worden gefactureerd bij start van het project. Het servicecontract wordt bij oplevering vooruitbetaald.';
+    const ARTIKEL_10_FOOTER_KAAL = 'Alle bedragen exclusief btw ({{vat_pct}}%). Prijzen zijn geldig tot de op de offerte vermelde datum.';
 }

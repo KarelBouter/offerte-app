@@ -62,7 +62,8 @@ class QuotePdfService
             'pdf_tekst_artikel_9_5'           => PdfDefaults::ARTIKEL_9_5,
             'pdf_tekst_artikel_9_6'           => PdfDefaults::ARTIKEL_9_6,
             'pdf_tekst_artikel_9_7'           => PdfDefaults::ARTIKEL_9_7,
-            'pdf_tekst_artikel_10_footer'     => PdfDefaults::ARTIKEL_10_FOOTER,
+            'pdf_tekst_artikel_10_footer'      => PdfDefaults::ARTIKEL_10_FOOTER,
+            'pdf_tekst_artikel_10_footer_kaal' => PdfDefaults::ARTIKEL_10_FOOTER_KAAL,
         ]);
 
         $settings = $defaults->merge(Setting::all()->pluck('value', 'key'));
@@ -102,13 +103,11 @@ class QuotePdfService
             }
         }
 
-        // ── Vervang {{vat_pct}} in artikel 10 footer ─────────────────────────
+        // ── Vervang {{vat_pct}} in artikel 10 footers ────────────────────────
         $vatPct = (float) $settings->get('vat_percentage', '21');
-        $settings->put('pdf_tekst_artikel_10_footer', str_replace(
-            '{{vat_pct}}',
-            number_format($vatPct, 0),
-            $settings->get('pdf_tekst_artikel_10_footer')
-        ));
+        foreach (['pdf_tekst_artikel_10_footer', 'pdf_tekst_artikel_10_footer_kaal'] as $key) {
+            $settings->put($key, str_replace('{{vat_pct}}', number_format($vatPct, 0), $settings->get($key)));
+        }
 
         // ── Render HTML ───────────────────────────────────────────────────────
         $html = view('pdf.quote', [

@@ -33,12 +33,14 @@ class Quote extends Model
         'sign_token',
         'sign_token_expires_at',
         'pdf_path',
+        'inclusief_overeenkomst',
     ];
 
     protected function casts(): array
     {
         return [
             'revision'                  => 'integer',
+            'inclusief_overeenkomst'    => 'boolean',
             'valid_until'               => 'date',
             'signed_at'                 => 'datetime',
             'cosigned_at'               => 'datetime',

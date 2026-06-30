@@ -209,12 +209,18 @@
             @endforeach
 
             {{-- ── HARDWARE ──────────────────────────────────────────── --}}
+            @error('step2') <p class="px-1 text-xs text-red-600">{{ $message }}</p> @enderror
             <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                <div class="px-5 py-3 border-b border-gray-100 bg-gray-50">
-                    <h3 class="font-semibold text-gray-700 text-sm">Hardware — Basisoptie</h3>
-                    <p class="text-xs text-gray-400 mt-0.5">Kies één configuratie</p>
+                <div class="px-5 py-3 border-b border-gray-100 bg-gray-50 flex items-baseline justify-between gap-2">
+                    <div>
+                        <h3 class="font-semibold text-gray-700 text-sm">Hardware — Basisoptie</h3>
+                        <p class="text-xs text-gray-400 mt-0.5">Optioneel — kies één configuratie of laat leeg</p>
+                    </div>
+                    @if($hwChoice)
+                    <button type="button" wire:click="$set('hwChoice', '')"
+                            class="text-xs text-gray-400 hover:text-gray-600 shrink-0">× Wissen</button>
+                    @endif
                 </div>
-                @error('hwChoice') <p class="px-5 pt-3 text-xs text-red-600">{{ $message }}</p> @enderror
                 <div class="p-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
                     @foreach($productsByCategory['Hardware'] ?? [] as $p)
                         @if(str_starts_with($p->name, 'Optie'))
@@ -528,9 +534,24 @@
 
             {{-- ── SERVICE ───────────────────────────────────────────── --}}
             <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                <div class="px-5 py-3 border-b border-gray-100 bg-gray-50">
-                    <h3 class="font-semibold text-gray-700 text-sm">Servicecontract</h3>
-                    <p class="text-xs text-gray-400 mt-0.5">Kies één servicecontract (verplicht)</p>
+                <div class="px-5 py-3 border-b border-gray-100 bg-gray-50 flex items-baseline justify-between gap-2">
+                    <div>
+                        <h3 class="font-semibold text-gray-700 text-sm">
+                            Servicecontract
+                            @if($svcRequired) <span class="text-red-500 ml-1">*</span> @endif
+                        </h3>
+                        <p class="text-xs text-gray-400 mt-0.5">
+                            @if($svcRequired)
+                                Verplicht bij de gekozen hardware-basisoptie
+                            @else
+                                Optioneel — kies een servicecontract of laat leeg
+                            @endif
+                        </p>
+                    </div>
+                    @if($svcChoice)
+                    <button type="button" wire:click="$set('svcChoice', '')"
+                            class="text-xs text-gray-400 hover:text-gray-600 shrink-0">× Wissen</button>
+                    @endif
                 </div>
                 @error('svcChoice') <p class="px-5 pt-3 text-xs text-red-600">{{ $message }}</p> @enderror
                 <div class="p-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -790,6 +811,21 @@
             @if($discountType)
             <p class="mt-3 text-xs text-amber-600">Korting geldt uitsluitend op eenmalige kosten. Het servicecontract wordt niet gekort.</p>
             @endif
+        </div>
+
+        {{-- Overeenkomst-optie --}}
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
+            <label class="flex items-start gap-3 cursor-pointer">
+                <input wire:model.live="inclusiefOvereenkomst" type="checkbox"
+                       class="mt-0.5 rounded border-gray-300 text-blue-600 shadow-sm focus:ring-blue-500"/>
+                <div>
+                    <span class="text-sm font-medium text-gray-800">Volledige overeenkomst toevoegen aan PDF</span>
+                    <p class="text-xs text-gray-400 mt-0.5">
+                        Voegt de juridische voorwaarden toe (Artikel 1–9, ondertekeningsblok).
+                        Standaard <strong>aan</strong> als er een servicecontract gekozen is, anders <strong>uit</strong>.
+                    </p>
+                </div>
+            </label>
         </div>
 
         {{-- Configuration table --}}

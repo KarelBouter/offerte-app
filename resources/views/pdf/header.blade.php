@@ -45,7 +45,7 @@ table { width: 100%; border-collapse: collapse; }
                 @endif
             </td>
             <td class="info-cel">
-                Overeenkomst Kassa Continuïteitsdienst<br>
+                {{ $quote->inclusief_overeenkomst ? 'Overeenkomst Kassa Continuïteitsdienst' : 'Offerte' }}<br>
                 Offertenummer: <b>{{ $quote->quote_number }}</b> &nbsp;<span style="color:#888">v{{ $quote->revision }}</span><br>
                 Datum: {{ \Carbon\Carbon::parse($quote->created_at)->format('d-m-Y') }}<br>
                 Geldig tot: {{ \Carbon\Carbon::parse($quote->valid_until)->format('d-m-Y') }}

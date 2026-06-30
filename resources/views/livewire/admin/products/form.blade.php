@@ -205,6 +205,14 @@
                             @error('installatie_instructie') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                         </div>
                         <div>
+                            <label class="flex items-center gap-3 cursor-pointer mt-1">
+                                <input wire:model="vereist_servicecontract" type="checkbox"
+                                       class="rounded border-gray-300 text-blue-600 shadow-sm focus:ring-blue-500"/>
+                                <span class="text-sm font-medium text-gray-700">Vereist servicecontract</span>
+                            </label>
+                            <p class="text-xs text-gray-400 mt-1">Alleen aanvinken voor hardware-basisopties (Optie A / B). Forceert de servicecontract-keuze bij het aanmaken van een offerte.</p>
+                        </div>
+                        <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Zichtbaarheid op werkbon</label>
                             <select wire:model="werkbon_zichtbaarheid"
                                     class="w-full rounded-lg border-gray-300 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500">

@@ -42,15 +42,31 @@ p { margin-bottom: 3mm; font-size: 9pt; }
 .subartikel-titel { font-weight: bold; font-size: 9pt; color: #1B3A6B; margin-bottom: 1.5mm; }
 .afbakening { margin-top: 4mm; padding: 3mm 4mm; background-color: #f8f8f8; border-left: 2pt solid #1B3A6B; font-size: 8.5pt; }
 .gegenereerd { margin-top: 6mm; padding: 3mm 4mm; background-color: #f5f5f5; border: 0.5pt solid #cccccc; font-size: 7.5pt; color: #777777; }
+.klant-blok { background: #f7f8fa; border: 1pt solid #d0d5e0; border-radius: 2pt; padding: 4mm 5mm; margin-bottom: 6mm; }
+.klant-blok table { width: 100%; border-collapse: collapse; }
+.klant-blok td { padding: 1mm 2mm; font-size: 9pt; vertical-align: top; }
+.klant-blok .label { color: #666; width: 38mm; }
 </style>
 </head>
 <body>
 
-
+{{-- ── TITELBLOK ──────────────────────────────────────────────────────── --}}
+@if($quote->inclusief_overeenkomst)
 <div class="titelblok">
     <div class="titel-label">Overeenkomst</div>
     <div class="titel-naam">Kassa Continuïteitsdienst</div>
 </div>
+@else
+<div class="titelblok">
+    <div class="titel-label">Offerte</div>
+    <div class="titel-naam">{{ $quote->customer->company_name }}</div>
+</div>
+@endif
+
+@if($quote->inclusief_overeenkomst)
+{{-- ══════════════════════════════════════════════════════════════════════
+     VOLLEDIGE OVEREENKOMST — Artikel 1 t/m 9
+     ══════════════════════════════════════════════════════════════════════ --}}
 
 <div class="artikel">
     <h2>Artikel 1 &mdash; Partijen</h2>
@@ -147,7 +163,7 @@ p { margin-bottom: 3mm; font-size: 9pt; }
     @php
         $installatieItems = $quote->items->filter(fn($i) =>
             str_contains(strtolower($i->product->category ?? ''), 'installatie') &&
-            !str_contains(strtolower($i->product->name ?? ''), 'materiaal')
+            !$i->product->is_price_on_quote
         );
     @endphp
     @if($installatieItems->isNotEmpty())
@@ -157,11 +173,7 @@ p { margin-bottom: 3mm; font-size: 9pt; }
             @foreach($installatieItems as $item)
             <tr>
                 <td>{{ $item->product->name }}</td>
-                <td class="rechts">
-                    @if($item->product->is_price_on_quote) Op offerte
-                    @else &euro; {{ number_format($item->unit_price_snapshot, 2, ',', '.') }}
-                    @endif
-                </td>
+                <td class="rechts">&euro; {{ number_format($item->unit_price_snapshot, 2, ',', '.') }}</td>
             </tr>
             @endforeach
         </tbody>
@@ -273,6 +285,7 @@ p { margin-bottom: 3mm; font-size: 9pt; }
     </div>
 </div>
 
+{{-- ── Artikel 10: Samenvatting (overeenkomst-versie, gefilterd) ── --}}
 <div class="artikel artikel-nieuw">
     <h2>Artikel 10 &mdash; Samenvatting gekozen configuratie</h2>
     <table class="data-tabel">
@@ -286,7 +299,6 @@ p { margin-bottom: 3mm; font-size: 9pt; }
                         @if(str_contains($item->product->category ?? '', 'Installatie')) Installatie &mdash; @endif
                         {{ $item->product->name }}
                         @if($item->quantity > 1 && !str_contains($item->product->category ?? '', 'Service')) &times; {{ $item->quantity }} @endif
-                        @if(str_contains($item->product->category ?? '', 'Service')) , per jaar @endif
                     </td>
                     <td class="rechts">
                         @if($item->product->is_price_on_quote)
@@ -333,6 +345,7 @@ p { margin-bottom: 3mm; font-size: 9pt; }
     <p>{!! nl2br(e($settings->get('pdf_tekst_artikel_10_footer', ''))) !!}</p>
 </div>
 
+{{-- ── Artikel 11: Ondertekening ── --}}
 <div class="artikel artikel-nieuw">
     <h2>Artikel 11 &mdash; Ondertekening</h2>
     <p>Beide partijen verklaren kennis te hebben genomen van de inhoud van deze overeenkomst en gaan hiermee akkoord.</p>
@@ -381,5 +394,126 @@ p { margin-bottom: 3mm; font-size: 9pt; }
     </div>
 </div>
 
+@else
+{{-- ══════════════════════════════════════════════════════════════════════
+     KALE OFFERTE — Klantgegevens + prijsoverzicht (geen juridische tekst)
+     ══════════════════════════════════════════════════════════════════════ --}}
+
+{{-- Klantgegevens --}}
+<div class="klant-blok">
+    <table>
+        <tr>
+            <td class="label">Klant</td>
+            <td><strong>{{ $quote->customer->company_name }}</strong></td>
+            <td class="label">Offertenummer</td>
+            <td><strong>{{ $quote->quote_number }}</strong></td>
+        </tr>
+        <tr>
+            <td class="label">Adres</td>
+            <td>{{ $quote->customer->address }}</td>
+            <td class="label">Datum</td>
+            <td>{{ \Carbon\Carbon::parse($quote->created_at)->format('d-m-Y') }}</td>
+        </tr>
+        @if($quote->installation_address)
+        <tr>
+            <td class="label">Installatieadres</td>
+            <td colspan="3"><strong>{{ $quote->installation_address }}</strong></td>
+        </tr>
+        @endif
+        <tr>
+            <td class="label">Contactpersoon</td>
+            <td>{{ $quote->customer->contact_name }}</td>
+            <td class="label">Geldig tot</td>
+            <td>{{ \Carbon\Carbon::parse($quote->valid_until)->format('d-m-Y') }}</td>
+        </tr>
+        <tr>
+            <td class="label">Opgesteld door</td>
+            <td colspan="3">{{ $settings->get('company_name', 'Proud Innovations B.V.') }}</td>
+        </tr>
+    </table>
+</div>
+
+{{-- Prijsoverzicht — alle items zonder filter --}}
+<div class="artikel">
+    <h2>Prijsoverzicht</h2>
+    <table class="data-tabel">
+        <thead>
+            <tr>
+                <th>Omschrijving</th>
+                <th class="rechts" style="width:18mm;">Aantal</th>
+                <th class="rechts" style="width:28mm;">Eenheidsprijs</th>
+                <th class="rechts" style="width:28mm;">Totaal (excl. BTW)</th>
+            </tr>
+        </thead>
+        <tbody>
+            @php $onetimeTotal = 0; $yearlyTotal = 0; @endphp
+            @foreach($quote->items->sortBy('sort_order') as $item)
+            @php
+                $prijs = $item->product->is_price_on_quote ? null : (float) $item->unit_price_snapshot;
+                $regeltotaal = $prijs !== null ? $prijs * $item->quantity : null;
+                if ($regeltotaal !== null) {
+                    if ($item->product->unit === 'jaar') { $yearlyTotal += $regeltotaal; }
+                    else { $onetimeTotal += $regeltotaal; }
+                }
+            @endphp
+            <tr>
+                <td>
+                    {{ $item->product->name }}
+                    @if($item->is_auto_added && $item->auto_added_reason)
+                        <span style="font-size:7.5pt; color:#888;"> &mdash; {{ $item->auto_added_reason }}</span>
+                    @endif
+                </td>
+                <td class="rechts">{{ $item->quantity }}&times;</td>
+                <td class="rechts">
+                    @if($item->product->is_price_on_quote) Op offerte
+                    @else &euro; {{ number_format($item->unit_price_snapshot, 2, ',', '.') }}{{ $item->product->unit === 'jaar' ? ' / jaar' : '' }}
+                    @endif
+                </td>
+                <td class="rechts">
+                    @if($item->product->is_price_on_quote) &mdash;
+                    @else &euro; {{ number_format($regeltotaal, 2, ',', '.') }}
+                    @endif
+                </td>
+            </tr>
+            @endforeach
+
+            {{-- Subtotaal + korting als van toepassing --}}
+            @if($quote->discount_type && $quote->discount_value && $quote->onetime_subtotal_excl_vat)
+            <tr>
+                <td colspan="3">Subtotaal eenmalig (excl. BTW)</td>
+                <td class="rechts">&euro; {{ number_format($quote->onetime_subtotal_excl_vat, 2, ',', '.') }}</td>
+            </tr>
+            <tr>
+                <td colspan="3" style="color:#2a7a2a;">
+                    Korting ({{ $quote->discount_type === 'percentage'
+                        ? number_format($quote->discount_value, 2, ',', '.').'%'
+                        : '&euro; '.number_format($quote->discount_value, 2, ',', '.') }})
+                </td>
+                <td class="rechts" style="color:#2a7a2a;">&minus; &euro; {{ number_format($quote->onetime_subtotal_excl_vat - $quote->total_onetime_excl_vat, 2, ',', '.') }}</td>
+            </tr>
+            @endif
+
+            @if($quote->total_onetime_excl_vat > 0)
+            <tr class="totaal">
+                <td colspan="3">Totaal eenmalig (excl. BTW)</td>
+                <td class="rechts">&euro; {{ number_format($quote->total_onetime_excl_vat, 2, ',', '.') }}</td>
+            </tr>
+            @endif
+            @if($quote->total_yearly_excl_vat > 0)
+            <tr class="totaal">
+                <td colspan="3">Totaal jaarlijks (excl. BTW)</td>
+                <td class="rechts">&euro; {{ number_format($quote->total_yearly_excl_vat, 2, ',', '.') }}</td>
+            </tr>
+            @endif
+        </tbody>
+    </table>
+    <p>{!! nl2br(e($settings->get('pdf_tekst_artikel_10_footer_kaal', ''))) !!}</p>
+</div>
+
+<div class="gegenereerd">
+    Dit document is gegenereerd via het offertesysteem van {{ $settings->get('company_name', 'Proud Innovations B.V.') }} op {{ now()->format('d-m-Y H:i') }}. Offertenummer: {{ $quote->quote_number }}.
+</div>
+
+@endif
 </body>
 </html>

@@ -51,8 +51,9 @@ class Create extends Component
     // ── Environment / configurator helpers ─────────────────────────────────
     public int   $numberOfKassas = 0;
     public array $cableRuns = []; // [productId => [runIndex => meters]]
-    public array $installatieNotities  = []; // [productId => string]
-    public array $werkbonAantekeningen = []; // [productId => string]
+    public array $installatieNotities    = []; // [productId => string]
+    public array $werkbonAantekeningen   = []; // [productId => string]
+    public bool  $inclusiefOvereenkomst  = false;
 
     // ── Products that are auto-add only (not shown in manual configurator) ─
     private const AUTO_ONLY_PRODUCTS = [
@@ -120,6 +121,9 @@ class Create extends Component
                 $this->werkbonAantekeningen[(string) $item->product_id] = $item->werkbon_aantekening;
             });
 
+            // Bestaande offertes: gebruik opgeslagen waarde; null → afleiden van svcChoice
+            $this->inclusiefOvereenkomst = $quote->inclusief_overeenkomst ?? !empty($this->svcChoice);
+
             $this->syncAndEvaluate();
         }
     }
@@ -172,6 +176,7 @@ class Create extends Component
 
     public function updatedSvcChoice(): void
     {
+        $this->inclusiefOvereenkomst = !empty($this->svcChoice);
         $this->syncAndEvaluate();
     }
 
@@ -250,14 +255,25 @@ class Create extends Component
         }
 
         if ($this->step === 2) {
-            if (!$this->hwChoice) {
-                $this->addError('hwChoice', 'Kies een hardware-configuratie om door te gaan.');
+            // Minimaal 1 product vereist
+            $hasQty     = !empty(array_filter($this->qtyInputs, fn($q) => (int) $q > 0));
+            $hasCable   = !empty(array_filter($this->cableRuns, fn($runs) =>
+                !empty(array_filter($runs, fn($r) => (int) (is_array($r) ? ($r['meters'] ?? 0) : $r) > 0))
+            ));
+            if (!$this->hwChoice && !$this->svcChoice && !$hasQty && !$hasCable) {
+                $this->addError('step2', 'Kies minimaal één product om door te gaan.');
                 return;
             }
-            if (!$this->svcChoice) {
-                $this->addError('svcChoice', 'Kies een servicecontract om door te gaan.');
-                return;
+
+            // Servicecontract verplicht alleen als gekozen hardware dat vereist
+            if (!empty($this->hwChoice) && empty($this->svcChoice)) {
+                $hwProduct = Product::find((int) $this->hwChoice);
+                if ($hwProduct && $hwProduct->vereist_servicecontract) {
+                    $this->addError('svcChoice', 'De gekozen hardware-basisoptie vereist een servicecontract.');
+                    return;
+                }
             }
+
             $this->step = 3;
         }
     }
@@ -296,6 +312,7 @@ class Create extends Component
             'onetime_subtotal_excl_vat' => $prices['onetimeSubtotal'],
             'total_onetime_excl_vat'    => $prices['onetimeExclVat'],
             'total_yearly_excl_vat'     => $prices['yearlyExclVat'],
+            'inclusief_overeenkomst'    => $this->inclusiefOvereenkomst,
         ];
 
         if ($this->existingQuoteId) {
@@ -800,6 +817,9 @@ class Create extends Component
         $title  = $this->existingQuoteId ? 'Offerte bewerken' : 'Nieuwe offerte';
         $layout = auth()->user()->role === 'admin' ? 'layouts.app-admin' : 'layouts.app-verkoper';
 
+        $hwProduct   = !empty($this->hwChoice) ? Product::find((int) $this->hwChoice) : null;
+        $svcRequired = $hwProduct && $hwProduct->vereist_servicecontract;
+
         return view('livewire.verkoper.quotes.create', [
             'productsByCategory' => $productsByCategory,
             'autoOnlyNames'      => $autoOnlyNames,
@@ -807,6 +827,7 @@ class Create extends Component
             'previewNumber'      => $previewNumber,
             'autoAddedIds'       => $this->getAutoAddedProductIds(),
             'poeWarnings'        => $this->getPoEWarnings(),
+            'svcRequired'        => $svcRequired,
         ])->layout($layout, ['title' => $title]);
     }
 }
