@@ -117,8 +117,7 @@
 
  {{-- Duplicate --}}
  @if(auth()->user()->canSendQuotes())
- <button wire:click="duplicate"
- wire:confirm="Weet je zeker dat je deze offerte wilt dupliceren?"
+ <button x-on:click="$dispatch('open-modal', 'confirm-duplicate')"
  class="px-3 py-2 rounded-lg text-sm font-medium text-gray-600 bg-white border border-gray-300 hover:bg-gray-50">
  Dupliceren
  </button>
@@ -126,9 +125,7 @@
 
  {{-- Mede-ondertekenen namens Proud Innovations --}}
  @if($quote->status === 'ondertekend' && !$quote->cosigned_at && auth()->user()->canSendQuotes())
- <button
- wire:click="signOnBehalf"
- wire:confirm="Weet je zeker dat je deze offerte wilt mede-ondertekenen namens Proud Innovations? De PDF wordt daarna definitief bijgewerkt."
+ <button x-on:click="$dispatch('open-modal', 'confirm-cosign')"
  class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-green-700 bg-green-50 border border-green-300 hover:bg-green-100 transition-colors">
  Ondertekenen namens PI
  </button>
@@ -513,4 +510,26 @@
  </div>
  @endif
  </div>
+
+<x-confirm-modal name="confirm-duplicate"
+    title="Offerte dupliceren?"
+    message="Er wordt een nieuwe conceptofferte aangemaakt als kopie van deze offerte. Je wordt daarna doorgestuurd naar de nieuwe offerte."
+    variant="default">
+    <button wire:click="duplicate"
+            class="px-4 py-2 rounded-lg text-sm font-medium text-white transition-colors"
+            style="background-color: #1B3A6B;">
+        Dupliceren
+    </button>
+</x-confirm-modal>
+
+<x-confirm-modal name="confirm-cosign"
+    title="Mede-ondertekenen namens Proud Innovations?"
+    message="Weet je zeker dat je deze offerte namens Proud Innovations wilt ondertekenen? De PDF wordt daarna definitief bijgewerkt."
+    variant="default">
+    <button wire:click="signOnBehalf"
+            class="px-4 py-2 rounded-lg text-sm font-medium text-white transition-colors"
+            style="background-color: #1B3A6B;">
+        Ondertekenen
+    </button>
+</x-confirm-modal>
 </div>

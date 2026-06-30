@@ -17,6 +17,9 @@ class Index extends Component
     public ?int   $quoteFilter  = null;
     public string $search       = '';
 
+    public ?int   $confirmingId    = null;
+    public string $confirmingTitle = '';
+
     public const STATUS_LABELS = [
         'open'          => 'Open',
         'in_behandeling' => 'In behandeling',
@@ -30,6 +33,13 @@ class Index extends Component
 
     #[On('task-saved')]
     public function handleTaskSaved(): void {}
+
+    public function prepareConfirmDelete(int $id, string $title): void
+    {
+        $this->confirmingId    = $id;
+        $this->confirmingTitle = $title;
+        $this->dispatch('open-modal', 'confirm-task');
+    }
 
     public function deleteTask(int $id): void
     {
@@ -48,6 +58,7 @@ class Index extends Component
         );
 
         $task->delete();
+        $this->dispatch('close-modal', 'confirm-task');
         session()->flash('success', 'Taak verwijderd.');
     }
 

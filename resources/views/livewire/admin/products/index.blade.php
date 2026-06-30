@@ -80,8 +80,7 @@
  Bewerken
  </a>
  <button
- wire:click="toggleActive({{ $product->id }})"
- wire:confirm="{{ $product->is_active ? 'Product archiveren?' : 'Product activeren?' }}"
+ wire:click="prepareConfirmToggle({{ $product->id }}, '{{ addslashes($product->name) }}', {{ $product->is_active ? 'true' : 'false' }})"
  class="{{ $product->is_active ? 'text-red-500 hover:text-red-700' : 'text-green-600 hover:text-green-800' }} font-medium transition-colors"
  >
  {{ $product->is_active ? 'Archiveren' : 'Activeren' }}
@@ -102,4 +101,16 @@
  </tbody>
  </table></div>
  </div>
+
+<x-confirm-modal name="confirm-product"
+    :title="$confirmingIsActive ? 'Product archiveren?' : 'Product activeren?'"
+    :message="$confirmingIsActive
+        ? 'Wil je \'' . $confirmingName . '\' archiveren? Het product wordt verborgen in de configurator.'
+        : 'Wil je \'' . $confirmingName . '\' weer activeren?'"
+    variant="danger">
+    <button wire:click="toggleActive({{ $confirmingId ?? 0 }})"
+            class="px-4 py-2 rounded-lg text-sm font-medium text-white bg-red-600 hover:bg-red-700 transition-colors">
+        {{ $confirmingIsActive ? 'Archiveren' : 'Activeren' }}
+    </button>
+</x-confirm-modal>
 </div>

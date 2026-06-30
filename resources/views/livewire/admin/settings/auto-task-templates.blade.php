@@ -97,8 +97,7 @@
                                         class="rounded px-2.5 py-1 text-xs font-medium text-blue-700 hover:bg-blue-50">
                                     Bewerken
                                 </button>
-                                <button wire:click="delete({{ $t->id }})"
-                                        wire:confirm="Template '{{ $t->name }}' verwijderen?"
+                                <button wire:click="prepareConfirmDelete({{ $t->id }}, '{{ addslashes($t->name) }}')"
                                         class="rounded px-2.5 py-1 text-xs font-medium text-red-600 hover:bg-red-50">
                                     Verwijderen
                                 </button>
@@ -260,4 +259,14 @@
         </div>
     </div>
     @endif
+
+<x-confirm-modal name="confirm-template"
+    title="Template verwijderen?"
+    :message="'Weet je zeker dat je \'' . $confirmingName . '\' wilt verwijderen?'"
+    variant="danger">
+    <button wire:click="delete({{ $confirmingId ?? 0 }})"
+            class="px-4 py-2 rounded-lg text-sm font-medium text-white bg-red-600 hover:bg-red-700 transition-colors">
+        Verwijderen
+    </button>
+</x-confirm-modal>
 </div>

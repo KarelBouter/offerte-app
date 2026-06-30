@@ -122,8 +122,7 @@
  </select>
 
  @if($canDelete)
- <button wire:click="deleteTask({{ $task->id }})"
- wire:confirm="Taak '{{ $task->title }}' verwijderen?"
+ <button wire:click="prepareConfirmDelete({{ $task->id }}, '{{ addslashes($task->title) }}')"
  class="text-red-400 hover:text-red-600 text-xs font-medium">
  Verwijderen
  </button>
@@ -150,4 +149,14 @@
  </table>
  </div>
  </div>
+
+<x-confirm-modal name="confirm-task"
+    title="Taak verwijderen?"
+    :message="'Wil je \'' . $confirmingTitle . '\' definitief verwijderen?'"
+    variant="danger">
+    <button wire:click="deleteTask({{ $confirmingId ?? 0 }})"
+            class="px-4 py-2 rounded-lg text-sm font-medium text-white bg-red-600 hover:bg-red-700 transition-colors">
+        Verwijderen
+    </button>
+</x-confirm-modal>
 </div>

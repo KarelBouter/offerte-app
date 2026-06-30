@@ -69,8 +69,7 @@
                                     class="text-xs text-blue-600 hover:text-blue-800 font-medium">
                                 Bewerken
                             </button>
-                            <button wire:click="delete({{ $c->id }})"
-                                    wire:confirm="Weet je zeker dat je '{{ $c->naam }}' wilt verwijderen?"
+                            <button wire:click="prepareConfirmDelete({{ $c->id }}, '{{ addslashes($c->naam) }}')"
                                     class="text-xs text-red-500 hover:text-red-700 font-medium">
                                 Verwijderen
                             </button>
@@ -154,4 +153,14 @@
         </div>
     </div>
     @endif
+
+<x-confirm-modal name="confirm-kassa-component"
+    title="Kassa-component verwijderen?"
+    :message="'Weet je zeker dat je \'' . $confirmingName . '\' wilt verwijderen?'"
+    variant="danger">
+    <button wire:click="delete({{ $confirmingId ?? 0 }})"
+            class="px-4 py-2 rounded-lg text-sm font-medium text-white bg-red-600 hover:bg-red-700 transition-colors">
+        Verwijderen
+    </button>
+</x-confirm-modal>
 </div>

@@ -110,6 +110,7 @@ class Show extends Component
         app(QuotePdfService::class)->generate($this->quote->fresh());
 
         $this->quote->refresh();
+        $this->dispatch('close-modal', 'confirm-cosign');
         session()->flash('success', 'Offerte mede-ondertekend. PDF is bijgewerkt.');
     }
 

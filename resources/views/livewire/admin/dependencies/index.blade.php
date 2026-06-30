@@ -136,8 +136,7 @@
                                             class="text-blue-600 hover:text-blue-800 font-medium transition-colors">
                                         Bewerken
                                     </button>
-                                    <button wire:click="delete({{ $dep->id }})"
-                                            wire:confirm="Regel verwijderen?"
+                                    <button wire:click="prepareConfirmDelete({{ $dep->id }})"
                                             class="text-red-500 hover:text-red-700 font-medium transition-colors">
                                         Verwijderen
                                     </button>
@@ -403,4 +402,13 @@
     </div>
     @endif
 
+<x-confirm-modal name="confirm-dependency"
+    title="Regel verwijderen?"
+    message="De afhankelijkheidsregel wordt definitief verwijderd. Dit kan het gedrag van de offertewizard beïnvloeden."
+    variant="danger">
+    <button wire:click="delete({{ $confirmingId ?? 0 }})"
+            class="px-4 py-2 rounded-lg text-sm font-medium text-white bg-red-600 hover:bg-red-700 transition-colors">
+        Verwijderen
+    </button>
+</x-confirm-modal>
 </div>

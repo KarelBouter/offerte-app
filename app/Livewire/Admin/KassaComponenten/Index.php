@@ -10,6 +10,9 @@ class Index extends Component
     public bool $showModal = false;
     public ?int $editingId = null;
 
+    public ?int $confirmingId     = null;
+    public string $confirmingName = '';
+
     // Form fields
     public string $naam             = '';
     public int    $poorten_per_kassa = 1;
@@ -69,9 +72,17 @@ class Index extends Component
         $this->resetForm();
     }
 
+    public function prepareConfirmDelete(int $id, string $naam): void
+    {
+        $this->confirmingId   = $id;
+        $this->confirmingName = $naam;
+        $this->dispatch('open-modal', 'confirm-kassa-component');
+    }
+
     public function delete(int $id): void
     {
         KassaComponent::findOrFail($id)->delete();
+        $this->dispatch('close-modal', 'confirm-kassa-component');
         session()->flash('success', 'Component verwijderd.');
     }
 

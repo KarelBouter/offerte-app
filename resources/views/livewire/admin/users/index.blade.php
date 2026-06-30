@@ -53,8 +53,7 @@
 
  @if($user->id !== auth()->id())
  <button
- wire:click="toggleActive({{ $user->id }})"
- wire:confirm="{{ $user->is_active ? 'Gebruiker deactiveren?' : 'Gebruiker activeren?' }}"
+ wire:click="prepareConfirmToggle({{ $user->id }}, '{{ addslashes($user->name) }}', {{ $user->is_active ? 'true' : 'false' }})"
  class="font-medium {{ $user->is_active ? 'text-red-500 hover:text-red-700' : 'text-green-600 hover:text-green-800' }}">
  {{ $user->is_active ? 'Deactiveren' : 'Activeren' }}
  </button>
@@ -71,4 +70,16 @@
  </table>
  </div>
  </div>
+
+<x-confirm-modal name="confirm-user"
+    :title="$confirmingIsActive ? 'Gebruiker deactiveren?' : 'Gebruiker activeren?'"
+    :message="$confirmingIsActive
+        ? 'Wil je ' . $confirmingName . ' deactiveren? De gebruiker kan daarna niet meer inloggen.'
+        : 'Wil je ' . $confirmingName . ' weer activeren?'"
+    variant="danger">
+    <button wire:click="toggleActive({{ $confirmingId ?? 0 }})"
+            class="px-4 py-2 rounded-lg text-sm font-medium text-white bg-red-600 hover:bg-red-700 transition-colors">
+        {{ $confirmingIsActive ? 'Deactiveren' : 'Activeren' }}
+    </button>
+</x-confirm-modal>
 </div>

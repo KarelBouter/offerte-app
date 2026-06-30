@@ -98,8 +98,7 @@
                     Bewerken
                 </button>
 
-                <button wire:click="delete"
-                        wire:confirm="Taak '{{ $task->title }}' definitief verwijderen?"
+                <button x-on:click="$dispatch('open-modal', 'confirm-delete-task')"
                         class="px-4 py-2.5 rounded-lg text-sm font-medium text-red-600 bg-red-50 hover:bg-red-100 transition-colors">
                     Verwijderen
                 </button>
@@ -107,3 +106,13 @@
         </div>
     </div>
 </div>
+
+<x-confirm-modal name="confirm-delete-task"
+    title="Taak definitief verwijderen?"
+    :message="'Wil je \'' . $task->title . '\' definitief verwijderen? Dit kan niet ongedaan worden gemaakt.'"
+    variant="danger">
+    <button wire:click="delete"
+            class="px-4 py-2 rounded-lg text-sm font-medium text-white bg-red-600 hover:bg-red-700 transition-colors">
+        Verwijderen
+    </button>
+</x-confirm-modal>

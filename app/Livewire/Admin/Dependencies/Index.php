@@ -36,6 +36,9 @@ class Index extends Component
     public bool $showTestModal = false;
     public int $testQuantity = 1;
 
+    // Confirm delete
+    public ?int $confirmingId = null;
+
     // ── Lifecycle ───────────────────────────────────────────────────────────
 
     public function mount(): void
@@ -205,9 +208,16 @@ class Index extends Component
 
     // ── Delete ──────────────────────────────────────────────────────────────
 
+    public function prepareConfirmDelete(int $id): void
+    {
+        $this->confirmingId = $id;
+        $this->dispatch('open-modal', 'confirm-dependency');
+    }
+
     public function delete(int $id): void
     {
         ProductDependency::findOrFail($id)->delete();
+        $this->dispatch('close-modal', 'confirm-dependency');
         $this->dispatch('notify', message: 'Regel verwijderd.');
     }
 

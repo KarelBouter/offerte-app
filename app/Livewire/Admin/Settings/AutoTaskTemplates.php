@@ -34,6 +34,10 @@ class AutoTaskTemplates extends Component
     public bool   $showModal          = false;
     public ?int   $editingId          = null;
 
+    // Confirm delete
+    public ?int   $confirmingId       = null;
+    public string $confirmingName     = '';
+
     // Form fields
     public string $name               = '';
     public string $trigger_status     = 'ondertekend';
@@ -146,9 +150,17 @@ class AutoTaskTemplates extends Component
         }
     }
 
+    public function prepareConfirmDelete(int $id, string $name): void
+    {
+        $this->confirmingId   = $id;
+        $this->confirmingName = $name;
+        $this->dispatch('open-modal', 'confirm-template');
+    }
+
     public function delete(int $id): void
     {
         AutoTaskTemplate::findOrFail($id)->delete();
+        $this->dispatch('close-modal', 'confirm-template');
         $this->dispatch('notify', message: 'Taaktemplate verwijderd.');
     }
 
