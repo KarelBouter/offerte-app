@@ -27,6 +27,7 @@ class Product extends Model
         'switch_ports_poe',
         'poorten_benodigd',
         'installatie_instructie',
+        'werkbon_zichtbaarheid',
     ];
 
     protected function casts(): array

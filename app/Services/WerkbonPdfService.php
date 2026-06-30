@@ -17,6 +17,13 @@ class WerkbonPdfService
         $allItems = $quote->items
             ->filter(fn($i) => $i->product !== null)
             ->sortBy('sort_order')
+            ->filter(function ($item) {
+                $zichtbaarheid = $item->product->werkbon_zichtbaarheid ?? 'automatisch';
+                if ($zichtbaarheid === 'verbergen') {
+                    return !empty($item->installatie_notitie) || !empty($item->werkbon_aantekening);
+                }
+                return true;
+            })
             ->values();
 
         $defaults = collect([

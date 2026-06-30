@@ -85,6 +85,28 @@ h2 {
     font-weight: normal;
     opacity: 0.85;
 }
+.aantekening-badge {
+    display: inline-block;
+    background: #f59e0b;
+    color: #1a1a1a;
+    font-size: 7.5pt;
+    font-weight: bold;
+    padding: 0.5mm 2.5mm;
+    border-radius: 2pt;
+    letter-spacing: 0.3pt;
+    text-transform: uppercase;
+    vertical-align: middle;
+}
+.aantekening-blok {
+    background: #fffbeb;
+    border: 1pt solid #f59e0b;
+    border-radius: 2pt;
+    padding: 2mm 3mm;
+    margin-bottom: 2mm;
+    font-size: 9pt;
+    color: #92400e;
+}
+.aantekening-blok strong { font-size: 8.5pt; text-transform: uppercase; color: #78350f; }
 .checklist-item-body {
     padding: 3mm 4mm;
 }
@@ -196,24 +218,33 @@ h2 {
 <div class="checklist">
 @forelse($allItems as $item)
 @php
-    $product  = $item->product;
-    $isCable  = (bool) $product->price_per_meter;
-    $runs     = $item->cable_runs ?? [];
-    $hasRuns  = $isCable && count(array_filter($runs, fn($r) => (int)(is_array($r) ? ($r['meters'] ?? 0) : $r) > 0)) > 0;
-    $totalMeters = $hasRuns
+    $product       = $item->product;
+    $isCable       = (bool) $product->price_per_meter;
+    $runs          = $item->cable_runs ?? [];
+    $hasRuns       = $isCable && count(array_filter($runs, fn($r) => (int)(is_array($r) ? ($r['meters'] ?? 0) : $r) > 0)) > 0;
+    $totalMeters   = $hasRuns
         ? (int) array_sum(array_map(fn($r) => is_array($r) ? (int)($r['meters'] ?? 0) : (int)$r, $runs))
         : 0;
-    $aantalRuns = $hasRuns
+    $aantalRuns    = $hasRuns
         ? count(array_filter($runs, fn($r) => (int)(is_array($r) ? ($r['meters'] ?? 0) : $r) > 0))
         : 0;
     $hasInstructie = !empty($product->installatie_instructie);
     $hasNotitie    = !empty($item->installatie_notitie);
-    $hasBody       = $hasInstructie || $hasNotitie || $hasRuns;
+    $aantekening   = $item->werkbon_aantekening ?? null;
+    $aantekLabel   = $aantekening ? (\App\Support\WerkbonAantekeningen::OPTIES[$aantekening] ?? $aantekening) : null;
+    $aantekKort    = $aantekening ? (\App\Support\WerkbonAantekeningen::KORT[$aantekening]  ?? '??') : null;
+    $hasBody       = $hasInstructie || $hasNotitie || $hasRuns || $aantekening;
     $qty           = $item->quantity;
 @endphp
 <div class="checklist-item">
     <div class="checklist-item-header">
-        <div class="hdr-checkbox"><div class="checkbox-box"></div></div>
+        <div class="hdr-checkbox">
+            @if($aantekening)
+                <div class="aantekening-badge">{{ $aantekKort }}</div>
+            @else
+                <div class="checkbox-box"></div>
+            @endif
+        </div>
         <div class="hdr-naam">{{ $product->name }}</div>
         <div class="hdr-qty">
             @if($isCable && $aantalRuns > 0)
@@ -226,6 +257,10 @@ h2 {
 
     @if($hasBody)
     <div class="checklist-item-body">
+        @if($aantekening)
+        <div class="aantekening-blok"><strong>{{ $aantekLabel }}</strong></div>
+        @endif
+
         @if($hasInstructie)
         <div class="instructie">{{ $product->installatie_instructie }}</div>
         @endif

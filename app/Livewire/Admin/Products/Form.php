@@ -31,7 +31,8 @@ class Form extends Component
     public ?int $switch_ports_total = null;
     public ?int $switch_ports_poe = null;
     public ?int $poorten_benodigd = null;
-    public string $installatie_instructie = '';
+    public string $installatie_instructie  = '';
+    public string $werkbon_zichtbaarheid   = 'automatisch';
 
     public function mount(?Product $product = null): void
     {
@@ -56,6 +57,7 @@ class Form extends Component
             $this->switch_ports_poe   = $product->switch_ports_poe;
             $this->poorten_benodigd       = $product->poorten_benodigd;
             $this->installatie_instructie = $product->installatie_instructie ?? '';
+            $this->werkbon_zichtbaarheid  = $product->werkbon_zichtbaarheid ?? 'automatisch';
         }
     }
 
@@ -80,6 +82,7 @@ class Form extends Component
                 'switch_ports_poe'    => 'nullable|integer|min:0|lte:switch_ports_total',
                 'poorten_benodigd'        => 'nullable|integer|min:0',
                 'installatie_instructie'  => 'nullable|string',
+                'werkbon_zichtbaarheid'   => 'required|in:automatisch,altijd,verbergen',
             ],
             [
                 'name.required' => 'Naam is verplicht.',
@@ -125,6 +128,7 @@ class Form extends Component
             'switch_ports_poe'    => $this->switch_ports_poe,
             'poorten_benodigd'        => $this->poorten_benodigd,
             'installatie_instructie'  => $this->installatie_instructie ?: null,
+            'werkbon_zichtbaarheid'   => $this->werkbon_zichtbaarheid,
         ];
 
         if ($this->image) {

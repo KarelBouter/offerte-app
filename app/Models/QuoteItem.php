@@ -16,6 +16,7 @@ class QuoteItem extends Model
         'auto_added_reason',
         'cable_runs',
         'installatie_notitie',
+        'werkbon_aantekening',
         'is_optional_declined',
         'sort_order',
     ];

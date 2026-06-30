@@ -51,7 +51,8 @@ class Create extends Component
     // ── Environment / configurator helpers ─────────────────────────────────
     public int   $numberOfKassas = 0;
     public array $cableRuns = []; // [productId => [runIndex => meters]]
-    public array $installatieNotities = []; // [productId => string]
+    public array $installatieNotities  = []; // [productId => string]
+    public array $werkbonAantekeningen = []; // [productId => string]
 
     // ── Products that are auto-add only (not shown in manual configurator) ─
     private const AUTO_ONLY_PRODUCTS = [
@@ -114,6 +115,9 @@ class Create extends Component
 
             $quote->items()->whereNotNull('installatie_notitie')->each(function ($item) {
                 $this->installatieNotities[(string) $item->product_id] = $item->installatie_notitie;
+            });
+            $quote->items()->whereNotNull('werkbon_aantekening')->each(function ($item) {
+                $this->werkbonAantekeningen[(string) $item->product_id] = $item->werkbon_aantekening;
             });
 
             $this->syncAndEvaluate();
@@ -344,6 +348,7 @@ class Create extends Component
                 'auto_added_reason'    => $autoReason,
                 'cable_runs'           => $cableRunsData,
                 'installatie_notitie'  => $this->installatieNotities[(string) $productId] ?? null,
+                'werkbon_aantekening'  => $this->werkbonAantekeningen[(string) $productId] ?? null,
                 'is_optional_declined' => false,
                 'sort_order'           => $sortOrder++,
             ]);
