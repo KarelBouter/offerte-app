@@ -97,8 +97,14 @@ class Create extends Component
                 } elseif ($product->category === 'Service') {
                     $this->svcChoice = (string) $item->product_id;
                 } elseif (in_array($item->product_id, $cableProductIds)) {
-                    // Bij bewerken: laad als 1 run met het opgeslagen totaal aantal meters
-                    $this->cableRuns[(string) $item->product_id] = [$item->quantity];
+                    $savedRuns = $item->cable_runs;
+                    if (!empty($savedRuns) && is_array($savedRuns) && isset($savedRuns[0]['meters'])) {
+                        // Nieuwe structuur: [['naam' => ..., 'meters' => ...], ...]
+                        $this->cableRuns[(string) $item->product_id] = $savedRuns;
+                    } else {
+                        // Oude structuur: totaal meters als quantity opgeslagen
+                        $this->cableRuns[(string) $item->product_id] = [['naam' => '', 'meters' => $item->quantity]];
+                    }
                 } else {
                     $this->qtyInputs[(string) $item->product_id] = $item->quantity;
                 }
@@ -183,7 +189,7 @@ class Create extends Component
 
     public function addCableRun(string $productId): void
     {
-        $this->cableRuns[$productId][] = 0;
+        $this->cableRuns[$productId][] = ['naam' => '', 'meters' => 0];
     }
 
     public function removeCableRun(string $productId, int $index): void
@@ -307,12 +313,17 @@ class Create extends Component
             $product = Product::find((int) $productId);
             if (!$product) continue;
 
-            // Cable products: quantity = aantal runs, auto_added_reason bevat meters per run
+            // Cable products: quantity = aantal runs, cable_runs bevat naam + meters per run
+            $cableRunsData = null;
             if ($product->price_per_meter) {
                 $runs = $item['cable_runs'] ?? [];
-                $savedQty = count(array_filter($runs, fn($m) => (int) $m > 0));
-                $totalMeters = array_sum(array_map('intval', $runs));
-                $autoReason = 'Kabelruns: '.implode('m, ', array_map('intval', $runs))."m — totaal {$totalMeters}m";
+                $savedQty = count(array_filter($runs, fn($r) => (int) (is_array($r) ? ($r['meters'] ?? 0) : $r) > 0));
+                $totalMeters = (int) array_sum(array_map(
+                    fn($r) => is_array($r) ? (int) ($r['meters'] ?? 0) : (int) $r,
+                    $runs
+                ));
+                $autoReason = "{$savedQty} run(s), totaal {$totalMeters}m";
+                $cableRunsData = array_values($runs);
             } else {
                 $savedQty = $item['quantity'];
                 $autoReason = $item['auto_added_reason'] ?? null;
@@ -325,6 +336,7 @@ class Create extends Component
                 'unit_price_snapshot' => $product->unit_price,
                 'is_auto_added'       => $item['is_auto_added'],
                 'auto_added_reason'   => $autoReason,
+                'cable_runs'          => $cableRunsData,
                 'is_optional_declined'=> false,
                 'sort_order'          => $sortOrder++,
             ]);
@@ -494,9 +506,9 @@ class Create extends Component
             }
         }
 
-        // Cable products: quantity = aantal runs, extra data = meters per run
+        // Cable products: quantity = aantal runs, cable_runs = [['naam'=>..., 'meters'=>...], ...]
         foreach ($this->cableRuns as $productId => $runs) {
-            $aantalRuns = count(array_filter($runs, fn($m) => (int) $m > 0));
+            $aantalRuns = count(array_filter($runs, fn($r) => (int) (is_array($r) ? ($r['meters'] ?? 0) : $r) > 0));
             if ($aantalRuns > 0 && !in_array((int) $productId, $autoAddedIds)) {
                 $items[(string) $productId] = [
                     'quantity'             => $aantalRuns,
@@ -637,7 +649,10 @@ class Create extends Component
             if ($product->price_per_meter) {
                 // qty = aantal runs; total = (runs × starttarief) + (totaal meters × prijs per meter)
                 $runs = $item['cable_runs'] ?? [];
-                $totalMeters = array_sum(array_map('intval', $runs));
+                $totalMeters = (int) array_sum(array_map(
+                    fn($r) => is_array($r) ? (int) ($r['meters'] ?? 0) : (int) $r,
+                    $runs
+                ));
                 $total = ($qty * (float) $product->unit_price) + ($totalMeters * (float) $product->price_per_meter);
             } else {
                 $total = $product->unit_price * $qty;

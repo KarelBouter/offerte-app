@@ -14,6 +14,7 @@ class QuoteItem extends Model
         'unit_price_snapshot',
         'is_auto_added',
         'auto_added_reason',
+        'cable_runs',
         'is_optional_declined',
         'sort_order',
     ];
@@ -24,6 +25,7 @@ class QuoteItem extends Model
             'unit_price_snapshot' => 'decimal:2',
             'is_auto_added' => 'boolean',
             'is_optional_declined' => 'boolean',
+            'cable_runs' => 'array',
         ];
     }
 
