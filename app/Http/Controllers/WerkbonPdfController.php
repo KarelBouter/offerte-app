@@ -13,9 +13,7 @@ class WerkbonPdfController extends Controller
     {
         $filename = 'werkbonnen/' . $quote->quote_number . '-v' . $quote->revision . '-werkbon.pdf';
 
-        if (!Storage::disk('local')->exists($filename)) {
-            $service->generate($quote);
-        }
+        $service->generate($quote);
 
         $download = 'Werkbon_' . $quote->quote_number . '-v' . $quote->revision . '_ProudInnovations.pdf';
 

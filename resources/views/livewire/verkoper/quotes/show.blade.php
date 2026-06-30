@@ -64,13 +64,8 @@
  PDF downloaden
  </a>
 
- {{-- Werkbon download — alleen tonen als er kabelproducten met runs zijn --}}
- @php
-     $heeftKabelruns = $quote->items->contains(fn($i) =>
-         $i->product !== null && $i->product->price_per_meter && !empty($i->cable_runs)
-     );
- @endphp
- @if($heeftKabelruns)
+ {{-- Werkbon download --}}
+ @if($quote->items->isNotEmpty())
  <a href="{{ route('verkoper.offertes.werkbon', $quote) }}"
  target="_blank"
  class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-indigo-700 bg-indigo-50 border border-indigo-200 hover:bg-indigo-100">

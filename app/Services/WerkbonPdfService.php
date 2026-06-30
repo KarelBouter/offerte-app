@@ -14,8 +14,9 @@ class WerkbonPdfService
     {
         $quote->load(['customer', 'items.product', 'user']);
 
-        $cableItems = $quote->items
-            ->filter(fn($i) => $i->product !== null && $i->product->price_per_meter)
+        $allItems = $quote->items
+            ->filter(fn($i) => $i->product !== null)
+            ->sortBy('sort_order')
             ->values();
 
         $defaults = collect([
@@ -43,10 +44,10 @@ class WerkbonPdfService
         }
 
         $html = view('pdf.werkbon', [
-            'quote'       => $quote,
-            'settings'    => $settings,
-            'logoSrc'     => $logoSrc,
-            'cableItems'  => $cableItems,
+            'quote'    => $quote,
+            'settings' => $settings,
+            'logoSrc'  => $logoSrc,
+            'allItems' => $allItems,
         ])->render();
 
         $headerHtml = view('pdf.werkbon-header', [

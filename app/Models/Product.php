@@ -26,6 +26,7 @@ class Product extends Model
         'switch_ports_total',
         'switch_ports_poe',
         'poorten_benodigd',
+        'installatie_instructie',
     ];
 
     protected function casts(): array

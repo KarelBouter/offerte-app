@@ -51,6 +51,7 @@ class Create extends Component
     // ── Environment / configurator helpers ─────────────────────────────────
     public int   $numberOfKassas = 0;
     public array $cableRuns = []; // [productId => [runIndex => meters]]
+    public array $installatieNotities = []; // [productId => string]
 
     // ── Products that are auto-add only (not shown in manual configurator) ─
     private const AUTO_ONLY_PRODUCTS = [
@@ -110,6 +111,10 @@ class Create extends Component
                     $this->qtyInputs[(string) $item->product_id] = $item->quantity;
                 }
             }
+
+            $quote->items()->whereNotNull('installatie_notitie')->each(function ($item) {
+                $this->installatieNotities[(string) $item->product_id] = $item->installatie_notitie;
+            });
 
             $this->syncAndEvaluate();
         }
@@ -331,15 +336,16 @@ class Create extends Component
             }
 
             QuoteItem::create([
-                'quote_id'            => $quote->id,
-                'product_id'          => (int) $productId,
-                'quantity'            => $savedQty,
-                'unit_price_snapshot' => $product->unit_price,
-                'is_auto_added'       => $item['is_auto_added'],
-                'auto_added_reason'   => $autoReason,
-                'cable_runs'          => $cableRunsData,
-                'is_optional_declined'=> false,
-                'sort_order'          => $sortOrder++,
+                'quote_id'             => $quote->id,
+                'product_id'           => (int) $productId,
+                'quantity'             => $savedQty,
+                'unit_price_snapshot'  => $product->unit_price,
+                'is_auto_added'        => $item['is_auto_added'],
+                'auto_added_reason'    => $autoReason,
+                'cable_runs'           => $cableRunsData,
+                'installatie_notitie'  => $this->installatieNotities[(string) $productId] ?? null,
+                'is_optional_declined' => false,
+                'sort_order'           => $sortOrder++,
             ]);
         }
 

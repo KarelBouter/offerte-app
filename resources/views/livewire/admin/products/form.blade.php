@@ -189,6 +189,19 @@
                     @error('poorten_benodigd') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                 </div>
 
+                {{-- Installatie-instructie --}}
+                <div class="sm:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                        Installatie-instructie (optioneel)
+                        <span class="text-xs text-gray-400 font-normal">— verschijnt als checklist-tekst op de werkbon</span>
+                    </label>
+                    <textarea wire:model="installatie_instructie" rows="3"
+                              class="w-full rounded-lg border-gray-300 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                              placeholder="bijv. Verbind netwerkkabel aan poort 1 van de switch. Configureer VLAN 10 via beheerinterface."></textarea>
+                    <p class="text-xs text-gray-400 mt-1">Verschijnt onder het product op de werkbon. Op de offerte niet zichtbaar.</p>
+                    @error('installatie_instructie') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                </div>
+
                 {{-- Prijs per meter --}}
                 <div class="sm:col-span-2">
                     <label class="block text-sm font-medium text-gray-700 mb-1">

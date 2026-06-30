@@ -819,6 +819,10 @@
                                 @if(!empty($line['item']['auto_added_reason']))
                                     <p class="text-xs text-gray-400 mt-0.5">{{ $line['item']['auto_added_reason'] }}</p>
                                 @endif
+                                <textarea wire:model.live="installatieNotities.{{ $line['product']->id }}"
+                                          rows="1"
+                                          class="mt-1.5 w-full rounded border-gray-200 bg-white/70 text-xs text-gray-600 shadow-sm focus:border-blue-400 focus:ring-blue-400 resize-none"
+                                          placeholder="Werkbon-notitie voor dit product (optioneel)…"></textarea>
                             </td>
                             <td class="px-5 py-3 text-center text-gray-600">{{ $line['qty'] }}</td>
                             <td class="px-5 py-3 text-right text-gray-600">
