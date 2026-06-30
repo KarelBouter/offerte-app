@@ -25,6 +25,7 @@ class Product extends Model
         'price_per_meter',
         'switch_ports_total',
         'switch_ports_poe',
+        'poorten_benodigd',
     ];
 
     protected function casts(): array

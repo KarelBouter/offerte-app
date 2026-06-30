@@ -30,6 +30,7 @@ class Form extends Component
     public ?float $price_per_meter = null;
     public ?int $switch_ports_total = null;
     public ?int $switch_ports_poe = null;
+    public ?int $poorten_benodigd = null;
 
     public function mount(?Product $product = null): void
     {
@@ -52,6 +53,7 @@ class Form extends Component
             $this->price_per_meter    = $product->price_per_meter ? (float) $product->price_per_meter : null;
             $this->switch_ports_total = $product->switch_ports_total;
             $this->switch_ports_poe   = $product->switch_ports_poe;
+            $this->poorten_benodigd   = $product->poorten_benodigd;
         }
     }
 
@@ -74,6 +76,7 @@ class Form extends Component
                 'price_per_meter'     => 'nullable|numeric|min:0',
                 'switch_ports_total'  => 'nullable|integer|min:1',
                 'switch_ports_poe'    => 'nullable|integer|min:0|lte:switch_ports_total',
+                'poorten_benodigd'    => 'nullable|integer|min:0',
             ],
             [
                 'name.required' => 'Naam is verplicht.',
@@ -117,6 +120,7 @@ class Form extends Component
             'price_per_meter'     => $this->price_per_meter,
             'switch_ports_total'  => $this->switch_ports_total,
             'switch_ports_poe'    => $this->switch_ports_poe,
+            'poorten_benodigd'    => $this->poorten_benodigd,
         ];
 
         if ($this->image) {

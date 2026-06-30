@@ -180,12 +180,21 @@
                     @php
                         $actieveComponenten = \App\Models\KassaComponent::actief()->orderBy('sort_order')->get();
                         $poortenPerKassa    = $actieveComponenten->sum('poorten_per_kassa');
-                        $totaalPoorten      = 1 + ($numberOfKassas * $poortenPerKassa);
+                        $kassaPoorten       = $numberOfKassas * $poortenPerKassa;
                         $componentTekst     = $actieveComponenten->map(fn($c) => "{$numberOfKassas}× {$c->naam}")->join(' + ');
+
+                        // Hardware-poorten uit alle huidig bekende items in de sidebar
+                        $hwPoorten = 0;
+                        foreach ($prices['lineItems'] as $line) {
+                            $hwPoorten += ($line['product']->poorten_benodigd ?? 0) * $line['qty'];
+                        }
+                        $totaalPoorten = $hwPoorten + $kassaPoorten;
                     @endphp
                         <p class="text-xs text-gray-400 mt-5">
                             {{ $totaalPoorten }} poorten benodigd
-                            ({{ $componentTekst }} + 1× uplink)
+                            @if($hwPoorten > 0)({{ $hwPoorten }}× hardware + @endif
+                            {{ $componentTekst }}@if($hwPoorten > 0))@endif
+                            <span class="text-gray-300 ml-1">— 1 uplink gereserveerd op switch</span>
                         </p>
                     @endif
                 </div>

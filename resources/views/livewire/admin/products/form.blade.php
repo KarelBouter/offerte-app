@@ -176,6 +176,19 @@
                     </div>
                 </div>
 
+                {{-- Netwerkpoorten benodigd --}}
+                <div class="sm:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                        Netwerkpoorten benodigd (optioneel)
+                        <span class="text-xs text-gray-400 font-normal">— voor servers/nodes: aantal switch-poorten per unit</span>
+                    </label>
+                    <input wire:model="poorten_benodigd" type="number" min="0"
+                           class="w-32 rounded-lg border-gray-300 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                           placeholder="bijv. 1"/>
+                    <p class="text-xs text-gray-400 mt-1">Vul in voor hardware die een eigen poort op de switch gebruikt (server, NUC-node). Telt mee in de automatische switch-selectie. Laat leeg voor producten die geen switchpoort gebruiken (UPS, SSD, switches zelf).</p>
+                    @error('poorten_benodigd') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                </div>
+
                 {{-- Prijs per meter --}}
                 <div class="sm:col-span-2">
                     <label class="block text-sm font-medium text-gray-700 mb-1">

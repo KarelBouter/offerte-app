@@ -524,8 +524,9 @@ class Create extends Component
 
         // Switch meeschalen op aantal kassas op basis van poortdata
         if ($this->numberOfKassas > 0) {
-            $poortenPerKassa = KassaComponent::actief()->sum('poorten_per_kassa');
-            $poortsNeeded = 1 + ($this->numberOfKassas * $poortenPerKassa); // 1 uplink + kassacomponenten
+            $poortenPerKassa  = KassaComponent::actief()->sum('poorten_per_kassa');
+            $hardwarePoorten  = $this->getHardwarePoorten($items);
+            $poortsNeeded     = $hardwarePoorten + ($this->numberOfKassas * $poortenPerKassa);
 
             $poeNeeded = false;
             $currentIds = array_map('intval', array_keys($items));
@@ -570,7 +571,7 @@ class Create extends Component
                     $items[(string) $switchId] = [
                         'quantity'            => $qty,
                         'is_auto_added'       => true,
-                        'auto_added_reason'   => "Automatisch: {$this->numberOfKassas} kassa's ({$poortsNeeded} poorten nodig, {$beschikbaar} beschikbaar" . ($poeNeeded ? ", {$poePoorten} PoE" : '') . ')',
+                        'auto_added_reason'   => "Automatisch: {$hardwarePoorten} hw-poort(en) + {$this->numberOfKassas} kassa's = {$poortsNeeded} poorten nodig, {$beschikbaar} beschikbaar" . ($poeNeeded ? ", {$poePoorten} PoE" : '') . ')',
                         'is_recommended'      => false,
                         'is_optional_declined'=> false,
                     ];
@@ -590,6 +591,28 @@ class Create extends Component
             'is_recommended'      => $isRecommended,
             'is_optional_declined'=> false,
         ];
+    }
+
+    private function getHardwarePoorten(array $items): int
+    {
+        // Combineer huidige items met auto-items uit de vorige evaluatie (bijv. NUC-nodes van Optie B)
+        $allIds = array_keys($items);
+        foreach ($this->autoItems as $productId => $autoItem) {
+            if (!($autoItem['is_optional_declined'] ?? false) && !isset($items[$productId])) {
+                $allIds[] = (string) $productId;
+            }
+        }
+
+        if (empty($allIds)) return 0;
+
+        $products = Product::whereIn('id', $allIds)
+            ->whereNotNull('poorten_benodigd')
+            ->where('poorten_benodigd', '>', 0)
+            ->get();
+
+        $merged = $items + array_filter($this->autoItems, fn($i) => !($i['is_optional_declined'] ?? false));
+
+        return $products->sum(fn($p) => $p->poorten_benodigd * ($merged[(string) $p->id]['quantity'] ?? 1));
     }
 
     private function applyFormula(?string $formula, int $triggerQty): ?int
@@ -706,11 +729,11 @@ class Create extends Component
 
         $products = Product::whereIn('id', array_keys($allItems))->get()->keyBy('id');
 
-        $totalPoeInput  = 0;
-        $totalPoeOutput = 0;
-        $totalPoorten   = 0;
+        $totalPoeInput   = 0;
+        $totalPoeOutput  = 0;
+        $totalPoorten    = 0;
+        $hardwarePoorten = 0;
         $poortenPerKassa = KassaComponent::actief()->sum('poorten_per_kassa');
-        $poortsNodig     = $this->numberOfKassas > 0 ? 1 + ($this->numberOfKassas * $poortenPerKassa) : 0;
 
         foreach ($allItems as $productId => $item) {
             $product = $products[(int) $productId] ?? null;
@@ -726,7 +749,12 @@ class Create extends Component
             if ($product->switch_ports_total) {
                 $totalPoorten += ($product->switch_ports_total - 1) * $qty;
             }
+            if ($product->poorten_benodigd) {
+                $hardwarePoorten += $product->poorten_benodigd * $qty;
+            }
         }
+
+        $poortsNodig = $hardwarePoorten + ($this->numberOfKassas > 0 ? ($this->numberOfKassas * $poortenPerKassa) : 0);
 
         if ($poortsNodig > 0 && $totalPoorten > 0 && $totalPoorten < $poortsNodig) {
             $warnings[] = "Onvoldoende switchpoorten: {$poortsNodig} nodig, {$totalPoorten} beschikbaar. Voeg een extra switch toe.";
