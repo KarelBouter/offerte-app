@@ -22,6 +22,7 @@ class Edit extends Component
     public function mount(Quote $quote): void
     {
         abort_unless(Auth::user()->canEditWerkbon(), 403);
+        abort_unless($quote->status === 'ondertekend', 403, 'Een werkbon kan pas bewerkt worden zodra de offerte is ondertekend.');
 
         $this->quote = $quote;
         $quote->load(['customer', 'items.product']);
@@ -47,6 +48,7 @@ class Edit extends Component
     public function save(): void
     {
         abort_unless(Auth::user()->canEditWerkbon(), 403);
+        abort_unless($this->quote->status === 'ondertekend', 403, 'Een werkbon kan pas bewerkt worden zodra de offerte is ondertekend.');
 
         $this->quote->load('items.product');
 

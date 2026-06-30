@@ -11,6 +11,8 @@ class WerkbonPdfController extends Controller
 {
     public function __invoke(Quote $quote, WerkbonPdfService $service): StreamedResponse
     {
+        abort_unless($quote->status === 'ondertekend', 403, 'De werkbon-PDF is pas beschikbaar zodra de offerte is ondertekend.');
+
         $filename = 'werkbonnen/' . $quote->quote_number . '-v' . $quote->revision . '-werkbon.pdf';
 
         $service->generate($quote);
