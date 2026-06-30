@@ -42,9 +42,10 @@ Route::prefix('verkoper')->name('verkoper.')->group(function () {
         Route::get('/klanten/{customer}', \App\Livewire\Verkoper\Customers\Show::class)->name('klanten.show');
     });
 
-    // PDF-download — samensteller mag dit niet
+    // PDF-download en werkbon — samensteller mag dit niet
     Route::middleware(['auth', 'verified', 'role:admin,verkoper'])->group(function () {
         Route::get('/offertes/{quote}/pdf', \App\Http\Controllers\QuotePdfController::class)->name('offertes.pdf');
+        Route::get('/offertes/{quote}/werkbon', \App\Http\Controllers\WerkbonPdfController::class)->name('offertes.werkbon');
     });
 });
 
