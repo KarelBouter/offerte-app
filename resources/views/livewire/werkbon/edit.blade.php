@@ -1,4 +1,10 @@
-<div>
+<div x-on:livewire-navigate-end.window="$wire.$refresh()">
+    {{-- lg:w-64 is not in the compiled CSS (new file), so the responsive column
+         width is enforced via an inline media query matching the layout pattern. --}}
+    <style>
+        @media (min-width: 1024px) { .werkbon-info-col { width: 16rem; } }
+    </style>
+
     {{-- Breadcrumb --}}
     <x-breadcrumb :items="[
         ['label' => 'Werkbonnen', 'route' => 'werkbon.index'],
@@ -8,7 +14,7 @@
     <div class="flex flex-col lg:flex-row lg:items-start gap-6">
 
         {{-- Linker kolom: quote-info --}}
-        <div class="w-full lg:w-64 flex-shrink-0 space-y-4">
+        <div class="werkbon-info-col w-full flex-shrink-0 space-y-4">
             <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
                 <p class="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-3">Offerte</p>
                 <p class="font-semibold text-gray-900">{{ $quote->quote_number }} <span class="text-gray-400 font-normal text-sm">v{{ $quote->revision }}</span></p>
