@@ -375,6 +375,17 @@
                         </div>
                         @endif
                     @endforeach
+                    @php
+                        $netwerkProductIds = ($productsByCategory['Netwerk'] ?? collect())->pluck('id')->all();
+                    @endphp
+                    @foreach($onderhoudsgroepen as $groep)
+                        @if($groep->producten->pluck('id')->intersect($netwerkProductIds)->isNotEmpty())
+                            @include('livewire.verkoper.quotes.partials.onderhoudscontract-toggle', [
+                                'groep'       => $groep,
+                                'aantalStuks' => $groepenAantallen[$groep->id] ?? 0,
+                            ])
+                        @endif
+                    @endforeach
                 </div>
             </div>
             @endif
@@ -423,6 +434,17 @@
                                           {{ $isAutoAdded ? 'bg-blue-100 border-blue-200 text-blue-700 cursor-not-allowed' : '' }}"/>
                         </div>
                     </div>
+                    @endforeach
+                    @php
+                        $beveiligingProductIds = ($productsByCategory['Beveiliging'] ?? collect())->pluck('id')->all();
+                    @endphp
+                    @foreach($onderhoudsgroepen as $groep)
+                        @if($groep->producten->pluck('id')->intersect($beveiligingProductIds)->isNotEmpty())
+                            @include('livewire.verkoper.quotes.partials.onderhoudscontract-toggle', [
+                                'groep'       => $groep,
+                                'aantalStuks' => $groepenAantallen[$groep->id] ?? 0,
+                            ])
+                        @endif
                     @endforeach
                 </div>
             </div>

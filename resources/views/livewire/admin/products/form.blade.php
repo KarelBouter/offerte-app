@@ -237,6 +237,18 @@
                             <p class="text-xs text-gray-400 mt-1">Aangevinkt: dit product wordt herkend als UPS in de offerte-PDF (aparte sectie artikel 1).</p>
                         </div>
                         <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Onderhoudsgroep</label>
+                            <select wire:model="onderhoudsgroep_id"
+                                    class="w-full rounded-lg border-gray-300 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                <option value="">— Geen —</option>
+                                @foreach($onderhoudsgroepen as $groep)
+                                    <option value="{{ $groep->id }}">{{ $groep->naam }}</option>
+                                @endforeach
+                            </select>
+                            <p class="text-xs text-gray-400 mt-1">Koppelt dit product aan een onderhoudsgroep. Producten in dezelfde groep tellen mee voor het onderhoudscontract-toggle in de configurator.</p>
+                            @error('onderhoudsgroep_id') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                        </div>
+                        <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Zichtbaarheid op werkbon</label>
                             <select wire:model="werkbon_zichtbaarheid"
                                     class="w-full rounded-lg border-gray-300 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500">

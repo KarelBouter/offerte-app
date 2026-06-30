@@ -195,6 +195,47 @@ class ProductSeeder extends Seeder
                 'is_price_on_quote' => false,
                 'sort_order' => 20,
             ],
+            // Onderhoudscontracten — verborgen, worden via toggles in de configurator toegevoegd
+            [
+                'name'        => 'Onderhoudscontract camera — basis',
+                'category'    => 'Service',
+                'description' => 'Jaarlijks onderhoudscontract beveiligingscamera\'s — basistarief per installatie.',
+                'unit_price'  => 250.00,
+                'unit'        => 'jaar',
+                'is_price_on_quote'      => false,
+                'verberg_in_configurator'=> true,
+                'sort_order'  => 30,
+            ],
+            [
+                'name'        => 'Onderhoudscontract camera — per stuk',
+                'category'    => 'Service',
+                'description' => 'Jaarlijks onderhoudscontract beveiligingscamera\'s — toeslag per camera.',
+                'unit_price'  => 35.00,
+                'unit'        => 'jaar',
+                'is_price_on_quote'      => false,
+                'verberg_in_configurator'=> true,
+                'sort_order'  => 31,
+            ],
+            [
+                'name'        => 'Onderhoudscontract access point — basis',
+                'category'    => 'Service',
+                'description' => 'Jaarlijks onderhoudscontract access points — basistarief per installatie.',
+                'unit_price'  => 150.00,
+                'unit'        => 'jaar',
+                'is_price_on_quote'      => false,
+                'verberg_in_configurator'=> true,
+                'sort_order'  => 32,
+            ],
+            [
+                'name'        => 'Onderhoudscontract access point — per stuk',
+                'category'    => 'Service',
+                'description' => 'Jaarlijks onderhoudscontract access points — toeslag per access point.',
+                'unit_price'  => 20.00,
+                'unit'        => 'jaar',
+                'is_price_on_quote'      => false,
+                'verberg_in_configurator'=> true,
+                'sort_order'  => 33,
+            ],
         ];
 
         foreach ($products as $data) {

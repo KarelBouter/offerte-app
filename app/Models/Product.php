@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Product extends Model
@@ -32,6 +33,7 @@ class Product extends Model
         'verberg_in_configurator',
         'is_hardware_basisoptie',
         'is_ups',
+        'onderhoudsgroep_id',
     ];
 
     protected function casts(): array
@@ -45,6 +47,7 @@ class Product extends Model
             'verberg_in_configurator'  => 'boolean',
             'is_hardware_basisoptie'   => 'boolean',
             'is_ups'                   => 'boolean',
+            'onderhoudsgroep_id'       => 'integer',
         ];
     }
 
@@ -69,5 +72,10 @@ class Product extends Model
     public function dependencies(): HasMany
     {
         return $this->hasMany(ProductDependency::class, 'product_id');
+    }
+
+    public function onderhoudsgroep(): BelongsTo
+    {
+        return $this->belongsTo(Onderhoudsgroep::class);
     }
 }

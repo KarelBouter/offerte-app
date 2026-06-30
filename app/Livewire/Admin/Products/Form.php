@@ -3,6 +3,7 @@
 namespace App\Livewire\Admin\Products;
 
 use App\Enums\ProductCategorie;
+use App\Models\Onderhoudsgroep;
 use App\Models\Product;
 use Livewire\Component;
 use Livewire\WithFileUploads;
@@ -38,6 +39,7 @@ class Form extends Component
     public bool   $verberg_in_configurator  = false;
     public bool   $is_hardware_basisoptie   = false;
     public bool   $is_ups                   = false;
+    public ?int   $onderhoudsgroep_id       = null;
 
     public function mount(?Product $product = null): void
     {
@@ -67,6 +69,7 @@ class Form extends Component
             $this->verberg_in_configurator = (bool) $product->verberg_in_configurator;
             $this->is_hardware_basisoptie  = (bool) $product->is_hardware_basisoptie;
             $this->is_ups                  = (bool) $product->is_ups;
+            $this->onderhoudsgroep_id      = $product->onderhoudsgroep_id;
         }
     }
 
@@ -96,6 +99,7 @@ class Form extends Component
                 'verberg_in_configurator'  => 'boolean',
                 'is_hardware_basisoptie'   => 'boolean',
                 'is_ups'                   => 'boolean',
+                'onderhoudsgroep_id'       => 'nullable|integer|exists:onderhoudsgroepen,id',
             ],
             [
                 'name.required' => 'Naam is verplicht.',
@@ -146,6 +150,7 @@ class Form extends Component
             'verberg_in_configurator' => $this->verberg_in_configurator,
             'is_hardware_basisoptie'  => $this->is_hardware_basisoptie,
             'is_ups'                  => $this->is_ups,
+            'onderhoudsgroep_id'      => $this->onderhoudsgroep_id ?: null,
         ];
 
         if ($this->image) {
@@ -167,7 +172,8 @@ class Form extends Component
     {
         $title = $this->product?->exists ? 'Product bewerken' : 'Nieuw product';
 
-        return view('livewire.admin.products.form')
-            ->layout('layouts.app-admin', ['title' => $title]);
+        return view('livewire.admin.products.form', [
+            'onderhoudsgroepen' => Onderhoudsgroep::actief()->orderBy('naam')->get(),
+        ])->layout('layouts.app-admin', ['title' => $title]);
     }
 }

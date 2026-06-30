@@ -4,6 +4,7 @@ namespace App\Livewire\Verkoper\Quotes;
 
 use App\Models\Customer;
 use App\Models\KassaComponent;
+use App\Models\Onderhoudsgroep;
 use App\Models\Product;
 use App\Models\ProductDependency;
 use App\Models\Quote;
@@ -54,6 +55,7 @@ class Create extends Component
     public array $installatieNotities    = []; // [productId => string]
     public array $werkbonAantekeningen   = []; // [productId => string]
     public bool  $inclusiefOvereenkomst  = false;
+    public array $onderhoudscontracten   = []; // [groepId => bool]
 
     // ── Lifecycle ──────────────────────────────────────────────────────────
 
@@ -110,6 +112,13 @@ class Create extends Component
 
             // Bestaande offertes: gebruik opgeslagen waarde; null → afleiden van svcChoice
             $this->inclusiefOvereenkomst = $quote->inclusief_overeenkomst ?? !empty($this->svcChoice);
+
+            // Afgeleid: zijn onderhoudscontracten aan voor bestaande offerte?
+            $savedProductIds = $quote->items()->pluck('product_id')->all();
+            foreach (Onderhoudsgroep::actief()->with('basisproduct:id')->get() as $groep) {
+                $this->onderhoudscontracten[$groep->id] = $groep->basisproduct_id !== null
+                    && in_array($groep->basisproduct_id, $savedProductIds);
+            }
 
             $this->syncAndEvaluate();
         }
@@ -168,6 +177,11 @@ class Create extends Component
     }
 
     public function updatedQtyInputs($value, $key): void
+    {
+        $this->syncAndEvaluate();
+    }
+
+    public function updatedOnderhoudscontracten($value, $key): void
     {
         $this->syncAndEvaluate();
     }
@@ -594,6 +608,43 @@ class Create extends Component
             }
         }
 
+        // ── Onderhoudscontracten ───────────────────────────────────────────
+        $groepen = Onderhoudsgroep::actief()
+            ->with(['producten:id,onderhoudsgroep_id', 'basisproduct:id,name', 'perStukProduct:id,name'])
+            ->get();
+
+        foreach ($groepen as $groep) {
+            $aantalStuks = 0;
+            foreach ($groep->producten as $product) {
+                $aantalStuks += (int) ($items[(string) $product->id]['quantity'] ?? 0);
+            }
+
+            if ($aantalStuks === 0) {
+                // Auto-reset toggle zodat de UI niet 'aan' toont terwijl er niets te onderhouden is
+                $this->onderhoudscontracten[$groep->id] = false;
+                continue;
+            }
+
+            if (!($this->onderhoudscontracten[$groep->id] ?? false)) {
+                continue;
+            }
+
+            if ($groep->basisproduct_id) {
+                $items[(string) $groep->basisproduct_id] = $this->makeAutoItem(
+                    1,
+                    "Onderhoudscontract {$groep->naam} — basis (1 installatie, {$aantalStuks} stuk" . ($aantalStuks === 1 ? '' : 's') . ')',
+                    false
+                );
+            }
+            if ($groep->per_stuk_product_id) {
+                $items[(string) $groep->per_stuk_product_id] = $this->makeAutoItem(
+                    $aantalStuks,
+                    "Onderhoudscontract {$groep->naam} — per stuk ({$aantalStuks} stuk" . ($aantalStuks === 1 ? '' : 's') . ')',
+                    false
+                );
+            }
+        }
+
         return $items;
     }
 
@@ -808,6 +859,20 @@ class Create extends Component
         $hwProduct   = !empty($this->hwChoice) ? Product::find((int) $this->hwChoice) : null;
         $svcRequired = $hwProduct && $hwProduct->vereist_servicecontract;
 
+        $onderhoudsgroepen = Onderhoudsgroep::actief()
+            ->with(['producten:id,onderhoudsgroep_id'])
+            ->orderBy('naam')
+            ->get();
+
+        $groepenAantallen = [];
+        foreach ($onderhoudsgroepen as $groep) {
+            $total = 0;
+            foreach ($groep->producten as $product) {
+                $total += (int) ($this->qtyInputs[(string) $product->id] ?? 0);
+            }
+            $groepenAantallen[$groep->id] = $total;
+        }
+
         return view('livewire.verkoper.quotes.create', [
             'productsByCategory' => $productsByCategory,
             'autoOnlyNames'      => $autoOnlyNames,
@@ -816,6 +881,8 @@ class Create extends Component
             'autoAddedIds'       => $this->getAutoAddedProductIds(),
             'poeWarnings'        => $this->getPoEWarnings(),
             'svcRequired'        => $svcRequired,
+            'onderhoudsgroepen'  => $onderhoudsgroepen,
+            'groepenAantallen'   => $groepenAantallen,
         ])->layout($layout, ['title' => $title]);
     }
 }
