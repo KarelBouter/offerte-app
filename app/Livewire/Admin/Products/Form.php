@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Admin\Products;
 
+use App\Enums\ProductCategorie;
 use App\Models\Product;
 use Livewire\Component;
 use Livewire\WithFileUploads;
@@ -33,7 +34,10 @@ class Form extends Component
     public ?int $poorten_benodigd = null;
     public string $installatie_instructie  = '';
     public string $werkbon_zichtbaarheid    = 'automatisch';
-    public bool   $vereist_servicecontract = false;
+    public bool   $vereist_servicecontract  = false;
+    public bool   $verberg_in_configurator  = false;
+    public bool   $is_hardware_basisoptie   = false;
+    public bool   $is_ups                   = false;
 
     public function mount(?Product $product = null): void
     {
@@ -57,9 +61,12 @@ class Form extends Component
             $this->switch_ports_total = $product->switch_ports_total;
             $this->switch_ports_poe   = $product->switch_ports_poe;
             $this->poorten_benodigd       = $product->poorten_benodigd;
-            $this->installatie_instructie = $product->installatie_instructie ?? '';
-            $this->werkbon_zichtbaarheid    = $product->werkbon_zichtbaarheid ?? 'automatisch';
+            $this->installatie_instructie  = $product->installatie_instructie ?? '';
+            $this->werkbon_zichtbaarheid   = $product->werkbon_zichtbaarheid ?? 'automatisch';
             $this->vereist_servicecontract = (bool) $product->vereist_servicecontract;
+            $this->verberg_in_configurator = (bool) $product->verberg_in_configurator;
+            $this->is_hardware_basisoptie  = (bool) $product->is_hardware_basisoptie;
+            $this->is_ups                  = (bool) $product->is_ups;
         }
     }
 
@@ -69,7 +76,7 @@ class Form extends Component
             [
                 'name' => 'required|string|max:255',
                 'sku' => 'nullable|string|max:100',
-                'category' => 'required|in:Hardware,Netwerk,Beveiliging,Installatie,Service',
+                'category' => 'required|in:'.implode(',', ProductCategorie::values()),
                 'description' => 'required|string',
                 'unit_price' => $this->is_price_on_quote ? 'numeric|min:0' : 'required|numeric|min:0',
                 'unit' => 'required|in:stuk,dag,jaar,set',
@@ -86,6 +93,9 @@ class Form extends Component
                 'installatie_instructie'  => 'nullable|string',
                 'werkbon_zichtbaarheid'    => 'required|in:automatisch,altijd,verbergen',
                 'vereist_servicecontract'  => 'boolean',
+                'verberg_in_configurator'  => 'boolean',
+                'is_hardware_basisoptie'   => 'boolean',
+                'is_ups'                   => 'boolean',
             ],
             [
                 'name.required' => 'Naam is verplicht.',
@@ -131,8 +141,11 @@ class Form extends Component
             'switch_ports_poe'    => $this->switch_ports_poe,
             'poorten_benodigd'        => $this->poorten_benodigd,
             'installatie_instructie'  => $this->installatie_instructie ?: null,
-            'werkbon_zichtbaarheid'    => $this->werkbon_zichtbaarheid,
-            'vereist_servicecontract'  => $this->vereist_servicecontract,
+            'werkbon_zichtbaarheid'   => $this->werkbon_zichtbaarheid,
+            'vereist_servicecontract' => $this->vereist_servicecontract,
+            'verberg_in_configurator' => $this->verberg_in_configurator,
+            'is_hardware_basisoptie'  => $this->is_hardware_basisoptie,
+            'is_ups'                  => $this->is_ups,
         ];
 
         if ($this->image) {

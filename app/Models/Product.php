@@ -29,6 +29,9 @@ class Product extends Model
         'installatie_instructie',
         'werkbon_zichtbaarheid',
         'vereist_servicecontract',
+        'verberg_in_configurator',
+        'is_hardware_basisoptie',
+        'is_ups',
     ];
 
     protected function casts(): array
@@ -36,9 +39,12 @@ class Product extends Model
         return [
             'unit_price'              => 'decimal:2',
             'price_per_meter'         => 'decimal:2',
-            'is_price_on_quote'       => 'boolean',
-            'is_active'               => 'boolean',
-            'vereist_servicecontract' => 'boolean',
+            'is_price_on_quote'        => 'boolean',
+            'is_active'                => 'boolean',
+            'vereist_servicecontract'  => 'boolean',
+            'verberg_in_configurator'  => 'boolean',
+            'is_hardware_basisoptie'   => 'boolean',
+            'is_ups'                   => 'boolean',
         ];
     }
 

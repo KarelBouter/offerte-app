@@ -48,8 +48,8 @@
                     </label>
                     <select wire:model="category"
                             class="w-full rounded-lg border-gray-300 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                        @foreach(['Hardware', 'Netwerk', 'Beveiliging', 'Installatie', 'Service'] as $cat)
-                            <option value="{{ $cat }}">{{ $cat }}</option>
+                        @foreach(\App\Enums\ProductCategorie::cases() as $cat)
+                            <option value="{{ $cat->value }}">{{ $cat->value }}</option>
                         @endforeach
                     </select>
                     @error('category') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
@@ -210,7 +210,31 @@
                                        class="rounded border-gray-300 text-blue-600 shadow-sm focus:ring-blue-500"/>
                                 <span class="text-sm font-medium text-gray-700">Vereist servicecontract</span>
                             </label>
-                            <p class="text-xs text-gray-400 mt-1">Alleen aanvinken voor hardware-basisopties (Optie A / B). Forceert de servicecontract-keuze bij het aanmaken van een offerte.</p>
+                            <p class="text-xs text-gray-400 mt-1">Forceert de servicecontract-keuze bij het aanmaken van een offerte.</p>
+                        </div>
+                        <div>
+                            <label class="flex items-center gap-3 cursor-pointer mt-1">
+                                <input wire:model="verberg_in_configurator" type="checkbox"
+                                       class="rounded border-gray-300 text-blue-600 shadow-sm focus:ring-blue-500"/>
+                                <span class="text-sm font-medium text-gray-700">Verbergen in handmatige configurator</span>
+                            </label>
+                            <p class="text-xs text-gray-400 mt-1">Aangevinkt: dit product is alleen via automatische afhankelijkheidsregels toe te voegen, niet handmatig kiesbaar.</p>
+                        </div>
+                        <div>
+                            <label class="flex items-center gap-3 cursor-pointer mt-1">
+                                <input wire:model="is_hardware_basisoptie" type="checkbox"
+                                       class="rounded border-gray-300 text-blue-600 shadow-sm focus:ring-blue-500"/>
+                                <span class="text-sm font-medium text-gray-700">Hardware-basisoptie</span>
+                            </label>
+                            <p class="text-xs text-gray-400 mt-1">Aangevinkt: dit product verschijnt als keuzeoptie in stap 2 van de offertewizard (hardware-basisoptie).</p>
+                        </div>
+                        <div>
+                            <label class="flex items-center gap-3 cursor-pointer mt-1">
+                                <input wire:model="is_ups" type="checkbox"
+                                       class="rounded border-gray-300 text-blue-600 shadow-sm focus:ring-blue-500"/>
+                                <span class="text-sm font-medium text-gray-700">UPS (noodstroombeveiliging)</span>
+                            </label>
+                            <p class="text-xs text-gray-400 mt-1">Aangevinkt: dit product wordt herkend als UPS in de offerte-PDF (aparte sectie artikel 1).</p>
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Zichtbaarheid op werkbon</label>

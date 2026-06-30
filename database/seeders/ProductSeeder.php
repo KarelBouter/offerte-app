@@ -19,6 +19,8 @@ class ProductSeeder extends Seeder
                 'unit' => 'set',
                 'is_price_on_quote' => false,
                 'sort_order' => 10,
+                'is_hardware_basisoptie' => true,
+                'vereist_servicecontract' => true,
             ],
             [
                 'name' => 'Optie B — HA Cluster (3 nodes)',
@@ -28,6 +30,8 @@ class ProductSeeder extends Seeder
                 'unit' => 'set',
                 'is_price_on_quote' => false,
                 'sort_order' => 20,
+                'is_hardware_basisoptie' => true,
+                'vereist_servicecontract' => true,
             ],
             [
                 'name' => 'NUC node',
@@ -37,6 +41,7 @@ class ProductSeeder extends Seeder
                 'unit' => 'stuk',
                 'is_price_on_quote' => true,
                 'sort_order' => 30,
+                'verberg_in_configurator' => true,
             ],
             [
                 'name' => '2.5" SSD',
@@ -46,6 +51,7 @@ class ProductSeeder extends Seeder
                 'unit' => 'stuk',
                 'is_price_on_quote' => true,
                 'sort_order' => 40,
+                'verberg_in_configurator' => true,
             ],
             [
                 'name' => 'Firewall',
@@ -55,6 +61,7 @@ class ProductSeeder extends Seeder
                 'unit' => 'stuk',
                 'is_price_on_quote' => true,
                 'sort_order' => 50,
+                'verberg_in_configurator' => true,
             ],
             [
                 'name' => 'Switch standaard',
@@ -64,6 +71,7 @@ class ProductSeeder extends Seeder
                 'unit' => 'stuk',
                 'is_price_on_quote' => true,
                 'sort_order' => 60,
+                'verberg_in_configurator' => true,
             ],
             [
                 'name' => 'PoE Switch 8-poorts',
@@ -73,6 +81,7 @@ class ProductSeeder extends Seeder
                 'unit' => 'stuk',
                 'is_price_on_quote' => true,
                 'sort_order' => 70,
+                'verberg_in_configurator' => true,
             ],
             [
                 'name' => 'PoE Switch 16-poorts',
@@ -82,6 +91,7 @@ class ProductSeeder extends Seeder
                 'unit' => 'stuk',
                 'is_price_on_quote' => true,
                 'sort_order' => 80,
+                'verberg_in_configurator' => true,
             ],
             [
                 'name' => 'UPS',
@@ -91,6 +101,7 @@ class ProductSeeder extends Seeder
                 'unit' => 'stuk',
                 'is_price_on_quote' => false,
                 'sort_order' => 90,
+                'is_ups' => true,
             ],
 
             // Netwerk
@@ -122,6 +133,7 @@ class ProductSeeder extends Seeder
                 'unit' => 'stuk',
                 'is_price_on_quote' => true,
                 'sort_order' => 20,
+                'verberg_in_configurator' => true,
             ],
 
             // Installatie
@@ -133,6 +145,7 @@ class ProductSeeder extends Seeder
                 'unit' => 'dag',
                 'is_price_on_quote' => false,
                 'sort_order' => 10,
+                'verberg_in_configurator' => true,
             ],
             [
                 'name' => 'Installatie hele dag (±8 uur)',
@@ -142,6 +155,7 @@ class ProductSeeder extends Seeder
                 'unit' => 'dag',
                 'is_price_on_quote' => false,
                 'sort_order' => 20,
+                'verberg_in_configurator' => true,
             ],
             [
                 'name' => 'Installatie extra dagdeel',
@@ -188,6 +202,28 @@ class ProductSeeder extends Seeder
                 ['name' => $data['name'], 'category' => $data['category']],
                 array_merge($data, ['is_active' => true])
             );
+        }
+
+        // Ensure flags are set correctly on existing products (no-op on fresh installs)
+        $flagUpdates = [
+            ['name' => 'Optie A — Tower server (RAID 1)', 'is_hardware_basisoptie' => true, 'vereist_servicecontract' => true],
+            ['name' => 'Optie B — HA Cluster (3 nodes)',  'is_hardware_basisoptie' => true, 'vereist_servicecontract' => true],
+            ['name' => 'NUC node',                        'verberg_in_configurator' => true],
+            ['name' => '2.5" SSD',                        'verberg_in_configurator' => true],
+            ['name' => 'Firewall',                        'verberg_in_configurator' => true],
+            ['name' => 'Switch standaard',                'verberg_in_configurator' => true],
+            ['name' => 'PoE Switch 8-poorts',             'verberg_in_configurator' => true],
+            ['name' => 'PoE Switch 16-poorts',            'verberg_in_configurator' => true],
+            ['name' => 'NVR (Network Video Recorder)',    'verberg_in_configurator' => true],
+            ['name' => 'Installatie halve dag (±4 uur)',  'verberg_in_configurator' => true],
+            ['name' => 'Installatie hele dag (±8 uur)',   'verberg_in_configurator' => true],
+            ['name' => 'UPS',                             'is_ups' => true],
+        ];
+
+        foreach ($flagUpdates as $update) {
+            $name = $update['name'];
+            unset($update['name']);
+            Product::where('name', $name)->update($update);
         }
     }
 }

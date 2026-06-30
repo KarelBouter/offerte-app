@@ -55,19 +55,6 @@ class Create extends Component
     public array $werkbonAantekeningen   = []; // [productId => string]
     public bool  $inclusiefOvereenkomst  = false;
 
-    // ── Products that are auto-add only (not shown in manual configurator) ─
-    private const AUTO_ONLY_PRODUCTS = [
-        'Firewall',
-        'Switch standaard',
-        'NUC node',
-        '2.5" SSD',
-        'PoE Switch 8-poorts',
-        'PoE Switch 16-poorts',
-        'NVR (Network Video Recorder)',
-        'Installatie halve dag (±4 uur)',
-        'Installatie hele dag (±8 uur)',
-    ];
-
     // ── Lifecycle ──────────────────────────────────────────────────────────
 
     public function mount(?Quote $quote = null): void
@@ -96,7 +83,7 @@ class Create extends Component
 
             foreach ($quote->items()->where('is_auto_added', false)->with('product')->get() as $item) {
                 $product = $item->product;
-                if ($product->category === 'Hardware' && str_starts_with($product->name, 'Optie')) {
+                if ($product->is_hardware_basisoptie) {
                     $this->hwChoice = (string) $item->product_id;
                 } elseif ($product->category === 'Service') {
                     $this->svcChoice = (string) $item->product_id;
@@ -677,6 +664,7 @@ class Create extends Component
 
     private function calculatePrices(): array
     {
+        $vatRate  = (float) (\App\Models\Setting::where('key', 'vat_percentage')->value('value') ?? 21) / 100;
         $products = Product::whereIn('id', array_keys($this->getAllItems()))->get()->keyBy('id');
 
         $onetimeTotal = 0.0;
@@ -739,11 +727,11 @@ class Create extends Component
             'onetimeSubtotal' => $onetimeTotal,
             'discountAmount'  => $discountAmount,
             'onetimeExclVat'  => $onetimeAfterDiscount,
-            'onetimeVat'      => $onetimeAfterDiscount * 0.21,
-            'onetimeInclVat'  => $onetimeAfterDiscount * 1.21,
+            'onetimeVat'      => $onetimeAfterDiscount * $vatRate,
+            'onetimeInclVat'  => $onetimeAfterDiscount * (1 + $vatRate),
             'yearlyExclVat'   => $yearlyTotal,
-            'yearlyVat'       => $yearlyTotal * 0.21,
-            'yearlyInclVat'   => $yearlyTotal * 1.21,
+            'yearlyVat'       => $yearlyTotal * $vatRate,
+            'yearlyInclVat'   => $yearlyTotal * (1 + $vatRate),
         ];
     }
 
@@ -806,7 +794,7 @@ class Create extends Component
             ->get();
 
         $productsByCategory = $allProducts->groupBy('category');
-        $autoOnlyNames      = self::AUTO_ONLY_PRODUCTS;
+        $autoOnlyNames      = $allProducts->where('verberg_in_configurator', true)->pluck('name')->all();
 
         $previewNumber = sprintf(
             'PI-%d-%04d',

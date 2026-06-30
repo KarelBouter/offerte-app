@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\ProductCategorie;
 use App\Models\Quote;
 use App\Models\Setting;
 use App\Support\PdfDefaults;
@@ -17,17 +18,15 @@ class QuotePdfService
         $items = $quote->items->filter(fn ($i) => $i->product !== null);
 
         // ── Item categorisering ──────────────────────────────────────────────
-        $hwOptionA    = $items->first(fn ($i) => str_starts_with($i->product->name, 'Optie A'));
-        $hwOptionB    = $items->first(fn ($i) => str_starts_with($i->product->name, 'Optie B'));
-        $chosenHw     = $hwOptionA ?? $hwOptionB;
-        $upsItem      = $items->first(fn ($i) => $i->product->name === 'UPS');
-        $svcItem      = $items->first(fn ($i) => $i->product->category === 'Service');
+        $chosenHw     = $items->first(fn ($i) => $i->product->is_hardware_basisoptie);
+        $upsItem      = $items->first(fn ($i) => $i->product->is_ups);
+        $svcItem      = $items->first(fn ($i) => $i->product->category === ProductCategorie::Service->value);
         $installItems = $items->filter(
-            fn ($i) => $i->product->category === 'Installatie' && !$i->product->is_price_on_quote
+            fn ($i) => $i->product->category === ProductCategorie::Installatie->value && !$i->product->is_price_on_quote
         );
         $addonItems   = $items->filter(function ($i) {
-            return in_array($i->product->category, ['Netwerk', 'Beveiliging'])
-                || ($i->product->category === 'Installatie' && $i->product->is_price_on_quote);
+            return in_array($i->product->category, [ProductCategorie::Netwerk->value, ProductCategorie::Beveiliging->value])
+                || ($i->product->category === ProductCategorie::Installatie->value && $i->product->is_price_on_quote);
         });
 
         // ── Settings: defaults + DB ──────────────────────────────────────────
@@ -117,8 +116,6 @@ class QuotePdfService
             'signatureSrc'  => $signatureSrc,
             'companySigSrc' => $companySigSrc,
             'chosenHw'      => $chosenHw,
-            'hwOptionA'     => $hwOptionA,
-            'hwOptionB'     => $hwOptionB,
             'upsItem'       => $upsItem,
             'svcItem'       => $svcItem,
             'installItems'  => $installItems,
