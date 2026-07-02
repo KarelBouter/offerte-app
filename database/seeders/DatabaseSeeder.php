@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             SettingSeeder::class,
             AutoTaskTemplateSeeder::class,
             PdfTextSeeder::class,
+            KassaContinuiteitsdienstSeeder::class,
         ]);
     }
 }

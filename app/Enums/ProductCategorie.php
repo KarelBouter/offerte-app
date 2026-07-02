@@ -8,6 +8,7 @@ enum ProductCategorie: string
     case Netwerk     = 'Netwerk';
     case Beveiliging = 'Beveiliging';
     case Installatie = 'Installatie';
+    case Licenties   = 'Licenties';
     case Service     = 'Service';
 
     public static function values(): array
